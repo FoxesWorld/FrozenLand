@@ -1,0 +1,64 @@
+plugins {
+    id 'application'
+    id 'java'
+    id "io.github.0ffz.github-packages" version "1.2.1"
+}
+
+apply plugin: 'java'
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+def libsDir = project.projectDir.toString() + File.separator + "lib"
+
+repositories {
+    flatDir {
+        dirs libsDir
+    }
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+    maven githubPackage.invoke("riccardobl")
+    maven githubPackage.invoke("jmePhonon")
+}
+
+dependencies {
+    implementation files('lib/gson.jar')
+    implementation files('lib/lwjgl.jar')
+    implementation files('lib/jinput.jar')
+    implementation files('lib/jbullet.jar')
+    implementation files('lib/vecmath.jar')
+    implementation files('lib/xpp3.jar')
+    implementation files('lib/cfgProvider-1.5.0-Release.jar')
+
+    implementation files('lib/j-ogg-vorbis.jar')
+    implementation files('lib/jme3-jogg.jar')
+
+    implementation files('lib/lwjgl-platform-natives-windows.jar')
+    implementation files('lib/jme3-core.jar')
+    implementation files('lib/jme3-jbullet.jar')
+    implementation files('lib/jme3-lwjgl-3.6.1-stable.jar')
+    implementation files('lib/jme3-desktop.jar')
+    implementation files('lib/jme3-plugins.jar')
+    implementation files('lib/jme3-terrain-3.6.1-stable.jar')
+    implementation files('lib/jme3-effects.jar')
+    implementation files('lib/jme3-awt-dialogs.jar')
+
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.19.0'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.19.0'
+    implementation group: 'com.sudoplay.joise', name: 'joise', version: '1.1.0'
+    implementation group: 'com.personthecat', name: 'fastnoise', version: '0.9'
+
+    implementation files('lib/jme3-niftygui-3.6.0-stable.jar')
+    implementation files('lib/jME3-niftygui.jar')
+    implementation files('lib/nifty.jar')
+    implementation files('lib/nifty-default-controls.jar')
+    implementation files('lib/nifty-default-styles-0.0.1.jar')
+
+    implementation  'wf.frk:jme-effekseer-native:0.4'
+    implementation (group: 'com.jme3.phonon', name: 'jme_phonon', version: '0.3.7', ext: 'jar', classifier: '')
+    implementation  "wf.frk:jme3-bullet-vhacd:1.0.5"
+    implementation  "wf.frk:jme_f3b:0.92"
+
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.19.0'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.19.0'
+}

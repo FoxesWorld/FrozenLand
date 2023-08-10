@@ -1,0 +1,27 @@
+MaterialDef CustomMaterial {
+    MaterialParameters {
+        Texture2D DiffuseMap
+        Texture2D NormalMap
+        Texture2D RoughnessMap
+        Texture2D OcclusionMap
+        Texture2D HeightMap
+    }
+
+    Technique {
+        VertexShader GLSL100:   Shaders/CustomShader.vert
+        FragmentShader GLSL100: Shaders/CustomShader.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+            NormalMatrix
+        }
+
+        Defines {
+            DIFFUSEMAP : DiffuseMap
+            NORMALMAP : NormalMap
+            ROUGHNESSMAP : RoughnessMap
+            OCCLUSIONMAP : OcclusionMap
+            HEIGHTMAP : HeightMap
+        }
+    }
+}
