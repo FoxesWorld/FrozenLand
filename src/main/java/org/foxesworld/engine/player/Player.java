@@ -79,4 +79,8 @@ public class Player extends Node {
         addControl(new ActionsControl(assetManager,true,jesse.getControl(BetterCharacterControl.class)));
 
     }
+
+    public Node getPlayerNode() {
+        return  this;
+    }
 }

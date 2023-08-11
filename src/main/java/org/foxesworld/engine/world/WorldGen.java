@@ -23,6 +23,7 @@ public class WorldGen {
     private TerrainGenerator terrain;
     private Water water;
     private Sun sun;
+    private  Player player;
     private SimpleApplication app;
 
     private Node rootNode;
@@ -33,6 +34,7 @@ public class WorldGen {
         this.terrainSize = terrainSize;
         this.waterLevel = waterLevel;
         this.terrain = new TerrainGenerator(app);
+        this.player = new Player(app);
         this.water = new Water(app, app.getFpp());
     }
 
@@ -59,8 +61,7 @@ public class WorldGen {
         sun.addSun();
     }
 
-    public void addPLayer(NewGame game){
-        Player player = new Player(game);
+    public void addPlayer(NewGame game){
         player.addPlayer(app.getCamera(), terrain.getSpawnPoint());
         game.getBullet().getPhysicsSpace().addAll(player);
         this.rootNode.attachChild(player);
@@ -69,4 +70,5 @@ public class WorldGen {
     public Sun getSun(){
         return sun;
     }
+
 }

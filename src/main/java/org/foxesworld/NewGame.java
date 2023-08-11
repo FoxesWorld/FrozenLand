@@ -32,15 +32,15 @@ public class NewGame extends SimpleApplication {
     private static Sound SOUND;
 
     public static void main(String[] args) {
-        CONFIG = new ConfigReader(new String[]{"userInput", "internal/sounds"}).getCfgMaps();
         NewGame app = new NewGame();
+        CONFIG = new ConfigReader(new String[]{"userInput", "internal/sounds"}).getCfgMaps();
         AppSettings cfg = new AppSettings(true);
         cfg.setVSync(false);
         cfg.setResolution(1360, 768);
         cfg.setFullscreen(false);
         cfg.setSamples(16);    // anti-aliasing
         cfg.setTitle("SolarSystem"); // branding: window name
-        app.setShowSettings(true); // or don't display splashscreen
+        app.setShowSettings(false); // or don't display splashscreen
         app.setDisplayFps(true);
         app.setDisplayStatView(false);
         app.setSettings(cfg);
@@ -69,7 +69,7 @@ public class NewGame extends SimpleApplication {
         world.genWater(lightDir);
         world.addSky("assets/textures/background.dds");
         world.addSun("sun", AMBIENT, ColorRGBA.Gray, new Vector3f(-0.7f, -0.3f, -0.5f).normalizeLocal(), 3f, 2f);
-        world.addPLayer(this);
+        world.addPlayer(this);
 
         //Setting shaders
                 //Bloom Filter
@@ -120,4 +120,5 @@ public class NewGame extends SimpleApplication {
     public FilterPostProcessor getFpp(){
         return fpp;
     }
+
 }

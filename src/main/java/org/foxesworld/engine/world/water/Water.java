@@ -4,6 +4,7 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
+import com.jme3.scene.Node;
 import com.jme3.texture.Texture2D;
 import com.jme3.water.WaterFilter;
 
@@ -11,15 +12,19 @@ public class Water {
 
     private SimpleApplication app;
     private FilterPostProcessor fpp;
+    private Node waterNode = new Node();
     private float waterLevel;
 
     public Water(SimpleApplication app, FilterPostProcessor fpp){
         this.app = app;
         this.fpp = fpp;
+        app.getRootNode().attachChild(waterNode);
     }
 
     public void generateWater(float waterLevel, @Deprecated Vector3f light){
-            this.waterLevel = waterLevel;
+        this.waterLevel = waterLevel;
+
+
             WaterFilter water = new WaterFilter(app.getRootNode(), light);
             water.setWaterColor(new ColorRGBA().setAsSrgb(0.0078f, 0.3176f, 0.5f, 1.0f));
             water.setDeepWaterColor(new ColorRGBA().setAsSrgb(0.0039f, 0.00196f, 0.145f, 1.0f));
@@ -38,6 +43,8 @@ public class Water {
             water.setRefractionStrength(0.2f);
             water.setWaterHeight(waterLevel);
             fpp.addFilter(water);
+
+        //waterShaderManager.waterShader(waterLevel, Vector3f.UNIT_Y.negate());
     }
 
     public float getWaterLevel() {

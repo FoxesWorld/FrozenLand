@@ -21,7 +21,6 @@ import java.util.Random;
 public class TerrainGenerator extends TerrainAbstract {
     private Vector3f[] vertices;
     private Vector3f spawnPoint;
-    private float waterLevel;
     private static final Logger logger = LoggerFactory.getLogger(TerrainGenerator.class);
 
     public TerrainGenerator(SimpleApplication app) {
@@ -52,7 +51,7 @@ public class TerrainGenerator extends TerrainAbstract {
         setFrequency(frequency);
         setNumOctaves(numOctaves);
         setTextureScale(textureScale);
-        this.waterLevel = waterLevel;
+
 
         TerrainMaterial terrainMaterial = generateTerrain(mat);
         Geometry terrainGeometry = terrainMaterial.terrainGeometry;
@@ -76,7 +75,6 @@ public class TerrainGenerator extends TerrainAbstract {
         return terrainNode;
     }
 
-
     //TODO Move to spatialGen
     protected void placeGeneratables(Node terrainNode, float waterLevel, int chancePerChunk) {
         logger.info("Placing generetables...");
@@ -89,7 +87,7 @@ public class TerrainGenerator extends TerrainAbstract {
             float x = random.nextFloat() * terrainSize - terrainSize * 0.5f;
             float z = random.nextFloat() * terrainSize - terrainSize * 0.5f;
             float y = getHeight(x, z);
-            if (y > waterLevel) { //If above water level (Later select generatables for water and surface)
+            if(y > waterLevel) { //If above water level (Later select generatables for water and surface)
 
                 Spatial treeInstance = treeModel.clone();
                 treeInstance.scale(1f);
@@ -109,7 +107,6 @@ public class TerrainGenerator extends TerrainAbstract {
             }
         }
     }
-
 
     protected float getHeight(float x, float z) {
         int gridSize = getGridSize();
@@ -140,32 +137,17 @@ public class TerrainGenerator extends TerrainAbstract {
         // Interpolate height vertically
         float height = h0 * (1 - v) + h1 * v;
 
-        // Apply rounding at the edges for island-like shape
-        float islandRadius = gridSize * stepSize * 0.4f;
-        float distanceToCenter = new Vector2f(x, z).length();
-        float roundFactor = FastMath.clamp(1 - (distanceToCenter / islandRadius), 0, 1);
-        float roundValue = roundFactor * 10; // Adjust this value as needed
-
-        height -= roundValue;
-
-        // Ensure the height doesn't go below water level
-        height = Math.max(height, waterLevel);
-
         return height;
     }
-
 
     @Override
     protected Mesh generateTerrainMesh() {
         int gridSize = getGridSize();
         float stepSize = getStepSize();
         float frequency = getFrequency();
-        float islandRadius = gridSize * stepSize * 0.4f; // Adjust this value as needed
-        float roundFactor = 10; // Adjust this value as needed
-
         // Create mesh and configure its vertices and triangle indices
         Mesh terrainMesh = new Mesh();
-        vertices = new Vector3f[(gridSize + 1) * (gridSize + 1)];
+        Vector3f[] vertices = new Vector3f[(gridSize + 1) * (gridSize + 1)];
         Vector2f[] texCoord = new Vector2f[(gridSize + 1) * (gridSize + 1)]; // Add array for texture coordinates
 
         // Create noise module for height generation
@@ -192,17 +174,8 @@ public class TerrainGenerator extends TerrainAbstract {
                 float hillHeight = (float) hillFractal.get(x * 0.2, 0, z * 0.2) * 10;
 
                 float y = noiseValue * 15 + hillHeight;
-
-                // Apply rounding at the edges for island-like shape
-                float distanceToCenter = new Vector2f(x, z).length();
-                float roundValue = FastMath.clamp(1 - (distanceToCenter / islandRadius), 0, 1) * roundFactor;
-
-                y -= roundValue;
-
-                // Ensure the height doesn't go below water level
-                y = Math.max(y, waterLevel);
-
                 vertices[i * (gridSize + 1) + j] = new Vector3f(x, y, z);
+                this.vertices = vertices;
 
                 // Generate texture coordinates in range [0, 1]
                 float u = (float) i / gridSize * getTextureScale();
@@ -243,7 +216,6 @@ public class TerrainGenerator extends TerrainAbstract {
         return terrainMesh;
     }
 
-
     @Override
     protected float[] generateHeightMap(int gridSize, float stepSize) {
         // Calculate height values and populate the height map array
@@ -283,7 +255,7 @@ public class TerrainGenerator extends TerrainAbstract {
         }
     }
 
-    public Vector3f getSpawnPoint() {
+    public Vector3f getSpawnPoint(){
         return spawnPoint;
     }
 }
