@@ -1,0 +1,11 @@
+{
+  "matDef": "Common/MatDefs/Terrain/TerrainLighting.j3md",
+  "textures": {
+    "DiffuseMap": {
+      "texture": "sunDiffuse.jpg",
+      "wrap": "REPEAT"
+    }
+  },
+  "vars": {
+  }
+}
