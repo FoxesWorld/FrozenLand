@@ -3,7 +3,7 @@
     {
       "event": "walk",
       "settings": {
-        "volume": 0.8,
+        "volume": 2.0,
         "pitch": 1.0,
         "dataType": "Buffer"
       },
@@ -28,7 +28,7 @@
     {
       "event": "sprint",
       "settings": {
-        "volume": 0.8,
+        "volume": 2.0,
         "pitch": 1.0,
         "dataType": "Buffer"
       },

@@ -7,6 +7,7 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.input.InputManager;
 import com.jme3.math.Vector3f;
+import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -28,13 +29,15 @@ public class Player extends Node {
     private Vector3f jumpForce = new Vector3f(0, 300, 0);
     private AssetManager assetManager;
     private SoundManager soundManager;
+    private  NiftyJmeDisplay niftyDisplay;
     private InputManager inputManager;
     private Node rootNode;
     private PhysicsSpace pspace;
     private Map CFG;
 
-    public Player(SoundManager soundManager, AssetManager assetManager, Node rootNode, BulletAppState bulletAppState, InputManager inputManager, Map config){
+    public Player(NiftyJmeDisplay niftyDisplay, SoundManager soundManager, AssetManager assetManager, Node rootNode, BulletAppState bulletAppState, InputManager inputManager, Map config){
         this.soundManager = soundManager;
+        this.niftyDisplay = niftyDisplay;
         this.assetManager = assetManager;
         this.rootNode = rootNode;
         this.pspace = bulletAppState.getPhysicsSpace();
@@ -63,7 +66,7 @@ public class Player extends Node {
         characterControl.warp(spawnPoint);
 
         // Load character logic
-        addControl(new UserInputHandler(soundManager, inputManager, assetManager, cam, rootNode,()->{
+        addControl(new UserInputHandler(niftyDisplay, soundManager, inputManager, assetManager, cam, rootNode,()->{
             fpsJesse.getControl(ActionsControl.class).shot( assetManager,cam.getLocation().add(cam.getDirection().mult(1)),cam.getDirection(),this.rootNode, this.pspace);
         }, (HashMap<String, List<Object>>) CFG.get("userInput")));
         addControl(new CameraFollowSpatial(cam));

@@ -1,11 +1,9 @@
 package org.foxesworld.newgame;
 
 import com.jme3.app.SimpleApplication;
-import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.math.Vector3f;
+import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.post.FilterPostProcessor;
-import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
 import org.foxesworld.newgame.engine.Kernel;
 import org.foxesworld.newgame.engine.config.ConfigReader;
@@ -38,8 +36,14 @@ public class NewGame extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         stateManager.attach(bulletAppState);
+        NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
         fpp = new FilterPostProcessor(assetManager);
-        new Kernel(assetManager, cam, rootNode, fpp, inputManager, bulletAppState, CONFIG);
+        new Kernel(niftyDisplay, viewPort, assetManager, cam, rootNode, fpp, inputManager, bulletAppState, CONFIG);
+        int numSamples = getContext().getSettings().getSamples();
+        if (numSamples > 0) {
+            fpp.setNumSamples(numSamples);
+        }
+        guiViewPort.addProcessor(niftyDisplay);
     }
 
     @Override

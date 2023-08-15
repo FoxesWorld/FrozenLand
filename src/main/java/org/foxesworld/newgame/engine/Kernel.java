@@ -10,14 +10,20 @@ import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
+import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.filters.FXAAFilter;
 import com.jme3.renderer.Camera;
+import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import org.foxesworld.newgame.engine.material.MaterialManager;
 import org.foxesworld.newgame.engine.player.Player;
+import org.foxesworld.newgame.engine.shaders.Bloom;
+import org.foxesworld.newgame.engine.shaders.DOF;
+import org.foxesworld.newgame.engine.shaders.LSF;
 import org.foxesworld.newgame.engine.sound.SoundManager;
 import org.foxesworld.newgame.engine.world.skybox.SkyboxGenerator;
 import org.foxesworld.newgame.engine.world.sun.LightingType;
@@ -30,6 +36,8 @@ public class Kernel {
 
     private  Map CONFIG;
     protected  AssetManager assetManager;
+    protected ViewPort viewPort;
+    protected  NiftyJmeDisplay niftyDisplay;
     protected SoundManager soundManager;
     protected  MaterialManager materialManager;
     protected Camera camera;
@@ -38,8 +46,10 @@ public class Kernel {
     protected FilterPostProcessor fpp;
     protected InputManager inputManager;
 
-    public Kernel(AssetManager assetManager, Camera camera, Node rootNode, FilterPostProcessor fpp, InputManager inputManager, BulletAppState bulletAppState, Map CONFIG) {
+    public Kernel(NiftyJmeDisplay niftyDisplay, ViewPort viewPort, AssetManager assetManager, Camera camera, Node rootNode, FilterPostProcessor fpp, InputManager inputManager, BulletAppState bulletAppState, Map CONFIG) {
         this.assetManager = assetManager;
+        this.viewPort = viewPort;
+        this.niftyDisplay = niftyDisplay;
         this.soundManager = new SoundManager(assetManager);
         this.materialManager = new MaterialManager(assetManager);
         this.camera = camera;
@@ -51,12 +61,12 @@ public class Kernel {
         this.genSkyBox("textures/BrightSky.dds");
         TerrainGenerator terrain = new TerrainGenerator(rootNode, bulletAppState);
         terrain.generateHillyTerrain(new Vector3f(0,0,0), materialManager.createMat("textures/soil"));
-        //this.createHorizontalSurface(new Vector3f(0,0,0),  64, new MaterialCreator(assetManager).crteateMaterial("textures/soil"));
-        Player player = new Player(soundManager, assetManager, rootNode, bulletAppState, inputManager, CONFIG);
+        Player player = new Player(niftyDisplay, soundManager, assetManager, rootNode, bulletAppState, inputManager, CONFIG);
         player.addPlayer(camera, new Vector3f(0,5,0));
         bulletAppState.getPhysicsSpace().addAll(player);
         rootNode.attachChild(player);
         this.addSun();
+        addShaders(fpp);
     }
 
     private void genSkyBox(String texture){
@@ -72,20 +82,26 @@ public class Kernel {
         sun.addSun(new MaterialManager(assetManager).createMat("textures/sun"));
     }
 
-    private void createHorizontalSurface(Vector3f position, int textureRepeat, Material material) {
-        Box ground = new Box(100, 0.2f, 100); // Размер можно настроить
-        Geometry groundGeom = new Geometry("Ground", ground);
-        groundGeom.setMaterial(material);
-        groundGeom.setLocalTranslation(position);
-        ground.scaleTextureCoordinates(new Vector2f(textureRepeat, textureRepeat));
-        // Добавляем геометрию на сцену
-        rootNode.attachChild(groundGeom);
+    private void  addShaders(FilterPostProcessor fpp){
+        Bloom bloom = new Bloom(fpp);
+        bloom.setBloom(1.0f);
+        bloom.setExposurePover(60);
+        bloom.compile();
 
-        // Создаем коллизию для плоскости
-        CollisionShape groundShape = new BoxCollisionShape(new Vector3f(100, 0.1f, 100)); // Размер коллизии соответствует размеру плоскости
-        RigidBodyControl groundPhysics = new RigidBodyControl(groundShape, 0);
-        groundGeom.addControl(groundPhysics);
-        bulletAppState.getPhysicsSpace().add(groundPhysics);
+        //Light Scattering Filter
+        LSF lsf = new LSF(fpp,new Vector3f(-4.9236743f, -1.27054665f, 5.896916f).mult(-300));
+        lsf.setLightDensity(0.5f);
+        lsf.compile();
+
+        //Depth of field Filter
+        DOF dof = new DOF(fpp);
+        dof.setFocusDistance(0);
+        dof.setFocusRange(100);
+        dof.compile();
+
+        fpp.addFilter(new FXAAFilter());
+
+        viewPort.addProcessor(fpp);
     }
 
 }

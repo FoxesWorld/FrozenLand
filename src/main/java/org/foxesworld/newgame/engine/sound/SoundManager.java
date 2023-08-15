@@ -65,7 +65,6 @@ public class SoundManager {
         List<AudioNode> audioNodes = soundMap.get(event);
         if (audioNodes != null && !audioNodes.isEmpty()) {
             int randomIndex = random.nextInt(audioNodes.size());
-            System.out.println(randomIndex);
             return audioNodes.get(randomIndex);
         }
         return null;

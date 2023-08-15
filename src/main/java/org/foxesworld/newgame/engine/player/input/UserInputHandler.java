@@ -9,13 +9,19 @@ import com.jme3.input.controls.*;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.AbstractControl;
+import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.elements.Element;
+import de.lessvoid.nifty.elements.render.TextRenderer;
+import de.lessvoid.nifty.screen.Screen;
 import org.foxesworld.newgame.engine.player.CharacterSettings;
 import org.foxesworld.newgame.engine.sound.SoundManager;
+import org.foxesworld.newgame.engine.ui.HUDController;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +29,8 @@ import java.util.Stack;
 
 public class UserInputHandler extends AbstractControl implements ActionListener, AnalogListener {
 
+    @Deprecated
+    private String audioType;
     private final Vector3f walkDirection = new Vector3f();
     private BetterCharacterControl characterControl;
     private CharacterSettings characterSettings;
@@ -35,17 +43,21 @@ public class UserInputHandler extends AbstractControl implements ActionListener,
     private boolean[] directions = new boolean[4];
     private AssetManager assetManager;
     private SoundManager soundManager;
+    private Nifty nifty;
     static HashMap<String, List<Object>> userInputConfig;
+    private float timeSinceLastAudio = 0;
 
-    public UserInputHandler(SoundManager soundManager, InputManager inputManager, AssetManager assetManager, Camera cam, Node rootNode, Runnable attackCallback, HashMap<String, List<Object>> userInputConfig) {
+    public UserInputHandler(NiftyJmeDisplay niftyDisplay, SoundManager soundManager, InputManager inputManager, AssetManager assetManager, Camera cam, Node rootNode, Runnable attackCallback, HashMap<String, List<Object>> userInputConfig) {
         this.soundManager = soundManager;
         this.inputManager = inputManager;
         this.assetManager = assetManager;
+        this.nifty = niftyDisplay.getNifty();
         this.rootNode = rootNode;
         this.attackCallback = attackCallback;
         this.cam = cam;
         this.userInputConfig = userInputConfig;
         this.characterSettings = new CharacterSettings();
+        this.nifty.fromXml("ui/test.xml", "hud", new HUDController());
     }
 
     private void initialize() {
@@ -153,6 +165,7 @@ public class UserInputHandler extends AbstractControl implements ActionListener,
     @Override
     protected void controlUpdate(float tpf) {
         initialize();
+        System.out.println(characterSettings.isWalking());
         Quaternion tmpQtr = new Quaternion();
         float currentSpeed = characterSettings.getCurrentSpeed();
         float targetSpeed = characterSettings.isRunning() ? characterSettings.getRunSpeed() : characterSettings.getWalkSpeed();
@@ -162,28 +175,28 @@ public class UserInputHandler extends AbstractControl implements ActionListener,
 
         walkDirection.set(directions[0] ? 1 : directions[1] ? -1 : 0, 0, directions[2] ? 1 : directions[3] ? -1 : 0);
         walkDirection.multLocal(currentSpeed);
-
         tmpV3.set(characterControl.getViewDirection());
         tmpV3.y = 0;
         tmpV3.normalizeLocal();
         tmpQtr.lookAt(tmpV3, Vector3f.UNIT_Y);
         tmpQtr.multLocal(walkDirection);
-
         characterControl.setWalkDirection(walkDirection);
         characterControl.setPhysicsDamping(0.9f);
-
         characterSettings.setWalking(walkDirection.lengthSquared() > 0 && characterSettings.getIsInAir() == 0);
-        updateWalkAudio();
-
+        updateMovementAudio(tpf);
         soundManager.update(tpf);
-
         characterSettings.setIsInAir(characterControl.isOnGround() ? 0 : characterSettings.getIsInAir() + tpf);
+        updateHUDText(new String[]{"movement", "speed", "jumping"}, new String[]{audioType, String.valueOf(characterSettings.getCurrentSpeed()), String.valueOf(characterSettings.isJumping())});
     }
 
-    private void updateWalkAudio() {
+    private void updateMovementAudio(float tpf) {
+        timeSinceLastAudio += tpf;
+        float interval = Math.max(0.05f, 0.3f - characterSettings.getCurrentSpeed() * 0.01f);
+
         if (characterSettings.isWalking()) {
-            if (walkAudio == null || !walkAudio.getStatus().equals(AudioSource.Status.Playing)) {
+            if ((walkAudio == null || !walkAudio.getStatus().equals(AudioSource.Status.Playing)) && timeSinceLastAudio >= interval) {
                 playWalkAudio();
+                timeSinceLastAudio = 0;
             }
         } else {
             stopWalkAudio();
@@ -197,13 +210,15 @@ public class UserInputHandler extends AbstractControl implements ActionListener,
             walkAudio = null;
         }
 
-        String audioType = characterSettings.isRunning() ? "sprint" : "walk";
+        audioType = characterSettings.isRunning() ? "sprint" : "walk";
         walkAudio = soundManager.getRandomAudioNode(audioType);
         if (walkAudio != null) {
             walkAudio.setLocalTranslation(spatial.getWorldTranslation());
+            walkAudio.setPitch(characterSettings.getCurrentSpeed()/4);
             rootNode.attachChild(walkAudio);
             walkAudio.play();
         }
+        updateHUDText(new String[]{"movement", "speed", "jumping"}, new String[]{audioType, String.valueOf(characterSettings.getCurrentSpeed()), String.valueOf(characterSettings.isJumping())});
     }
 
     private void stopWalkAudio() {
@@ -213,6 +228,27 @@ public class UserInputHandler extends AbstractControl implements ActionListener,
             walkAudio = null;
         }
     }
+
+    private void updateHUDText(String[] elementIds, String[] values) {
+        if (nifty != null) {
+            Screen currentScreen = nifty.getCurrentScreen();
+            if (currentScreen != null) {
+                for (int i = 0; i < elementIds.length; i++) {
+                    String elementId = elementIds[i];
+                    String value = values[i];
+
+                    Element hudElement = currentScreen.findElementById(elementId);
+                    if (hudElement != null) {
+                        TextRenderer textRenderer = hudElement.getRenderer(TextRenderer.class);
+                        if (textRenderer != null) {
+                            textRenderer.setText(String.valueOf(value));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
