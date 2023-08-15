@@ -1,17 +1,15 @@
 package org.foxesworld.newgame.engine.world.terrain;
 
-import com.jme3.app.SimpleApplication;
+import com.jme3.asset.TextureKey;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.texture.Texture;
-import com.jme3.texture.Texture.WrapMode;
 import com.sudoplay.joise.module.ModuleBasisFunction;
 import com.sudoplay.joise.module.ModuleFractal;
 import org.slf4j.Logger;
@@ -35,7 +33,7 @@ public class TerrainGenerator {
 
         ModuleFractal fractal = new ModuleFractal();
         fractal.setAllSourceTypes(ModuleBasisFunction.BasisType.GRADIENT, ModuleBasisFunction.InterpolationType.LINEAR);
-        fractal.setNumOctaves(8); // Увеличьте количество октав для более выраженных холмов
+        fractal.setNumOctaves(4); // Увеличьте количество октав для более выраженных холмов
         fractal.setFrequency(0.04); // Увеличьте частоту для более мелких деталей
 
         float terrainSize = gridSize * stepSize;
@@ -57,13 +55,10 @@ public class TerrainGenerator {
 
         return heightMap;
     }
-
-
     public TerrainQuad generateHillyTerrain(Vector3f playerPosition, Material terrainMaterial) {
         float[] heightMap = generateHillyHeightMap(playerPosition);
         TerrainQuad terrain = new TerrainQuad("terrain", gridSize + 1, gridSize + 1, heightMap);
         terrain.setMaterial(terrainMaterial);
-
         // Generate collision shape based on the height map
         HeightfieldCollisionShape collisionShape = new HeightfieldCollisionShape(heightMap, terrain.getLocalScale());
         RigidBodyControl rigidBodyControl = new RigidBodyControl(collisionShape, 0);

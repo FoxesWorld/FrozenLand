@@ -5,11 +5,8 @@ import com.jme3.audio.AudioNode;
 import com.jme3.audio.AudioSource;
 import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.input.InputManager;
-import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.AnalogListener;
-import com.jme3.input.controls.KeyTrigger;
-import com.jme3.input.controls.MouseAxisTrigger;
-import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.input.controls.*;
+import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
@@ -17,7 +14,8 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.AbstractControl;
-import org.foxesworld.newgame.engine.player.camera.ShakeCam;
+import org.foxesworld.newgame.engine.player.CharacterSettings;
+import org.foxesworld.newgame.engine.sound.SoundManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,237 +24,198 @@ import java.util.Stack;
 public class UserInputHandler extends AbstractControl implements ActionListener, AnalogListener {
 
     private final Vector3f walkDirection = new Vector3f();
-    private final float walkSpeed = 4.0f;
-    private final float runSpeed = 8.0f;
-    private final float rotationSpeed = 0.5f;
+    private BetterCharacterControl characterControl;
+    private CharacterSettings characterSettings;
     private final InputManager inputManager;
     private final Camera cam;
     private final Node rootNode;
-    private BetterCharacterControl characterControl;
-    private float walkAudioCooldown = 0.0f;
-    private final float walkAudioCooldownDuration = 0.5f;
     private AudioNode walkAudio;
-
     private Runnable attackCallback;
-    private boolean isWalking;
-    private boolean ready = false;
-    private float isInAir = 0;
-    private boolean left, right, up, down, run;
+    private boolean initialised = false;
+    private boolean[] directions = new boolean[4];
     private AssetManager assetManager;
-    //private Sound SOUND;
+    private SoundManager soundManager;
     static HashMap<String, List<Object>> userInputConfig;
 
-    public UserInputHandler(InputManager inputManager, AssetManager assetManager, Camera cam, Node rootNode, Runnable attackCallback, HashMap<String, List<Object>> userInputConfig) {
+    public UserInputHandler(SoundManager soundManager, InputManager inputManager, AssetManager assetManager, Camera cam, Node rootNode, Runnable attackCallback, HashMap<String, List<Object>> userInputConfig) {
+        this.soundManager = soundManager;
         this.inputManager = inputManager;
         this.assetManager = assetManager;
         this.rootNode = rootNode;
         this.attackCallback = attackCallback;
         this.cam = cam;
         this.userInputConfig = userInputConfig;
-        //this.SOUND = NewGame.getSOUND();
+        this.characterSettings = new CharacterSettings();
     }
 
     private void initialize() {
-        if (ready) return;
-        ready = true;
-
-        characterControl = spatial.getControl(BetterCharacterControl.class);
-        if (characterControl == null) {
-            System.err.println(getClass() + " can be attached only to a spatial that has a BetterCharacterControl");
-            return;
+        if (!initialised) {
+            characterControl = spatial.getControl(BetterCharacterControl.class);
+            if (characterControl == null) {
+                System.err.println(getClass() + " can be attached only to a spatial that has a BetterCharacterControl");
+                return;
+            }
+            inputManager.setCursorVisible(false);
+            keyBindingInit(UserInputHelper.getInputMaps(userInputConfig));
+            initialised = true;
         }
-
-        inputManager.setCursorVisible(false);
-        keyBindingInit(UserInputHelper.getInputMaps(userInputConfig));
-
-        // Создайте AudioNode и добавьте его в rootNode только один раз
-        //walkAudio = SOUND.getSoundNode("player/walkAudio", false, 5.0f, 10.0f, 1.0f);
-        //walkAudio.setLocalTranslation(spatial.getLocalTranslation());
-        //rootNode.attachChild(walkAudio);
     }
 
     protected void keyBindingInit(Stack<String> inputMaps) {
         inputMaps.forEach(inputMap -> userInputConfig.get(inputMap).forEach(inputLine -> {
             InputType inputType = InputType.valueOf(inputMap.toUpperCase());
-            int inputKey;
-            String inputName;
-            boolean negative;
+            int inputKey = (Integer) ((HashMap<?, ?>) inputLine).get("inputKey");
+            String inputName = (String) ((HashMap<?, ?>) inputLine).get("inputName");
 
             switch (inputType) {
                 case KEYBOARD:
-                    inputKey = (Integer) ((HashMap<?, ?>) inputLine).get("inputKey");
-                    inputName = (String) ((HashMap<?, ?>) inputLine).get("inputName");
                     inputManager.addMapping(inputName, new KeyTrigger(inputKey));
-                    inputManager.addListener(this, inputName);
                     break;
-
                 case MOUSEAXIS:
-                    inputKey = (Integer) ((HashMap<?, ?>) inputLine).get("inputKey");
-                    inputName = (String) ((HashMap<?, ?>) inputLine).get("inputName");
-                    negative = (Boolean) ((HashMap<?, ?>) inputLine).get("negative");
+                    boolean negative = (Boolean) ((HashMap<?, ?>) inputLine).get("negative");
                     inputManager.addMapping(inputName, new MouseAxisTrigger(inputKey, negative));
-                    inputManager.addListener(this, inputName);
                     break;
-
                 case MOUSEBUTTONS:
-                    inputKey = (Integer) ((HashMap<?, ?>) inputLine).get("inputKey");
-                    inputName = (String) ((HashMap<?, ?>) inputLine).get("inputName");
                     inputManager.addMapping(inputName, new MouseButtonTrigger(inputKey));
-                    inputManager.addListener(this, inputName);
                     break;
             }
+
+            inputManager.addListener(this, inputName);
         }));
     }
+
     final float angles[] = {0, 0, 0};
     final Quaternion tmpRot = new Quaternion();
+    final Vector3f tmpV3 = new Vector3f();
 
     @Override
     public void onAnalog(String name, float value, float tpf) {
-        value = value * rotationSpeed;
-        switch (name) {
+        float rotationMultiplier = characterSettings.isRunning() ? 0.04f : 0.1f;
+        value *= characterSettings.getCurrentSpeed() * rotationMultiplier;
 
-            case "Rotate_Left": {
+        switch (name) {
+            case "Rotate_Left":
                 angles[1] += value;
                 break;
-            }
-
-            case "Rotate_Right": {
+            case "Rotate_Right":
                 angles[1] -= value;
                 break;
-            }
-
-            case "Rotate_Up": {
+            case "Rotate_Up":
                 angles[0] -= value;
                 break;
-            }
-
-            case "Rotate_Down": {
+            case "Rotate_Down":
                 angles[0] += value;
                 break;
-            }
-
         }
-        if (angles[0] > 1.1) angles[0] = 1.1f;
-        if (angles[0] < -0.85) angles[0] = -0.85f;
 
-        Vector3f v = characterControl.getViewDirection();
-        v.set(Vector3f.UNIT_Z);
+        angles[0] = FastMath.clamp(angles[0], -0.85f, 1.1f);
+
+        tmpV3.set(Vector3f.UNIT_Z);
         tmpRot.fromAngles(angles);
-        tmpRot.multLocal(v);
-        characterControl.setViewDirection(v);
+        tmpRot.multLocal(tmpV3);
+        characterControl.setViewDirection(tmpV3);
     }
 
     @Override
     public void onAction(String binding, boolean isPressed, float tpf) {
         switch (binding) {
-            case "Left": {
-                left = isPressed;
+            case "Left":
+                directions[0] = isPressed;
                 break;
-            }
-            case "Right": {
-                right = isPressed;
+            case "Right":
+                directions[1] = isPressed;
                 break;
-            }
-            case "Up": {
-                up = isPressed;
+            case "Up":
+                directions[2] = isPressed;
                 break;
-            }
-            case "Down": {
-                down = isPressed;
+            case "Down":
+                directions[3] = isPressed;
                 break;
-            }
-
-            case "spawnGhoul": {
-                //app.getEnemies(5).add(new Ghoul(app));
-                break;
-            }
-
-            case "Attack": {
+            case "Attack":
+                characterSettings.setAttacking(isPressed);
                 if (isPressed) {
                     attackCallback.run();
                 }
                 break;
-
-            }
-            case "Jump": {
+            case "Jump":
+                characterSettings.setJumping(isPressed);
                 if (isPressed) {
                     characterControl.jump();
                     characterControl.setPhysicsDamping(0);
                 }
                 break;
-            }
-            case "Run": {
-                run = isPressed;
+            case "Run":
+                characterSettings.setRunning(isPressed);
                 break;
-            }
         }
     }
-
-    private final Quaternion tmpQtr = new Quaternion();
-    private final Vector3f tmpV3 = new Vector3f();
 
     @Override
     protected void controlUpdate(float tpf) {
-
         initialize();
-        // Using a float here helps us achieve smoother transitions on rough terrains.
-        if (!characterControl.isOnGround()) {
-            isInAir += tpf;
-            // При взлете или падении отключим звук ходьбы
-            if (walkAudio != null && walkAudio.getStatus().equals(AudioSource.Status.Playing)) {
-                walkAudio.stop();
+        Quaternion tmpQtr = new Quaternion();
+        float currentSpeed = characterSettings.getCurrentSpeed();
+        float targetSpeed = characterSettings.isRunning() ? characterSettings.getRunSpeed() : characterSettings.getWalkSpeed();
+        float speedChange = targetSpeed - currentSpeed;
+        float actualSpeedChange = Math.signum(speedChange) * Math.min(characterSettings.getMaxSmoothSpeedChange() * tpf, Math.abs(speedChange));
+        characterSettings.setCurrentSpeed(currentSpeed += actualSpeedChange);
+
+        walkDirection.set(directions[0] ? 1 : directions[1] ? -1 : 0, 0, directions[2] ? 1 : directions[3] ? -1 : 0);
+        walkDirection.multLocal(currentSpeed);
+
+        tmpV3.set(characterControl.getViewDirection());
+        tmpV3.y = 0;
+        tmpV3.normalizeLocal();
+        tmpQtr.lookAt(tmpV3, Vector3f.UNIT_Y);
+        tmpQtr.multLocal(walkDirection);
+
+        characterControl.setWalkDirection(walkDirection);
+        characterControl.setPhysicsDamping(0.9f);
+
+        characterSettings.setWalking(walkDirection.lengthSquared() > 0 && characterSettings.getIsInAir() == 0);
+        updateWalkAudio();
+
+        soundManager.update(tpf);
+
+        characterSettings.setIsInAir(characterControl.isOnGround() ? 0 : characterSettings.getIsInAir() + tpf);
+    }
+
+    private void updateWalkAudio() {
+        if (characterSettings.isWalking()) {
+            if (walkAudio == null || !walkAudio.getStatus().equals(AudioSource.Status.Playing)) {
+                playWalkAudio();
             }
         } else {
-            isInAir = 0;
-            //playerMovement();
-
-            // Уменьшаем время cooldown
-            if (walkAudioCooldown > 0) {
-                walkAudioCooldown -= tpf;
-            }
-
-            float speed = run ? runSpeed : walkSpeed;
-            walkDirection.set(0, 0, 0);
-            if (left) walkDirection.addLocal(1, 0, 0);
-            if (right) walkDirection.addLocal(-1, 0, 0);
-            if (up) walkDirection.addLocal(0, 0, 1);
-            if (down) walkDirection.addLocal(0, 0, -1);
-
-            tmpV3.set(characterControl.getViewDirection());
-            tmpV3.y = 0; // Remove y component
-            tmpV3.normalizeLocal();
-
-            tmpQtr.loadIdentity();
-            tmpQtr.lookAt(tmpV3, Vector3f.UNIT_Y);
-            tmpQtr.multLocal(walkDirection);
-            walkDirection.multLocal(speed);
-
-            characterControl.setWalkDirection(walkDirection);
-            characterControl.setPhysicsDamping(0.9f);
+            stopWalkAudio();
         }
     }
 
-    private void playerMovement() {
-        if (walkDirection.lengthSquared() > 0) {
-            isWalking = true;
-            if (!walkAudio.getStatus().equals(AudioSource.Status.Playing) && walkAudioCooldown <= 0) {
-                // Воспроизведем звук ходьбы, если еще не воспроизводится и прошло время cooldown
-                walkAudio.play();
-                walkAudioCooldown = walkAudioCooldownDuration;
-            }
-        } else {
-            isWalking = false;
-            if (walkAudio.getStatus().equals(AudioSource.Status.Playing)) {
-                // Остановим звук ходьбы, если игрок перестал двигаться
-                walkAudio.stop();
-                walkAudioCooldown = 0;
-            }
+    private void playWalkAudio() {
+        if (walkAudio != null) {
+            walkAudio.stop();
+            rootNode.detachChild(walkAudio);
+            walkAudio = null;
+        }
+
+        String audioType = characterSettings.isRunning() ? "sprint" : "walk";
+        walkAudio = soundManager.getRandomAudioNode(audioType);
+        if (walkAudio != null) {
+            walkAudio.setLocalTranslation(spatial.getWorldTranslation());
+            rootNode.attachChild(walkAudio);
+            walkAudio.play();
+        }
+    }
+
+    private void stopWalkAudio() {
+        if (walkAudio != null && walkAudio.getStatus().equals(AudioSource.Status.Playing)) {
+            walkAudio.stop();
+            rootNode.detachChild(walkAudio);
+            walkAudio = null;
         }
     }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-
+        // Оставьте этот метод пустым, если вам не нужно рендерить что-либо.
     }
-
 }

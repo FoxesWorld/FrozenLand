@@ -17,6 +17,7 @@ import org.foxesworld.newgame.engine.player.camera.CameraFollowSpatial;
 import org.foxesworld.newgame.engine.player.camera.CameraSwingControl;
 import org.foxesworld.newgame.engine.player.input.FPSViewControl;
 import org.foxesworld.newgame.engine.player.input.UserInputHandler;
+import org.foxesworld.newgame.engine.sound.SoundManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,12 +27,14 @@ public class Player extends Node {
 
     private Vector3f jumpForce = new Vector3f(0, 300, 0);
     private AssetManager assetManager;
+    private SoundManager soundManager;
     private InputManager inputManager;
     private Node rootNode;
     private PhysicsSpace pspace;
     private Map CFG;
 
-    public Player(AssetManager assetManager, Node rootNode, BulletAppState bulletAppState, InputManager inputManager,  Map config){
+    public Player(SoundManager soundManager, AssetManager assetManager, Node rootNode, BulletAppState bulletAppState, InputManager inputManager, Map config){
+        this.soundManager = soundManager;
         this.assetManager = assetManager;
         this.rootNode = rootNode;
         this.pspace = bulletAppState.getPhysicsSpace();
@@ -60,7 +63,7 @@ public class Player extends Node {
         characterControl.warp(spawnPoint);
 
         // Load character logic
-        addControl(new UserInputHandler(inputManager, assetManager, cam, rootNode,()->{
+        addControl(new UserInputHandler(soundManager, inputManager, assetManager, cam, rootNode,()->{
             fpsJesse.getControl(ActionsControl.class).shot( assetManager,cam.getLocation().add(cam.getDirection().mult(1)),cam.getDirection(),this.rootNode, this.pspace);
         }, (HashMap<String, List<Object>>) CFG.get("userInput")));
         addControl(new CameraFollowSpatial(cam));

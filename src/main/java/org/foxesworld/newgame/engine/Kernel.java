@@ -16,8 +16,9 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
-import org.foxesworld.newgame.engine.material.MaterialCreator;
+import org.foxesworld.newgame.engine.material.MaterialManager;
 import org.foxesworld.newgame.engine.player.Player;
+import org.foxesworld.newgame.engine.sound.SoundManager;
 import org.foxesworld.newgame.engine.world.skybox.SkyboxGenerator;
 import org.foxesworld.newgame.engine.world.sun.LightingType;
 import org.foxesworld.newgame.engine.world.sun.Sun;
@@ -29,6 +30,8 @@ public class Kernel {
 
     private  Map CONFIG;
     protected  AssetManager assetManager;
+    protected SoundManager soundManager;
+    protected  MaterialManager materialManager;
     protected Camera camera;
     protected BulletAppState bulletAppState;
     protected Node rootNode;
@@ -37,6 +40,8 @@ public class Kernel {
 
     public Kernel(AssetManager assetManager, Camera camera, Node rootNode, FilterPostProcessor fpp, InputManager inputManager, BulletAppState bulletAppState, Map CONFIG) {
         this.assetManager = assetManager;
+        this.soundManager = new SoundManager(assetManager);
+        this.materialManager = new MaterialManager(assetManager);
         this.camera = camera;
         this.rootNode = rootNode;
         this.fpp = fpp;
@@ -45,9 +50,9 @@ public class Kernel {
         this.CONFIG = CONFIG;
         this.genSkyBox("textures/BrightSky.dds");
         TerrainGenerator terrain = new TerrainGenerator(rootNode, bulletAppState);
-        terrain.generateHillyTerrain(new Vector3f(0,0,0), new MaterialCreator(assetManager).createMat("textures/sand"));
+        terrain.generateHillyTerrain(new Vector3f(0,0,0), materialManager.createMat("textures/soil"));
         //this.createHorizontalSurface(new Vector3f(0,0,0),  64, new MaterialCreator(assetManager).crteateMaterial("textures/soil"));
-        Player player = new Player(assetManager, rootNode, bulletAppState, inputManager, CONFIG);
+        Player player = new Player(soundManager, assetManager, rootNode, bulletAppState, inputManager, CONFIG);
         player.addPlayer(camera, new Vector3f(0,5,0));
         bulletAppState.getPhysicsSpace().addAll(player);
         rootNode.attachChild(player);
@@ -64,7 +69,7 @@ public class Kernel {
         Sun sun = new Sun(assetManager, rootNode, "sun", LightingType.AMBIENT, ColorRGBA.White, 1f);
         sun.setSunOptions(new Vector3f(5,5,5),3f);
         sun.setPosition(new Vector3f(0f, 50f, 0f));
-        sun.addSun(new MaterialCreator(assetManager).createMat("textures/sun"));
+        sun.addSun(new MaterialManager(assetManager).createMat("textures/sun"));
     }
 
     private void createHorizontalSurface(Vector3f position, int textureRepeat, Material material) {

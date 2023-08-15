@@ -4,13 +4,14 @@ import com.jme3.asset.AssetManager;
 import com.jme3.input.InputManager;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import org.foxesworld.newgame.engine.sound.SoundManager;
 
 import java.util.*;
 
 public class UserInputHelper extends UserInputHandler {
 
-    public UserInputHelper(InputManager inputManager, AssetManager assetManager, Camera cam, Node rootNode, Runnable attackCallback, HashMap<String, List<Object>> userInputConfig) {
-        super(inputManager, assetManager, cam, rootNode, attackCallback, userInputConfig);
+    public UserInputHelper(SoundManager soundManager, InputManager inputManager, AssetManager assetManager, Camera cam, Node rootNode, Runnable attackCallback, HashMap<String, List<Object>> userInputConfig) {
+        super(soundManager, inputManager, assetManager, cam, rootNode, attackCallback, userInputConfig);
     }
 
     /**

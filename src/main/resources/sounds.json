@@ -1,0 +1,55 @@
+{
+  "events": [
+    {
+      "event": "walk",
+      "settings": {
+        "volume": 0.8,
+        "pitch": 1.0,
+        "dataType": "Buffer"
+      },
+      "sounds": [
+        "footstep/stone/walk/walk1.ogg",
+        "footstep/stone/walk/walk2.ogg",
+        "footstep/stone/walk/walk3.ogg",
+        "footstep/stone/walk/walk4.ogg",
+        "footstep/stone/walk/walk5.ogg",
+        "footstep/stone/walk/walk6.ogg",
+        "footstep/stone/walk/walk7.ogg",
+        "footstep/stone/walk/walk8.ogg",
+        "footstep/stone/walk/walk9.ogg",
+        "footstep/stone/walk/walk10.ogg",
+        "footstep/stone/walk/walk11.ogg",
+        "footstep/stone/walk/walk12.ogg",
+        "footstep/stone/walk/walk13.ogg",
+        "footstep/stone/walk/walk14.ogg",
+        "footstep/stone/walk/walk15.ogg"
+      ]
+    },
+    {
+      "event": "sprint",
+      "settings": {
+        "volume": 0.8,
+        "pitch": 1.0,
+        "dataType": "Buffer"
+      },
+      "sounds": [
+        "footstep/stone/sprint/sprint1.ogg",
+        "footstep/stone/sprint/sprint2.ogg",
+        "footstep/stone/sprint/sprint3.ogg",
+        "footstep/stone/sprint/sprint4.ogg",
+        "footstep/stone/sprint/sprint5.ogg",
+        "footstep/stone/sprint/sprint6.ogg",
+        "footstep/stone/sprint/sprint7.ogg",
+        "footstep/stone/sprint/sprint8.ogg",
+        "footstep/stone/sprint/sprint9.ogg",
+        "footstep/stone/sprint/sprint10.ogg",
+        "footstep/stone/sprint/sprint11.ogg",
+        "footstep/stone/sprint/sprint12.ogg",
+        "footstep/stone/sprint/sprint13.ogg",
+        "footstep/stone/sprint/sprint14.ogg",
+        "footstep/stone/sprint/sprint15.ogg",
+        "footstep/stone/sprint/sprint16.ogg"
+      ]
+    }
+  ]
+}
