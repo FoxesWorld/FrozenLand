@@ -29,8 +29,6 @@ import java.util.Stack;
 
 public class UserInputHandler extends AbstractControl implements ActionListener, AnalogListener {
 
-    @Deprecated
-    private String audioType;
     private final Vector3f walkDirection = new Vector3f();
     private BetterCharacterControl characterControl;
     private CharacterSettings characterSettings;
@@ -102,7 +100,7 @@ public class UserInputHandler extends AbstractControl implements ActionListener,
 
     @Override
     public void onAnalog(String name, float value, float tpf) {
-        float rotationMultiplier = characterSettings.isRunning() ? 0.04f : 0.1f;
+        float rotationMultiplier = characterSettings.getPlayerState().equals(PlayerState.SPRINTING) ? 0.04f : 0.1f;
         value *= characterSettings.getCurrentSpeed() * rotationMultiplier;
 
         switch (name) {
@@ -165,37 +163,61 @@ public class UserInputHandler extends AbstractControl implements ActionListener,
     @Override
     protected void controlUpdate(float tpf) {
         initialize();
-        System.out.println(characterSettings.isWalking());
         Quaternion tmpQtr = new Quaternion();
-        float currentSpeed = characterSettings.getCurrentSpeed();
-        float targetSpeed = characterSettings.isRunning() ? characterSettings.getRunSpeed() : characterSettings.getWalkSpeed();
-        float speedChange = targetSpeed - currentSpeed;
-        float actualSpeedChange = Math.signum(speedChange) * Math.min(characterSettings.getMaxSmoothSpeedChange() * tpf, Math.abs(speedChange));
-        characterSettings.setCurrentSpeed(currentSpeed += actualSpeedChange);
 
+        float targetSpeed = characterSettings.isRunning() ? characterSettings.getRunSpeed() : characterSettings.getWalkSpeed();
+        float speedChange = targetSpeed - characterSettings.getCurrentSpeed();
+        float actualSpeedChange = Math.signum(speedChange) * Math.min(characterSettings.getMaxSmoothSpeedChange() * tpf, Math.abs(speedChange));
+
+        characterSettings.setCurrentSpeed(characterSettings.getCurrentSpeed() + actualSpeedChange);
         walkDirection.set(directions[0] ? 1 : directions[1] ? -1 : 0, 0, directions[2] ? 1 : directions[3] ? -1 : 0);
-        walkDirection.multLocal(currentSpeed);
+        walkDirection.multLocal(characterSettings.getCurrentSpeed());
+
         tmpV3.set(characterControl.getViewDirection());
         tmpV3.y = 0;
         tmpV3.normalizeLocal();
         tmpQtr.lookAt(tmpV3, Vector3f.UNIT_Y);
         tmpQtr.multLocal(walkDirection);
+
         characterControl.setWalkDirection(walkDirection);
         characterControl.setPhysicsDamping(0.9f);
-        characterSettings.setWalking(walkDirection.lengthSquared() > 0 && characterSettings.getIsInAir() == 0);
+
+        setPlayerState(walkDirection);
+
         updateMovementAudio(tpf);
         soundManager.update(tpf);
-        characterSettings.setIsInAir(characterControl.isOnGround() ? 0 : characterSettings.getIsInAir() + tpf);
-        updateHUDText(new String[]{"movement", "speed", "jumping"}, new String[]{audioType, String.valueOf(characterSettings.getCurrentSpeed()), String.valueOf(characterSettings.isJumping())});
+
+        //float isInAir = characterControl.isOnGround() ? 0 : characterSettings.getIsInAir() + tpf;
+        //characterSettings.setIsInAir(isInAir);
+
+        updateHUDText(new String[]{"speed", "playerState"}, new String[]{String.valueOf(characterSettings.getCurrentSpeed()), String.valueOf(characterSettings.getPlayerState())});
+    }
+
+    private  void setPlayerState(Vector3f walkDirection){
+        if(walkDirection.lengthSquared() == 0){
+            characterSettings.setPlayerState(PlayerState.STANDING);
+        } else {
+            if(walkDirection.lengthSquared() > 0){
+                if(!characterControl.isOnGround()){
+                    characterSettings.setPlayerState(PlayerState.FLYING);
+                } else {
+                    if (characterSettings.getCurrentSpeed() > characterSettings.getWalkSpeed()) {
+                        characterSettings.setPlayerState(PlayerState.SPRINTING);
+                    } else {
+                        characterSettings.setPlayerState(PlayerState.WALKING);
+                    }
+                }
+            }
+        }
     }
 
     private void updateMovementAudio(float tpf) {
         timeSinceLastAudio += tpf;
         float interval = Math.max(0.05f, 0.3f - characterSettings.getCurrentSpeed() * 0.01f);
 
-        if (characterSettings.isWalking()) {
+        if (!characterSettings.getPlayerState().equals(PlayerState.STANDING)) {
             if ((walkAudio == null || !walkAudio.getStatus().equals(AudioSource.Status.Playing)) && timeSinceLastAudio >= interval) {
-                playWalkAudio();
+                playWalkAudio(characterSettings.getPlayerState().toString().toLowerCase());
                 timeSinceLastAudio = 0;
             }
         } else {
@@ -203,22 +225,20 @@ public class UserInputHandler extends AbstractControl implements ActionListener,
         }
     }
 
-    private void playWalkAudio() {
+    private void playWalkAudio(String userState) {
         if (walkAudio != null) {
             walkAudio.stop();
             rootNode.detachChild(walkAudio);
             walkAudio = null;
         }
 
-        audioType = characterSettings.isRunning() ? "sprint" : "walk";
-        walkAudio = soundManager.getRandomAudioNode(audioType);
+        walkAudio = soundManager.getRandomAudioNode(userState);
         if (walkAudio != null) {
             walkAudio.setLocalTranslation(spatial.getWorldTranslation());
             walkAudio.setPitch(characterSettings.getCurrentSpeed()/4);
             rootNode.attachChild(walkAudio);
             walkAudio.play();
         }
-        updateHUDText(new String[]{"movement", "speed", "jumping"}, new String[]{audioType, String.valueOf(characterSettings.getCurrentSpeed()), String.valueOf(characterSettings.isJumping())});
     }
 
     private void stopWalkAudio() {
@@ -248,7 +268,6 @@ public class UserInputHandler extends AbstractControl implements ActionListener,
             }
         }
     }
-
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
