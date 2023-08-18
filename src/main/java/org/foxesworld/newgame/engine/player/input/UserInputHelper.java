@@ -7,7 +7,9 @@ import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import org.foxesworld.newgame.engine.sound.SoundManager;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Stack;
 
 public class UserInputHelper extends UserInputHandler {
 
@@ -36,7 +38,7 @@ public class UserInputHelper extends UserInputHandler {
      * @param inputActions The list of input actions for the new input map.
      */
     public void addInputMap(String inputMapName, List<Object> inputActions) {
-        userInputConfig.put(inputMapName, inputActions);
+        getUserInputConfig().put(inputMapName, inputActions);
     }
 
     /**
@@ -46,7 +48,7 @@ public class UserInputHelper extends UserInputHandler {
      * @return true if the input map was removed, false otherwise.
      */
     public boolean removeInputMap(String inputMapName) {
-        return userInputConfig.remove(inputMapName) != null;
+        return getUserInputConfig().remove(inputMapName) != null;
     }
 
 }

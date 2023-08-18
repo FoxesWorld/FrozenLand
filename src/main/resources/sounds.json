@@ -8,21 +8,21 @@
         "dataType": "Buffer"
       },
       "sounds": [
-        "footstep/stone/walking/walk1.ogg",
-        "footstep/stone/walking/walk2.ogg",
-        "footstep/stone/walking/walk3.ogg",
-        "footstep/stone/walking/walk4.ogg",
-        "footstep/stone/walking/walk5.ogg",
-        "footstep/stone/walking/walk6.ogg",
-        "footstep/stone/walking/walk7.ogg",
-        "footstep/stone/walking/walk8.ogg",
-        "footstep/stone/walking/walk9.ogg",
-        "footstep/stone/walking/walk10.ogg",
-        "footstep/stone/walking/walk11.ogg",
-        "footstep/stone/walking/walk12.ogg",
-        "footstep/stone/walking/walk13.ogg",
-        "footstep/stone/walking/walk14.ogg",
-        "footstep/stone/walking/walk15.ogg"
+        "player/footstep/stone/walking/walk1.ogg",
+        "player/footstep/stone/walking/walk2.ogg",
+        "player/footstep/stone/walking/walk3.ogg",
+        "player/footstep/stone/walking/walk4.ogg",
+        "player/footstep/stone/walking/walk5.ogg",
+        "player/footstep/stone/walking/walk6.ogg",
+        "player/footstep/stone/walking/walk7.ogg",
+        "player/footstep/stone/walking/walk8.ogg",
+        "player/footstep/stone/walking/walk9.ogg",
+        "player/footstep/stone/walking/walk10.ogg",
+        "player/footstep/stone/walking/walk11.ogg",
+        "player/footstep/stone/walking/walk12.ogg",
+        "player/footstep/stone/walking/walk13.ogg",
+        "player/footstep/stone/walking/walk14.ogg",
+        "player/footstep/stone/walking/walk15.ogg"
       ]
     },
     {
@@ -33,22 +33,22 @@
         "dataType": "Buffer"
       },
       "sounds": [
-        "footstep/stone/sprinting/sprint1.ogg",
-        "footstep/stone/sprinting/sprint2.ogg",
-        "footstep/stone/sprinting/sprint3.ogg",
-        "footstep/stone/sprinting/sprint4.ogg",
-        "footstep/stone/sprinting/sprint5.ogg",
-        "footstep/stone/sprinting/sprint6.ogg",
-        "footstep/stone/sprinting/sprint7.ogg",
-        "footstep/stone/sprinting/sprint8.ogg",
-        "footstep/stone/sprinting/sprint9.ogg",
-        "footstep/stone/sprinting/sprint10.ogg",
-        "footstep/stone/sprinting/sprint11.ogg",
-        "footstep/stone/sprinting/sprint12.ogg",
-        "footstep/stone/sprinting/sprint13.ogg",
-        "footstep/stone/sprinting/sprint14.ogg",
-        "footstep/stone/sprinting/sprint15.ogg",
-        "footstep/stone/sprinting/sprint16.ogg"
+        "player/footstep/stone/sprinting/sprint1.ogg",
+        "player/footstep/stone/sprinting/sprint2.ogg",
+        "player/footstep/stone/sprinting/sprint3.ogg",
+        "player/footstep/stone/sprinting/sprint4.ogg",
+        "player/footstep/stone/sprinting/sprint5.ogg",
+        "player/footstep/stone/sprinting/sprint6.ogg",
+        "player/footstep/stone/sprinting/sprint7.ogg",
+        "player/footstep/stone/sprinting/sprint8.ogg",
+        "player/footstep/stone/sprinting/sprint9.ogg",
+        "player/footstep/stone/sprinting/sprint10.ogg",
+        "player/footstep/stone/sprinting/sprint11.ogg",
+        "player/footstep/stone/sprinting/sprint12.ogg",
+        "player/footstep/stone/sprinting/sprint13.ogg",
+        "player/footstep/stone/sprinting/sprint14.ogg",
+        "player/footstep/stone/sprinting/sprint15.ogg",
+        "player/footstep/stone/sprinting/sprint16.ogg"
       ]
     }
   ]

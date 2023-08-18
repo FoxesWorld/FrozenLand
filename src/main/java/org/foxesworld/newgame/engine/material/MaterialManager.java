@@ -7,38 +7,56 @@ import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector2f;
 import com.jme3.texture.Texture;
+import org.foxesworld.newgame.engine.Kernel;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MaterialManager extends MaterialAbstract {
 
     private static final String matIndexFile = "materialOptions.json";
     private Map<String, Object> matData;
+    private Map<String, Material> Materials;
 
-    public MaterialManager(AssetManager assetManager) {
+    public MaterialManager(AssetManager assetManager, Map<String, Material> Materials) {
+        this.Materials = Materials;
         setAssetManager(assetManager);
+        addMaterials();
+    }
+
+    private void addMaterials() {
+        Kernel.logger.info("Adding materials");
+        String[] textures = new String[]{"soil", "sand", "sun"};
+        for (int c = 0; c < textures.length; c++) {
+            String mat = textures[c];
+            Kernel.logger.info("    - Adding '" + mat + "' material");
+            Materials.put(mat, createMat(mat));
+        }
     }
 
     @Override
-    public Material createMat(String path) {
-        matData = readMatConfig(MaterialManager.class.getClassLoader().getResourceAsStream(path + "/" + matIndexFile));
+    public Material createMat(String file) {
+        String path = "textures/" + file + "/";
+        matData = readMatConfig(MaterialManager.class.getClassLoader().getResourceAsStream(path + matIndexFile));
         initMaterial(String.valueOf(matData.get("matDef")));
-
+        AtomicInteger textNum = new AtomicInteger();
+        AtomicInteger varNum = new AtomicInteger();
         handleTextures(path, (mapName, textureInstanceMap) -> {
             TextureWrap wrapType = TextureWrap.valueOf((String) textureInstanceMap.get("wrap"));
-            Texture thisTexture = getAssetManager().loadTexture(path + "/" + textureInstanceMap.get("texture"));
-
+            Texture thisTexture = getAssetManager().loadTexture(path + textureInstanceMap.get("texture"));
             wrapType(wrapType, thisTexture);
             getMaterial().setTexture(mapName, thisTexture);
+            textNum.getAndIncrement();
         });
 
         handleVars((cfgTitle, value) -> {
             inputType(cfgTitle, value);
+            varNum.getAndIncrement();
         });
+        Kernel.logger.info("    - "+file + " has " + textNum + " textures and " + varNum + " vars");
 
         return getMaterial();
     }

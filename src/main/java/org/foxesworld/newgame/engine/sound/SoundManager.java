@@ -7,19 +7,23 @@ import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioData;
 import com.jme3.audio.AudioNode;
 import com.jme3.audio.AudioSource;
+import org.foxesworld.newgame.engine.Kernel;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SoundManager {
 
-    private Map<String, List<AudioNode>> soundMap = new HashMap<>();
+    //private Map<String, List<AudioNode>> soundMap = new HashMap<>();
     private AssetManager assetManager;
     private Random random = new Random();
+    private  Map<String, List<AudioNode>> Sounds;
 
-    public SoundManager(AssetManager assetManager) {
+    public SoundManager(AssetManager assetManager, Map<String, List<AudioNode>> Sounds) {
         this.assetManager = assetManager;
+        this.Sounds = Sounds;
         loadSounds(assetManager.locateAsset(new AssetKey<>("sounds.json")).openStream());
     }
 
@@ -27,12 +31,12 @@ public class SoundManager {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(inputStream);
-
             JsonNode eventsArray = rootNode.get("events");
+            Kernel.logger.info("Adding sounds...");
             eventsArray.forEach(eventNode -> {
+                AtomicInteger soundsNum = new AtomicInteger();
                 String event = eventNode.get("event").asText();
                 JsonNode settingsNode = eventNode.get("settings");
-
                 List<AudioNode> audioNodes = new ArrayList<>();
                 JsonNode soundsArray = eventNode.get("sounds");
                 soundsArray.forEach(soundNode -> {
@@ -49,11 +53,11 @@ public class SoundManager {
                             audioNode.setPitch((float) settingsNode.get("pitch").asDouble());
                         }
                     }
-
                     audioNodes.add(audioNode);
+                    soundsNum.getAndIncrement();
                 });
-
-                soundMap.put(event, audioNodes);
+                Kernel.logger.info("Added " + soundsNum + " to sounds '"+ event + "' event");
+                Sounds.put(event, audioNodes);
             });
 
         } catch (IOException e) {
@@ -62,7 +66,7 @@ public class SoundManager {
     }
 
     public AudioNode getRandomAudioNode(String event) {
-        List<AudioNode> audioNodes = soundMap.get(event);
+        List<AudioNode> audioNodes = Sounds.get(event);
         if (audioNodes != null && !audioNodes.isEmpty()) {
             int randomIndex = random.nextInt(audioNodes.size());
             return audioNodes.get(randomIndex);
@@ -84,7 +88,7 @@ public class SoundManager {
     }
 
     public void update(float tpf) {
-        for (Map.Entry<String, List<AudioNode>> entry : soundMap.entrySet()) {
+        for (Map.Entry<String, List<AudioNode>> entry : Sounds.entrySet()) {
             List<AudioNode> audioNodes = entry.getValue();
             Iterator<AudioNode> iterator = audioNodes.iterator();
 
@@ -108,10 +112,5 @@ public class SoundManager {
                 }
             }
         }
-    }
-
-
-    public Map<String, List<AudioNode>> getSoundMap() {
-        return soundMap;
     }
 }

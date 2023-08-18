@@ -42,17 +42,25 @@ dependencies {
     implementation files('lib/jme3-terrain-3.6.1-stable.jar')
     implementation files('lib/jme3-effects.jar')
     implementation files('lib/jme3-awt-dialogs.jar')
+    implementation files('lib/lemur-1.11.0.jar')
+    implementation files('lib/vlc4j.jar')
 
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.19.0'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.19.0'
     implementation group: 'com.sudoplay.joise', name: 'joise', version: '1.1.0'
     implementation group: 'com.personthecat', name: 'fastnoise', version: '0.9'
+    implementation group: 'com.simsilica', name: 'sio2', version: '1.8.0'
+    implementation files("lib/sim-arboreal-1.0.1-SNAPSHOT.jar")
+
 
     implementation files('lib/jme3-niftygui-3.6.0-stable.jar')
     implementation files('lib/jME3-niftygui.jar')
     implementation files('lib/nifty.jar')
     implementation files('lib/nifty-default-controls.jar')
     implementation files('lib/nifty-default-styles-0.0.1.jar')
+    implementation  files('lib/java-discord-rpc-2.0.1-all.jar')
+
+
 
     implementation  'wf.frk:jme-effekseer-native:0.4'
     implementation (group: 'com.jme3.phonon', name: 'jme_phonon', version: '0.3.7', ext: 'jar', classifier: '')
@@ -61,4 +69,8 @@ dependencies {
 
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.19.0'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.19.0'
+
+
+
+
 }

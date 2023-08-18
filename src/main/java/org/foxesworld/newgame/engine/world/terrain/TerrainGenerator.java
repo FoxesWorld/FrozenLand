@@ -5,15 +5,22 @@ import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.material.Material;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.texture.Texture;
+import com.simsilica.arboreal.BranchParameters;
+import com.simsilica.arboreal.Tree;
+import com.simsilica.arboreal.TreeGenerator;
+import com.simsilica.arboreal.TreeParameters;
 import com.sudoplay.joise.module.ModuleBasisFunction;
 import com.sudoplay.joise.module.ModuleFractal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 public class TerrainGenerator {
 
@@ -30,7 +37,6 @@ public class TerrainGenerator {
 
     protected float[] generateHillyHeightMap(Vector3f playerPosition) {
         float[] heightMap = new float[(gridSize + 1) * (gridSize + 1)];
-
         ModuleFractal fractal = new ModuleFractal();
         fractal.setAllSourceTypes(ModuleBasisFunction.BasisType.GRADIENT, ModuleBasisFunction.InterpolationType.LINEAR);
         fractal.setNumOctaves(4); // Увеличьте количество октав для более выраженных холмов
@@ -41,6 +47,7 @@ public class TerrainGenerator {
         float playerZ = playerPosition.z;
 
         for (int i = 0; i <= gridSize; i++) {
+
             for (int j = 0; j <= gridSize; j++) {
                 float x = -terrainSize * 0.5f + i * stepSize;
                 float z = -terrainSize * 0.5f + j * stepSize;

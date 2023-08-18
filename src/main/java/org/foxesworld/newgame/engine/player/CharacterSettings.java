@@ -1,17 +1,15 @@
 package org.foxesworld.newgame.engine.player;
 
-import org.foxesworld.newgame.engine.player.input.PlayerState;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Spatial;
 
 public class CharacterSettings {
-    private PlayerState playerState = PlayerState.STANDING;
     private float currentSpeed = 0.0f;
     private float walkSpeed = 4.0f;
     private float runSpeed = 8.0f;
     private float maxSmoothSpeedChange = 2.0f;
-    private float rotationSpeed = 0.5f;
     private float rotationMultiplierWalking = 0.04f;
     private float rotationMultiplierRunning = 0.1f;
-    private float isInAir = 0;
     private boolean isJumping = false;
     private boolean isAttacking = false;
     private boolean isRunning = false;
@@ -36,9 +34,7 @@ public class CharacterSettings {
         this.currentSpeed = currentSpeed;
     }
 
-    public boolean isJumping() {
-        return isJumping;
-    }
+    public boolean isJumping() {return isJumping;}
 
     public boolean isAttacking() {
         return isAttacking;
@@ -60,11 +56,18 @@ public class CharacterSettings {
         isRunning = running;
     }
 
-    public PlayerState getPlayerState() {
-        return playerState;
+    public float getPlayerDistanceAboveGround(Spatial spatial) {
+        Vector3f characterPosition = spatial.getWorldTranslation();
+        float characterHeight = 2.0f; // Подставьте фактическую высоту Box персонажа
+        float distanceAboveGround = characterPosition.y - characterHeight * 0.5f;
+        return distanceAboveGround;
     }
 
-    public void setPlayerState(PlayerState playerState) {
-        this.playerState = playerState;
+    public float getRotationMultiplierWalking() {
+        return rotationMultiplierWalking;
+    }
+
+    public float getRotationMultiplierRunning() {
+        return rotationMultiplierRunning;
     }
 }

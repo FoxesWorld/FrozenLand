@@ -9,11 +9,6 @@ import com.jme3.renderer.Camera;
 
 import java.util.Random;
 
-
-/**
- *
- * @author xxx
- */
 public class ShakeCam extends BaseAppState{
 
     Camera cam;

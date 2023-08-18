@@ -6,13 +6,15 @@
     <screen id="hud" controller="org.foxesworld.newgame.engine.ui.HUDController">
         <layer id="foreground" childLayout="horizontal">
             <panel id="panel_left" childLayout="vertical" width="80%" height="100%"/>
-            <panel id="panel_right" childLayout="vertical" width="20%" height="100%">
+            <panel id="panel_right" childLayout="vertical" width="30%" height="100%">
+
                 <panel id="panel_top_right2" childLayout="horizontal" backgroundColor="#1119" width="100%" height="10%">
-                    <control name="label" id="health" color="#FFF" width="50%" text="Speed" halign="right" height="100%"/>
+                    <control name="label" color="#FFF" width="30%" text="maxSpeed" halign="right" height="100%"/>
                     <control name="label" id="speed" color="#FFF" width="50%" text="" halign="left" height="100%"/>
                 </panel>
+
                 <panel id="panel_top_right3" childLayout="horizontal" backgroundColor="#1119" width="100%" height="10%">
-                    <control name="label" id="health" color="#FFF" width="50%" text="playerState" halign="right" height="100%"/>
+                    <control name="label" color="#FFF" width="30%" text="playerState" halign="right" height="100%"/>
                     <control name="label" id="playerState" color="#FFF" width="50%" text="" halign="left" height="100%"/>
                 </panel>
             </panel>
