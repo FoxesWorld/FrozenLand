@@ -19,7 +19,7 @@ import org.foxesworld.newgame.engine.player.camera.CameraFollowSpatial;
 import org.foxesworld.newgame.engine.player.camera.ShakeCam;
 import org.foxesworld.newgame.engine.player.input.FPSViewControl;
 import org.foxesworld.newgame.engine.player.input.UserInputHandler;
-import org.foxesworld.newgame.engine.sound.SoundManager;
+import org.foxesworld.newgame.engine.providers.sound.SoundManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +27,8 @@ import java.util.Map;
 
 public class Player extends Node {
 
+    private BetterCharacterControl characterControl;
+    private  UserInputHandler userInputHandler;
     private Vector3f jumpForce = new Vector3f(0, 300, 0);
     private AssetManager assetManager;
     private  AppStateManager stateManager;
@@ -58,10 +60,12 @@ public class Player extends Node {
         Camera fpsCam = cam.clone();
         this.loadFPSLogicWorld(cam, fpsCam, fpsPlayer, spawnPoint);
         fpsPlayer.loadFPSLogicFPSView(cam, fpsCam, this);
+        pspace.addAll(this);
+        rootNode.attachChild(this);
     }
     public void loadFPSLogicWorld(Camera cam, Camera fpsCam, Spatial playerModel, Vector3f spawnPoint){
         BoundingBox jesseBbox=(BoundingBox)getWorldBound();
-        BetterCharacterControl characterControl = new BetterCharacterControl(jesseBbox.getXExtent(), jesseBbox.getYExtent(), 50f);
+        characterControl = new BetterCharacterControl(jesseBbox.getXExtent(), jesseBbox.getYExtent(), 50f);
         characterControl.setJumpForce(jumpForce);
         addControl(characterControl);
 
@@ -73,10 +77,10 @@ public class Player extends Node {
         camShake.shakeHitHard();
 
         // Load character logic
-        addControl(new UserInputHandler(niftyDisplay, soundManager, inputManager, assetManager, cam, rootNode,()->
+        addControl(userInputHandler = new UserInputHandler(niftyDisplay, soundManager, inputManager, assetManager, cam, rootNode,()->
         playerModel.getControl(ActionsControl.class).shot(assetManager,cam.getLocation().add(cam.getDirection().mult(1)),cam.getDirection(),this.rootNode, this.pspace), (HashMap<String, List<Object>>) CFG.get("userInput")));
         addControl(new CameraFollowSpatial(cam));
-        addControl(new ActionsControl(assetManager,true));
+        addControl(new ActionsControl(assetManager,soundManager));
         addControl(new FPSViewControl(FPSViewControl.Mode.WORLD_SCENE));
     }
 
@@ -90,10 +94,10 @@ public class Player extends Node {
             protected void controlRender(RenderManager rm, ViewPort vp) { }
         });
         addControl(new FPSViewControl(FPSViewControl.Mode.FPS_SCENE));
-        addControl(new ActionsControl(assetManager,true,jesse.getControl(BetterCharacterControl.class)));
+        addControl(new ActionsControl(assetManager,soundManager,jesse.getControl(BetterCharacterControl.class)));
     }
 
-    public  Vector3f getPosition(){
-        return this.getPosition();
+    public Vector3f getPlayerPosition(){
+        return userInputHandler.getPlayerPosition();
     }
 }

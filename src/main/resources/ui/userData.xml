@@ -17,6 +17,22 @@
                     <control name="label" color="#FFF" width="30%" text="playerState" halign="right" height="100%"/>
                     <control name="label" id="playerState" color="#FFF" width="50%" text="" halign="left" height="100%"/>
                 </panel>
+
+
+                <panel id="panel_top_right4" childLayout="horizontal" backgroundColor="#1119" width="100%" height="10%">
+                    <control name="label" color="#FFF" width="30%" text="posX" halign="right" height="100%"/>
+                    <control name="label" id="posX" color="#FFF" width="50%" text="" halign="left" height="100%"/>
+                </panel>
+
+                <panel id="panel_top_right5" childLayout="horizontal" backgroundColor="#1119" width="100%" height="10%">
+                    <control name="label" color="#FFF" width="30%" text="pozY" halign="right" height="100%"/>
+                    <control name="label" id="posY" color="#FFF" width="50%" text="" halign="left" height="100%"/>
+                </panel>
+
+                <panel id="panel_top_right6" childLayout="horizontal" backgroundColor="#1119" width="100%" height="10%">
+                    <control name="label" color="#FFF" width="30%" text="posZ" halign="right" height="100%"/>
+                    <control name="label" id="posZ" color="#FFF" width="50%" text="" halign="left" height="100%"/>
+                </panel>
             </panel>
         </layer>
     </screen>

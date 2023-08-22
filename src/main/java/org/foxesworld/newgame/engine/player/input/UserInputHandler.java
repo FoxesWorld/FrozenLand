@@ -20,13 +20,10 @@ import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import org.foxesworld.newgame.engine.player.CharacterSettings;
 import org.foxesworld.newgame.engine.player.camera.ShakeCam;
-import org.foxesworld.newgame.engine.sound.SoundManager;
+import org.foxesworld.newgame.engine.providers.sound.SoundManager;
 import org.foxesworld.newgame.engine.ui.HUDController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 public class UserInputHandler extends UserInputAbstract {
 
@@ -40,15 +37,16 @@ public class UserInputHandler extends UserInputAbstract {
     private final Runnable attackCallback;
     private boolean[] directions = new boolean[4];
     private final AssetManager assetManager;
-    private final SoundManager soundManager;
+    private final Map<String, List<AudioNode>> playerSounds;
+    private  final SoundManager soundManager;
     private final Nifty nifty;
     final float[] angles = {0, 0, 0};
     final Quaternion tmpRot = new Quaternion();
     final Vector3f tmpV3 = new Vector3f();
-    final Map<String, List<AudioNode>> playerSounds = new HashMap<>();
 
     public UserInputHandler(NiftyJmeDisplay niftyDisplay, SoundManager soundManager, InputManager inputManager, AssetManager assetManager, Camera cam, Node rootNode, Runnable attackCallback, HashMap<String, List<Object>> userInputConfig) {
         this.soundManager = soundManager;
+        this.playerSounds = soundManager.getSoundBlock("player");
         this.inputManager = inputManager;
         this.assetManager = assetManager;
         this.nifty = niftyDisplay.getNifty();
@@ -170,7 +168,13 @@ public class UserInputHandler extends UserInputAbstract {
         updateMovementAudio(tpf);
         soundManager.update(tpf);
         camShake.update(tpf);
-        updateHUDText(new String[]{"speed", "playerState"}, new String[]{String.valueOf(characterSettings.getCurrentSpeed()), String.valueOf(getPlayerState())});
+        updateHUDText(new String[]{"speed", "playerState", "posX", "posY", "posZ"}, new String[]{
+                String.valueOf(characterSettings.getCurrentSpeed()),
+                String.valueOf(getPlayerState()),
+                String.valueOf(this.getPlayerPosition().x),
+                String.valueOf(this.getPlayerPosition().y),
+                String.valueOf(this.getPlayerPosition().z)
+        });
     }
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
@@ -209,7 +213,7 @@ public class UserInputHandler extends UserInputAbstract {
 
     private void playWalkAudio(String userState) {
         stopWalkAudio();
-        walkAudio = soundManager.getRandomAudioNode(userState);
+        walkAudio = getRandomAudioNode(userState);
         if (walkAudio != null) {
             walkAudio.setLocalTranslation(spatial.getWorldTranslation());
             walkAudio.setPitch(characterSettings.getCurrentSpeed() / 4);
@@ -242,6 +246,24 @@ public class UserInputHandler extends UserInputAbstract {
                     }
                 }
             }
+        }
+    }
+
+    public AudioNode getRandomAudioNode(String event) {
+        Random random = new Random();
+        List<AudioNode> audioNodes = playerSounds.get(event);
+        if (audioNodes != null && !audioNodes.isEmpty()) {
+            int randomIndex = random.nextInt(audioNodes.size());
+            return audioNodes.get(randomIndex);
+        }
+        return null;
+    }
+
+    public Vector3f getPlayerPosition() {
+        if (spatial != null) {
+            return spatial.getWorldTranslation();
+        } else {
+            return null;
         }
     }
 }

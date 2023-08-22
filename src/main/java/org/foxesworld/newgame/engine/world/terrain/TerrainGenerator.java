@@ -1,78 +1,85 @@
 package org.foxesworld.newgame.engine.world.terrain;
 
-import com.jme3.asset.TextureKey;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.material.Material;
-import com.jme3.math.FastMath;
-import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.debug.WireBox;
 import com.jme3.terrain.geomipmap.TerrainQuad;
-import com.jme3.texture.Texture;
-import com.simsilica.arboreal.BranchParameters;
-import com.simsilica.arboreal.Tree;
-import com.simsilica.arboreal.TreeGenerator;
-import com.simsilica.arboreal.TreeParameters;
-import com.sudoplay.joise.module.ModuleBasisFunction;
-import com.sudoplay.joise.module.ModuleFractal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Map;
+import com.jme3.terrain.heightmap.AbstractHeightMap;
+import com.jme3.terrain.heightmap.HeightMap;
+import org.foxesworld.newgame.engine.providers.material.MaterialManager;
 
 public class TerrainGenerator {
 
     private BulletAppState bulletAppState;
     private Node rootNode;
-    private int gridSize = 128;
-    private float stepSize = 5;
-    private Logger logger = LoggerFactory.getLogger(TerrainGenerator.class);
 
-    public TerrainGenerator(Node rootNode, BulletAppState bulletAppState) {
+    public TerrainGenerator(BulletAppState bulletAppState, Node rootNode) {
         this.bulletAppState = bulletAppState;
         this.rootNode = rootNode;
     }
 
-    protected float[] generateHillyHeightMap(Vector3f playerPosition) {
-        float[] heightMap = new float[(gridSize + 1) * (gridSize + 1)];
-        ModuleFractal fractal = new ModuleFractal();
-        fractal.setAllSourceTypes(ModuleBasisFunction.BasisType.GRADIENT, ModuleBasisFunction.InterpolationType.LINEAR);
-        fractal.setNumOctaves(4); // Увеличьте количество октав для более выраженных холмов
-        fractal.setFrequency(0.04); // Увеличьте частоту для более мелких деталей
+    public void generateChunkTerrain(ChunkManager chunkManager) {
+        int chunkSize = chunkManager.getChunkSize();
+        Vector3f chunkPosition = chunkManager.getChunkPosition();
+        MaterialManager materialManager = chunkManager.getMaterialManager();
+        HeightMap heightMap = generateHeightMap(chunkPosition, chunkSize);
+        TerrainQuad terrain = new TerrainQuad("section-" + chunkManager.getChunkNum(), 65, chunkSize + 1, heightMap.getHeightMap());
+        terrain.setMaterial(materialManager.getMaterial("soil"));
 
-        float terrainSize = gridSize * stepSize;
-        float playerX = playerPosition.x;
-        float playerZ = playerPosition.z;
-
-        for (int i = 0; i <= gridSize; i++) {
-
-            for (int j = 0; j <= gridSize; j++) {
-                float x = -terrainSize * 0.5f + i * stepSize;
-                float z = -terrainSize * 0.5f + j * stepSize;
-
-                float distanceToPlayer = new Vector3f(playerX - x, 0, playerZ - z).length();
-
-                float hillHeight = (float) (fractal.get(x, 0, z) * Math.max(1 - distanceToPlayer * 0.005, 0));
-
-                heightMap[i * (gridSize + 1) + j] = hillHeight;
-            }
-        }
-
-        return heightMap;
-    }
-    public TerrainQuad generateHillyTerrain(Vector3f playerPosition, Material terrainMaterial) {
-        float[] heightMap = generateHillyHeightMap(playerPosition);
-        TerrainQuad terrain = new TerrainQuad("terrain", gridSize + 1, gridSize + 1, heightMap);
-        terrain.setMaterial(terrainMaterial);
-        // Generate collision shape based on the height map
-        HeightfieldCollisionShape collisionShape = new HeightfieldCollisionShape(heightMap, terrain.getLocalScale());
+        float[] heightArray = heightMap.getHeightMap();
+        HeightfieldCollisionShape collisionShape = new HeightfieldCollisionShape(heightArray, terrain.getLocalScale());
         RigidBodyControl rigidBodyControl = new RigidBodyControl(collisionShape, 0);
-        terrain.addControl(rigidBodyControl);
         bulletAppState.getPhysicsSpace().add(rigidBodyControl);
+        terrain.setLocalTranslation(chunkPosition);
         rootNode.attachChild(terrain);
+        terrain.addControl(rigidBodyControl);
 
-        return terrain;
+        if (chunkManager.isShowBorder()) {
+            WireBox wireBox = new WireBox(chunkSize * 0.5f, terrain.getLocalScale().y, chunkSize * 0.5f);
+            Geometry wireBoxGeom = new Geometry("wireBox-" + chunkManager.getChunkNum(), wireBox);
+            wireBoxGeom.setLocalTranslation(chunkPosition);
+            wireBoxGeom.setMaterial(materialManager.getMaterial("sand"));
+            rootNode.attachChild(wireBoxGeom);
+        }
+        chunkManager.addChunktoMap(chunkPosition, terrain);
+    }
+
+    public HeightMap generateHeightMap(Vector3f chunkPosition, int chunkSize) {
+        AbstractHeightMap heightMap = new AbstractHeightMap() {
+            @Override
+            public boolean load() {
+                int width = chunkSize + 1;
+                int height = chunkSize + 1;
+                this.heightData = new float[width * height];
+
+                // Calculate noise parameters
+                float scale = 0.01f; // Controls the frequency of the noise
+                int seed = 566767896;    // Seed for the random number generator
+
+                /*
+                // Generate height data using Perlin noise
+                for (int x = 0; x < width; x++) {
+                    for (int z = 0; z < height; z++) {
+                        float normalizedX = (chunkPosition.x + x) * scale;
+                        float normalizedZ = (chunkPosition.z + z) * scale;
+
+                        float noiseValue = ImprovedNoise.noise(normalizedX, normalizedZ, seed);
+                        float heightValue = noiseValue * 50f; // Scale the noise to control height
+
+                        setHeightAtPoint((float) x, z, (int) heightValue);
+                    }
+                } */
+
+                normalizeTerrain(0.5f); // Normalize the terrain heights
+                return true;
+            }
+        };
+
+        heightMap.load();
+        return heightMap;
     }
 }

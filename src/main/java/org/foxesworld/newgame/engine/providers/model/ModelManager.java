@@ -1,4 +1,4 @@
-package org.foxesworld.newgame.engine.model;
+package org.foxesworld.newgame.engine.providers.model;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
@@ -24,7 +24,7 @@ public class ModelManager {
     public Spatial addModels(Node rootNode, String modelPath, String material) {
         Spatial model = loadModel(modelPath);
         rootNode.attachChild(model);
-        model.setMaterial(Kernel.Materials.get(material));
+        //model.setMaterial(Kernel.aterials.get(material));
 
         RigidBodyControl collisionControl = createCollisionControl(model);
         rootNode.addControl(collisionControl);

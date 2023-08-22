@@ -1,16 +1,16 @@
-package org.foxesworld.newgame.engine.material;
+package org.foxesworld.newgame.engine.providers.material;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector2f;
 import com.jme3.texture.Texture;
 import org.foxesworld.newgame.engine.Kernel;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,10 +19,10 @@ public class MaterialManager extends MaterialAbstract {
 
     private static final String matIndexFile = "materialOptions.json";
     private Map<String, Object> matData;
-    private Map<String, Material> Materials;
+    private Map<String, Material> Materials = new HashMap<>();
 
-    public MaterialManager(AssetManager assetManager, Map<String, Material> Materials) {
-        this.Materials = Materials;
+    public MaterialManager(AssetManager assetManager) {
+        //this.Materials = Materials;
         setAssetManager(assetManager);
         addMaterials();
     }
@@ -32,7 +32,7 @@ public class MaterialManager extends MaterialAbstract {
         String[] textures = new String[]{"soil", "sand", "sun"};
         for (int c = 0; c < textures.length; c++) {
             String mat = textures[c];
-            Kernel.logger.info("    - Adding '" + mat + "' material");
+            Kernel.logger.info("  - Adding '" + mat + "' material");
             Materials.put(mat, createMat(mat));
         }
     }
@@ -127,25 +127,12 @@ public class MaterialManager extends MaterialAbstract {
         COLOR
     }
 
-    @Deprecated
-    private Vector2f parseVector2f(String input) {
-        String[] parts = input.split(",");
-        if (parts.length != 2) {
-            throw new IllegalArgumentException("Invalid vector2f format: " + input);
-        }
-
-        float x = Float.parseFloat(parts[0].trim());
-        float y = Float.parseFloat(parts[1].trim());
-
-        return new Vector2f(x, y);
-    }
-
     private Map<String, Object> readMatConfig(InputStream is) {
         Map<String, Object> map = null;
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            TypeReference<Map<String, Object>> typeRef = new TypeReference<Map<String, Object>>() {
+            TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {
             };
             map = mapper.readValue(is, typeRef);
         } catch (IOException ignored) {
@@ -156,5 +143,13 @@ public class MaterialManager extends MaterialAbstract {
     @FunctionalInterface
     private interface BiConsumer<T, U> {
         void accept(T t, U u);
+    }
+
+    public Material getMaterial(String mat) {
+        return Materials.get(mat);
+    }
+
+    public Map<String, Material> getMaterials() {
+        return Materials;
     }
 }

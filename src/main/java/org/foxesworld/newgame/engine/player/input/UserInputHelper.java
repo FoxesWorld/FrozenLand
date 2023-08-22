@@ -5,7 +5,7 @@ import com.jme3.input.InputManager;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
-import org.foxesworld.newgame.engine.sound.SoundManager;
+import org.foxesworld.newgame.engine.providers.sound.SoundManager;
 
 import java.util.HashMap;
 import java.util.List;

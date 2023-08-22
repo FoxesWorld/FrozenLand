@@ -1,8 +1,9 @@
 package org.foxesworld.newgame.engine;
 
+import com.jme3.app.Application;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
-import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.input.InputManager;
 import com.jme3.material.Material;
@@ -18,22 +19,22 @@ import com.jme3.scene.Spatial;
 import org.foxesworld.newgame.engine.ai.NPC;
 import org.foxesworld.newgame.engine.ai.NPCAI;
 import org.foxesworld.newgame.engine.discord.Discord;
-import org.foxesworld.newgame.engine.material.MaterialManager;
-import org.foxesworld.newgame.engine.model.ModelManager;
+import org.foxesworld.newgame.engine.providers.material.MaterialManager;
+import org.foxesworld.newgame.engine.providers.model.ModelManager;
 import org.foxesworld.newgame.engine.player.Player;
 import org.foxesworld.newgame.engine.shaders.Bloom;
 import org.foxesworld.newgame.engine.shaders.DOF;
 import org.foxesworld.newgame.engine.shaders.LSF;
-import org.foxesworld.newgame.engine.sound.SoundManager;
+import org.foxesworld.newgame.engine.providers.sound.SoundManager;
 import org.foxesworld.newgame.engine.world.skybox.SkyboxGenerator;
 import org.foxesworld.newgame.engine.world.sun.LightingType;
 import org.foxesworld.newgame.engine.world.sun.Sun;
+import org.foxesworld.newgame.engine.world.terrain.ChunkManager;
 import org.foxesworld.newgame.engine.world.terrain.TerrainGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Kernel {
@@ -48,6 +49,7 @@ public class Kernel {
     protected SoundManager soundManager;
     protected MaterialManager materialManager;
     protected ModelManager modelManager;
+    private ChunkManager chunkManager;
     protected Camera camera;
     protected BulletAppState bulletAppState;
     protected Node rootNode;
@@ -57,8 +59,8 @@ public class Kernel {
     NPCAI npcAI;
 
     /* Assets MAPs*/
-    public static Map<String, Material> Materials = new HashMap<>();
-    public static Map<String, List<AudioNode>> Sounds = new HashMap<>();
+    //public static Map<String, Material> Materials = new HashMap<>();
+    //public static Map<String, Map<String, List<AudioNode>>> Sounds = new HashMap<>();
     public static Map<String, Spatial> Models = new HashMap<>();
 
     public Kernel(AppStateManager stateManager, NiftyJmeDisplay niftyDisplay, ViewPort viewPort, AssetManager assetManager, Camera camera, Node rootNode, FilterPostProcessor fpp, InputManager inputManager, BulletAppState bulletAppState, Map CONFIG) {
@@ -66,8 +68,8 @@ public class Kernel {
         this.assetManager = assetManager;
         this.viewPort = viewPort;
         this.niftyDisplay = niftyDisplay;
-        this.soundManager = new SoundManager(assetManager, Sounds);
-        this.materialManager = new MaterialManager(assetManager, Materials);
+        this.soundManager = new SoundManager(assetManager);
+        this.materialManager = new MaterialManager(assetManager);
         this.modelManager = new ModelManager(assetManager, bulletAppState, rootNode);
         this.camera = camera;
         this.rootNode = rootNode;
@@ -75,18 +77,20 @@ public class Kernel {
         this.inputManager = inputManager;
         this.bulletAppState = bulletAppState;
         this.CONFIG = CONFIG;
-        this.discord = new Discord("Developing", this.getClass().getTypeName());
+        this.discord = new Discord("Infinite world with border", this.getClass().getTypeName());
         this.discord.discordRpcStart("default");
         this.genSkyBox("textures/BrightSky.dds");
-        TerrainGenerator terrain = new TerrainGenerator(rootNode, bulletAppState);
-        terrain.generateHillyTerrain(new Vector3f(0, 0, 0), Materials.get("sand"));
+
+        TerrainGenerator terrainGenerator = new TerrainGenerator(bulletAppState, rootNode);
+        chunkManager = new ChunkManager(terrainGenerator, 100, materialManager);
+
         player = new Player(stateManager, niftyDisplay, soundManager, assetManager, rootNode, bulletAppState, inputManager, CONFIG);
         player.addPlayer(camera, new Vector3f(0, 5, 0));
-        bulletAppState.getPhysicsSpace().addAll(player);
-        rootNode.attachChild(player);
         this.addSun();
         addShaders(fpp);
-        ncpTest();
+
+        AutoUpdateAppState autoUpdateAppState = new AutoUpdateAppState();
+        stateManager.attach(autoUpdateAppState);
     }
 
     private void genSkyBox(String texture) {
@@ -99,7 +103,7 @@ public class Kernel {
         Sun sun = new Sun(assetManager, rootNode, "sun", LightingType.AMBIENT, ColorRGBA.White, 1f);
         sun.setSunOptions(new Vector3f(5, 5, 5), 3f);
         sun.setPosition(new Vector3f(0f, 50f, 0f));
-        sun.addSun(Materials.get("sun"));
+        sun.addSun(materialManager.getMaterial("sun"));
     }
 
     private void ncpTest() {
@@ -133,5 +137,32 @@ public class Kernel {
         fpp.addFilter(new FXAAFilter());
 
         viewPort.addProcessor(fpp);
+    }
+
+    private class AutoUpdateAppState extends BaseAppState {
+        @Override
+        protected void initialize(Application app) {
+
+        }
+
+        @Override
+        protected void cleanup(Application app) {
+            // Уборка логики после отключения
+        }
+
+        @Override
+        protected void onEnable() {
+            // Логика, когда состояние включается
+        }
+
+        @Override
+        protected void onDisable() {
+            // Логика, когда состояние отключается
+        }
+
+        @Override
+        public void update(float tpf) {
+            chunkManager.generateAndLoadChunks(player.getPlayerPosition(), true);
+        }
     }
 }

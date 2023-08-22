@@ -1,4 +1,4 @@
-package org.foxesworld.newgame.engine.material;
+package org.foxesworld.newgame.engine.providers.material;
 
 public enum TextureWrap {
     REPEAT,
