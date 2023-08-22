@@ -34,7 +34,7 @@ public class ChunkManager {
                 chunkPosition = newChunkPosition.add(i * chunkSize, 0, j * chunkSize);
                 if (!chunkMap.containsKey(chunkPosition) && playerPosition.distance(chunkPosition) <= chunkLoadDistance) {
                     terrainGenerator.generateChunkTerrain(this);
-                    System.out.println("Adding chunk " + chunkNum+ ' ' + chunkPosition);
+                    System.out.println("Adding chunk " + chunkNum + ' ' + chunkPosition);
                     chunkNum+=1;
                 }
             }
