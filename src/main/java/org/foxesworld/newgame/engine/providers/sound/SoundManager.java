@@ -8,6 +8,7 @@ import com.jme3.audio.AudioData;
 import com.jme3.audio.AudioNode;
 import com.jme3.audio.AudioSource;
 import org.foxesworld.newgame.engine.Kernel;
+import org.foxesworld.newgame.engine.KernelInterface;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,12 +16,12 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SoundManager {
-    private AssetManager assetManager;
-    private  Map<String, Map<String, List<AudioNode>>> Sounds = new HashMap<>();
+    private KernelInterface kernelInterface;
+    private Map<String, Map<String, List<AudioNode>>> Sounds = new HashMap<>();
 
-    public SoundManager(AssetManager assetManager) {
-        this.assetManager = assetManager;
-        loadSounds(assetManager.locateAsset(new AssetKey<>("sounds.json")).openStream());
+    public SoundManager(KernelInterface kernelInterface) {
+        this.kernelInterface = kernelInterface;
+        loadSounds(kernelInterface.getAssetManager().locateAsset(new AssetKey<>("sounds.json")).openStream());
     }
 
     private void loadSounds(InputStream inputStream) {
@@ -28,9 +29,9 @@ public class SoundManager {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonRoot = objectMapper.readTree(inputStream);
             Iterator<String> iterator = jsonRoot.fieldNames();
-            while(iterator.hasNext()) {
+            while (iterator.hasNext()) {
                 String currentBlock = iterator.next();
-                Kernel.logger.info("====== Scanning block " +currentBlock + " ======");
+                kernelInterface.getLogger().info("====== Scanning block " + currentBlock + " ======");
                 JsonNode eventsArray = jsonRoot.get(currentBlock);
                 Map<String, List<AudioNode>> soundBlock = new HashMap<>();
                 eventsArray.forEach(eventNode -> {
@@ -45,7 +46,7 @@ public class SoundManager {
                         String fileName = soundNode.asText();
                         AudioData.DataType dataType = AudioData.DataType.valueOf(settingsNode.get("dataType").asText());
                         String filePath = "sounds/" + currentBlock + '/' + sndPackage + event + fileName;
-                        AudioNode audioNode = new AudioNode(assetManager, filePath, dataType);
+                        AudioNode audioNode = new AudioNode(kernelInterface.getAssetManager(), filePath, dataType);
 
                         if (settingsNode != null) {
                             if (settingsNode.has("volume")) {
@@ -61,7 +62,7 @@ public class SoundManager {
                         audioNodes.add(audioNode);
                         soundsNum.getAndIncrement();
                     });
-                    Kernel.logger.info("Added " + soundsNum + " sounds to '" + event + "' event");
+                    kernelInterface.getLogger().info("Added " + soundsNum + " sounds to '" + event + "' event");
                     soundBlock.put(event, audioNodes);
                 });
                 Sounds.put(currentBlock, soundBlock);
@@ -69,16 +70,16 @@ public class SoundManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Kernel.logger.info("Sound scanning done!");
+        kernelInterface.getLogger().info("Sound scanning done!");
     }
 
-    public Map<String, List<AudioNode>> getSoundBlock(String blockName){
+    public Map<String, List<AudioNode>> getSoundBlock(String blockName) {
         return Sounds.get(blockName);
     }
 
     public void update(float tpf) {
         for (Map.Entry<String, Map<String, List<AudioNode>>> entry : Sounds.entrySet()) {
-            for(Map.Entry<String, List<AudioNode>> update: entry.getValue().entrySet()) {
+            for (Map.Entry<String, List<AudioNode>> update : entry.getValue().entrySet()) {
                 List<AudioNode> audioNodes = update.getValue();
                 Iterator<AudioNode> iterator = audioNodes.iterator();
 

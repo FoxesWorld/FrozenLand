@@ -4,9 +4,10 @@ import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.material.MaterialDef;
 import com.jme3.math.ColorRGBA;
+import org.foxesworld.newgame.engine.KernelInterface;
 
 public abstract class MaterialAbstract {
-    private AssetManager assetManager;
+    private KernelInterface kernelInterface;
     private Material material;
     private MaterialDef materialDef;
     public abstract Material createMat(String path);
@@ -24,14 +25,14 @@ public abstract class MaterialAbstract {
         return materialDef;
     }
     protected void initMaterial(String matDef) {
-        materialDef = (MaterialDef) getAssetManager().loadAsset(matDef);
+        materialDef = (MaterialDef) kernelInterface.getAssetManager().loadAsset(matDef);
         material = new Material(getMaterialDef());
     }
-    public AssetManager getAssetManager() {
-        return assetManager;
+    public KernelInterface getKernelInterface() {
+        return kernelInterface;
     }
-    public void setAssetManager(AssetManager assetManager) {
-        this.assetManager = assetManager;
+    public void setAssetManager(KernelInterface kernelInterface) {
+        this.kernelInterface = kernelInterface;
     }
     public Material getMaterial() {
         return material;

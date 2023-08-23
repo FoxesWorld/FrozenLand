@@ -3,7 +3,6 @@ package org.foxesworld.newgame.engine.player;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.bounding.BoundingBox;
-import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.input.InputManager;
@@ -15,23 +14,23 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
+import org.foxesworld.newgame.engine.Kernel;
 import org.foxesworld.newgame.engine.player.camera.CameraFollowSpatial;
 import org.foxesworld.newgame.engine.player.camera.ShakeCam;
 import org.foxesworld.newgame.engine.player.input.FPSViewControl;
 import org.foxesworld.newgame.engine.player.input.UserInputHandler;
 import org.foxesworld.newgame.engine.providers.sound.SoundManager;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class Player extends Node {
+public class Player extends Node implements PlayerInterface {
 
     private BetterCharacterControl characterControl;
     private  UserInputHandler userInputHandler;
     private Vector3f jumpForce = new Vector3f(0, 300, 0);
     private AssetManager assetManager;
     private  AppStateManager stateManager;
+    private Spatial actorLoad;
     private SoundManager soundManager;
     private  NiftyJmeDisplay niftyDisplay;
     private InputManager inputManager;
@@ -39,20 +38,20 @@ public class Player extends Node {
     private PhysicsSpace pspace;
     private Map CFG;
 
-    public Player(AppStateManager stateManager, NiftyJmeDisplay niftyDisplay, SoundManager soundManager, AssetManager assetManager, Node rootNode, BulletAppState bulletAppState, InputManager inputManager, Map config){
-        this.stateManager = stateManager;
-        this.soundManager = soundManager;
-        this.niftyDisplay = niftyDisplay;
-        this.assetManager = assetManager;
-        this.rootNode = rootNode;
-        this.pspace = bulletAppState.getPhysicsSpace();
-        this.inputManager = inputManager;
-        this.CFG = config;
+    public Player(Kernel kernel){
+        this.stateManager = kernel.getStateManager();
+        this.soundManager = kernel.getSoundManager();
+        this.niftyDisplay = kernel.getNiftyDisplay();
+        this.assetManager = kernel.getAssetManager();
+        this.rootNode = kernel.getRootNode();
+        this.pspace = kernel.getBulletAppState().getPhysicsSpace();
+        this.inputManager = kernel.getInputManager();
+        this.CFG = kernel.getCONFIG();
 
-        Spatial actorLoad = assetManager.loadModel("models/char.glb");
+        actorLoad = assetManager.loadModel("Models/char.glb");
         actorLoad.setLocalScale(1f);
-        attachChild(actorLoad);
-        setCullHint(CullHint.Never);
+        this.attachChild(actorLoad);
+        this.setCullHint(CullHint.Never);
     }
 
     public void addPlayer(Camera cam, Vector3f spawnPoint){
@@ -69,35 +68,80 @@ public class Player extends Node {
         characterControl.setJumpForce(jumpForce);
         addControl(characterControl);
 
-        // Установка позиции спавна игрока
+        // Spawn position
         characterControl.warp(spawnPoint);
 
         ShakeCam camShake = new ShakeCam(cam);
         stateManager.attach(camShake);
-        camShake.shakeHitHard();
 
         // Load character logic
-        addControl(userInputHandler = new UserInputHandler(niftyDisplay, soundManager, inputManager, assetManager, cam, rootNode,()->
-        playerModel.getControl(ActionsControl.class).shot(assetManager,cam.getLocation().add(cam.getDirection().mult(1)),cam.getDirection(),this.rootNode, this.pspace), (HashMap<String, List<Object>>) CFG.get("userInput")));
-        addControl(new CameraFollowSpatial(cam));
+        addControl(userInputHandler = new UserInputHandler(this, cam, ()->
+        playerModel.getControl(ActionsControl.class).shot(assetManager,cam.getLocation().add(cam.getDirection().mult(1)),cam.getDirection(),this.rootNode, this.pspace)));
+        addControl(new CameraFollowSpatial(getUserInputHandler(), cam, camShake));
         addControl(new ActionsControl(assetManager,soundManager));
         addControl(new FPSViewControl(FPSViewControl.Mode.WORLD_SCENE));
     }
 
-    public void loadFPSLogicFPSView(Camera cam, Camera fpsCam, Spatial jesse){
+    public void loadFPSLogicFPSView(Camera cam, Camera fpsCam, Spatial playerSpatial){
         addControl(new AbstractControl(){
+            @Override
             protected void controlUpdate(float tpf) {
-                setLocalTransform(jesse.getWorldTransform());
+                setLocalTransform(playerSpatial.getWorldTransform());
                 fpsCam.setLocation(cam.getLocation());
                 fpsCam.lookAtDirection(cam.getDirection(),cam.getUp());
             }
+            @Override
             protected void controlRender(RenderManager rm, ViewPort vp) { }
         });
         addControl(new FPSViewControl(FPSViewControl.Mode.FPS_SCENE));
-        addControl(new ActionsControl(assetManager,soundManager,jesse.getControl(BetterCharacterControl.class)));
+        addControl(new ActionsControl(assetManager,soundManager,playerSpatial.getControl(BetterCharacterControl.class)));
     }
 
     public Vector3f getPlayerPosition(){
         return userInputHandler.getPlayerPosition();
+    }
+
+    public BetterCharacterControl getCharacterControl() {
+        return characterControl;
+    }
+
+    public UserInputHandler getUserInputHandler() {
+        return userInputHandler;
+    }
+
+    public Vector3f getJumpForce() {
+        return jumpForce;
+    }
+
+    public AssetManager getAssetManager() {
+        return assetManager;
+    }
+
+    public AppStateManager getStateManager() {
+        return stateManager;
+    }
+
+    public SoundManager getSoundManager() {
+        return soundManager;
+    }
+
+    public NiftyJmeDisplay getNiftyDisplay() {
+        return niftyDisplay;
+    }
+
+    public InputManager getInputManager() {
+        return inputManager;
+    }
+
+    public Node getRootNode() {
+        return rootNode;
+    }
+
+    public PhysicsSpace getPspace() {
+        return pspace;
+    }
+
+    public Map getCFG() {
+        return CFG;
     }
 }

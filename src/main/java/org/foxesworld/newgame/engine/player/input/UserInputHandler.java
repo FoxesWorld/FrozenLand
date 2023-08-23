@@ -5,11 +5,12 @@ import com.jme3.audio.AudioNode;
 import com.jme3.audio.AudioSource;
 import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.input.InputManager;
-import com.jme3.input.controls.*;
+import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseAxisTrigger;
+import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -19,15 +20,14 @@ import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import org.foxesworld.newgame.engine.player.CharacterSettings;
-import org.foxesworld.newgame.engine.player.camera.ShakeCam;
+import org.foxesworld.newgame.engine.player.Player;
 import org.foxesworld.newgame.engine.providers.sound.SoundManager;
 import org.foxesworld.newgame.engine.ui.HUDController;
 
 import java.util.*;
 
-public class UserInputHandler extends UserInputAbstract {
+public class UserInputHandler extends UserInputAbstract implements UserInputHandlerI {
 
-    private  ShakeCam camShake;
     private BetterCharacterControl characterControl;
     protected final CharacterSettings characterSettings;
     private final InputManager inputManager;
@@ -44,25 +44,23 @@ public class UserInputHandler extends UserInputAbstract {
     final Quaternion tmpRot = new Quaternion();
     final Vector3f tmpV3 = new Vector3f();
 
-    public UserInputHandler(NiftyJmeDisplay niftyDisplay, SoundManager soundManager, InputManager inputManager, AssetManager assetManager, Camera cam, Node rootNode, Runnable attackCallback, HashMap<String, List<Object>> userInputConfig) {
-        this.soundManager = soundManager;
+    public UserInputHandler(Player player, Camera cam, Runnable attackCallback) {
+        this.soundManager = player.getSoundManager();
         this.playerSounds = soundManager.getSoundBlock("player");
-        this.inputManager = inputManager;
-        this.assetManager = assetManager;
-        this.nifty = niftyDisplay.getNifty();
-        this.rootNode = rootNode;
+        this.inputManager = player.getInputManager();
+        this.assetManager = player.getAssetManager();
+        this.nifty = player.getNiftyDisplay().getNifty();
+        this.rootNode = player.getRootNode();
         this.attackCallback = attackCallback;
         this.cam = cam;
-        setUserInputConfig(userInputConfig);
-        this.camShake = new ShakeCam(cam);
+        setUserInputConfig((HashMap<String, List<Object>>) player.getCFG().get("userInput"));
         this.characterSettings = new CharacterSettings();
         this.nifty.fromXml("ui/userData.xml", "hud", new HUDController());
     }
 
     @Override
-    protected void init() {
+    public void init() {
         if(!isInit()){
-            camShake = new ShakeCam(cam);
             characterControl = spatial.getControl(BetterCharacterControl.class);
             if (characterControl == null) {
                     System.err.println(getClass() + " can be attached only to a spatial that has a BetterCharacterControl");
@@ -167,7 +165,6 @@ public class UserInputHandler extends UserInputAbstract {
 
         updateMovementAudio(tpf);
         soundManager.update(tpf);
-        camShake.update(tpf);
         updateHUDText(new String[]{"speed", "playerState", "posX", "posY", "posZ"}, new String[]{
                 String.valueOf(characterSettings.getCurrentSpeed()),
                 String.valueOf(getPlayerState()),
@@ -178,7 +175,7 @@ public class UserInputHandler extends UserInputAbstract {
     }
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-        // Оставьте этот метод пустым, если вам не нужно рендерить что-либо.
+        // Only for rendering
     }
 
     @Override
@@ -263,7 +260,9 @@ public class UserInputHandler extends UserInputAbstract {
         if (spatial != null) {
             return spatial.getWorldTranslation();
         } else {
-            return null;
+            return new Vector3f(0,0,0);
         }
     }
+
+
 }

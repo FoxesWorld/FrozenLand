@@ -6,7 +6,6 @@ import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.input.InputManager;
-import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
@@ -19,27 +18,27 @@ import com.jme3.scene.Spatial;
 import org.foxesworld.newgame.engine.ai.NPC;
 import org.foxesworld.newgame.engine.ai.NPCAI;
 import org.foxesworld.newgame.engine.discord.Discord;
+import org.foxesworld.newgame.engine.player.Player;
 import org.foxesworld.newgame.engine.providers.material.MaterialManager;
 import org.foxesworld.newgame.engine.providers.model.ModelManager;
-import org.foxesworld.newgame.engine.player.Player;
+import org.foxesworld.newgame.engine.providers.sound.SoundManager;
 import org.foxesworld.newgame.engine.shaders.Bloom;
 import org.foxesworld.newgame.engine.shaders.DOF;
 import org.foxesworld.newgame.engine.shaders.LSF;
-import org.foxesworld.newgame.engine.providers.sound.SoundManager;
 import org.foxesworld.newgame.engine.world.skybox.SkyboxGenerator;
 import org.foxesworld.newgame.engine.world.sun.LightingType;
 import org.foxesworld.newgame.engine.world.sun.Sun;
-import org.foxesworld.newgame.engine.world.terrain.ChunkManager;
-import org.foxesworld.newgame.engine.world.terrain.TerrainGenerator;
+import org.foxesworld.newgame.engine.world.terrain.gen.TerrainGenerator;
+import org.foxesworld.newgame.engine.world.terrain.TerrainManager;
+import org.foxesworld.newgame.engine.world.terrain.TerrainManagerInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public class Kernel {
+public class Kernel implements KernelInterface {
 
-    public static final Logger logger = LoggerFactory.getLogger(Kernel.class);
+    private final Logger logger = LoggerFactory.getLogger(Kernel.class);
     private Map CONFIG;
     protected AssetManager assetManager;
     protected Discord discord;
@@ -49,27 +48,22 @@ public class Kernel {
     protected SoundManager soundManager;
     protected MaterialManager materialManager;
     protected ModelManager modelManager;
-    private ChunkManager chunkManager;
     protected Camera camera;
     protected BulletAppState bulletAppState;
     protected Node rootNode;
     protected FilterPostProcessor fpp;
     protected InputManager inputManager;
+    private TerrainManagerInterface terrainManager;
     protected Player player;
     NPCAI npcAI;
-
-    /* Assets MAPs*/
-    //public static Map<String, Material> Materials = new HashMap<>();
-    //public static Map<String, Map<String, List<AudioNode>>> Sounds = new HashMap<>();
-    public static Map<String, Spatial> Models = new HashMap<>();
 
     public Kernel(AppStateManager stateManager, NiftyJmeDisplay niftyDisplay, ViewPort viewPort, AssetManager assetManager, Camera camera, Node rootNode, FilterPostProcessor fpp, InputManager inputManager, BulletAppState bulletAppState, Map CONFIG) {
         this.stateManager = stateManager;
         this.assetManager = assetManager;
         this.viewPort = viewPort;
         this.niftyDisplay = niftyDisplay;
-        this.soundManager = new SoundManager(assetManager);
-        this.materialManager = new MaterialManager(assetManager);
+        this.soundManager = new SoundManager(this);
+        this.materialManager = new MaterialManager(this);
         this.modelManager = new ModelManager(assetManager, bulletAppState, rootNode);
         this.camera = camera;
         this.rootNode = rootNode;
@@ -81,16 +75,21 @@ public class Kernel {
         this.discord.discordRpcStart("default");
         this.genSkyBox("textures/BrightSky.dds");
 
-        TerrainGenerator terrainGenerator = new TerrainGenerator(bulletAppState, rootNode);
-        chunkManager = new ChunkManager(terrainGenerator, 100, materialManager);
+        terrainManager = new TerrainManager(assetManager, bulletAppState, this);
 
-        player = new Player(stateManager, niftyDisplay, soundManager, assetManager, rootNode, bulletAppState, inputManager, CONFIG);
-        player.addPlayer(camera, new Vector3f(0, 5, 0));
+        //chunkManager = new ChunkManager(new TerrainGenerator(this),  this);
+        //TerrainGenerator terrainGenerator = new TerrainGenerator(this);
+        //terrainGenerator.generateMountains();
+        new TerrainGenerator(this);
+        //rootNode.attachChild(terrainGenerator.generateTerrain());
+        rootNode.attachChild(terrainManager.getTerrain());
+        rootNode.attachChild(terrainManager.getMountains());
         this.addSun();
         addShaders(fpp);
 
-        AutoUpdateAppState autoUpdateAppState = new AutoUpdateAppState();
-        stateManager.attach(autoUpdateAppState);
+        player = new Player(this);
+        player.addPlayer(camera, new Vector3f(0,300,0));
+
     }
 
     private void genSkyBox(String texture) {
@@ -102,13 +101,13 @@ public class Kernel {
     private void addSun() {
         Sun sun = new Sun(assetManager, rootNode, "sun", LightingType.AMBIENT, ColorRGBA.White, 1f);
         sun.setSunOptions(new Vector3f(5, 5, 5), 3f);
-        sun.setPosition(new Vector3f(0f, 50f, 0f));
+        sun.setPosition(new Vector3f(0f, 10f, 0f));
         sun.addSun(materialManager.getMaterial("sun"));
     }
 
     private void ncpTest() {
         Node npcNode = new Node();
-        NPC npc = new NPC(assetManager.loadModel("models/char.glb"));
+        NPC npc = new NPC(assetManager.loadModel("Models/char.glb"));
         npcNode.attachChild(npc.getModel());
         npcAI = new NPCAI(npc);
         npcAI.setTargetPosition(new Vector3f(50, 0, 0));
@@ -162,7 +161,69 @@ public class Kernel {
 
         @Override
         public void update(float tpf) {
-            chunkManager.generateAndLoadChunks(player.getPlayerPosition(), true);
+            terrainManager.update(tpf);
         }
+    }
+
+    public Map getCONFIG() {
+        return CONFIG;
+    }
+
+    public AssetManager getAssetManager() {
+        return assetManager;
+    }
+
+    public ViewPort getViewPort() {
+        return viewPort;
+    }
+
+    public NiftyJmeDisplay getNiftyDisplay() {
+        return niftyDisplay;
+    }
+
+    public AppStateManager getStateManager() {
+        return stateManager;
+    }
+
+    public SoundManager getSoundManager() {
+        return soundManager;
+    }
+
+    public MaterialManager getMaterialManager() {
+        return materialManager;
+    }
+
+    public ModelManager getModelManager() {
+        return modelManager;
+    }
+
+    //public ChunkManager getChunkManager() {return chunkManager;}
+
+    public Camera getCamera() {
+        return camera;
+    }
+
+    public BulletAppState getBulletAppState() {
+        return bulletAppState;
+    }
+
+    public Node getRootNode() {
+        return rootNode;
+    }
+
+    @Override
+    public Logger getLogger() {
+        return this.logger;
+    }
+
+    public FilterPostProcessor getFpp() {
+        return fpp;
+    }
+
+    public InputManager getInputManager() {
+        return inputManager;
+    }
+    public Player getPlayer() {
+        return player;
     }
 }

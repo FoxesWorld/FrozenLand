@@ -7,6 +7,7 @@ import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.texture.Texture;
 import org.foxesworld.newgame.engine.Kernel;
+import org.foxesworld.newgame.engine.KernelInterface;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,18 +22,18 @@ public class MaterialManager extends MaterialAbstract {
     private Map<String, Object> matData;
     private Map<String, Material> Materials = new HashMap<>();
 
-    public MaterialManager(AssetManager assetManager) {
+    public MaterialManager(KernelInterface kernelInterface) {
         //this.Materials = Materials;
-        setAssetManager(assetManager);
+        setAssetManager(kernelInterface);
         addMaterials();
     }
 
     private void addMaterials() {
-        Kernel.logger.info("Adding materials");
-        String[] textures = new String[]{"soil", "sand", "sun"};
+        getKernelInterface().getLogger().info("Adding materials");
+        String[] textures = new String[]{"soil", "sand", "sun", "terrain"};
         for (int c = 0; c < textures.length; c++) {
             String mat = textures[c];
-            Kernel.logger.info("  - Adding '" + mat + "' material");
+            getKernelInterface().getLogger().info("  - Adding '" + mat + "' material");
             Materials.put(mat, createMat(mat));
         }
     }
@@ -46,7 +47,7 @@ public class MaterialManager extends MaterialAbstract {
         AtomicInteger varNum = new AtomicInteger();
         handleTextures(path, (mapName, textureInstanceMap) -> {
             TextureWrap wrapType = TextureWrap.valueOf((String) textureInstanceMap.get("wrap"));
-            Texture thisTexture = getAssetManager().loadTexture(path + textureInstanceMap.get("texture"));
+            Texture thisTexture = getKernelInterface().getAssetManager().loadTexture(path + textureInstanceMap.get("texture"));
             wrapType(wrapType, thisTexture);
             getMaterial().setTexture(mapName, thisTexture);
             textNum.getAndIncrement();
@@ -56,7 +57,7 @@ public class MaterialManager extends MaterialAbstract {
             inputType(cfgTitle, value);
             varNum.getAndIncrement();
         });
-        Kernel.logger.info("    - "+file + " has " + textNum + " textures and " + varNum + " vars");
+        getKernelInterface().getLogger().info("    - "+file + " has " + textNum + " textures and " + varNum + " vars");
 
         return getMaterial();
     }
@@ -81,7 +82,7 @@ public class MaterialManager extends MaterialAbstract {
         VarType inputType = VarType.valueOf(((String) value.get("type")).toUpperCase());
         switch (inputType) {
             case FLOAT:
-                setMaterialFloat(cfgTitle, (Float) value.get("value"));
+                setMaterialFloat(cfgTitle, (Integer) value.get("value"));
                 break;
             case BOOLEAN:
                 setMaterialBoolean(cfgTitle, (Boolean) value.get("value"));

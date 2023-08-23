@@ -13,7 +13,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Map;
 
-
 public class NewGame extends SimpleApplication {
 
     protected BulletAppState bulletAppState = new BulletAppState();
@@ -38,6 +37,7 @@ public class NewGame extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        flyCam.setMoveSpeed(50);
         stateManager.attach(bulletAppState);
         bulletAppState.setDebugEnabled(true);
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
@@ -68,5 +68,7 @@ public class NewGame extends SimpleApplication {
         }
         settings.setIcons(icons);
     }
+
+
 
 }

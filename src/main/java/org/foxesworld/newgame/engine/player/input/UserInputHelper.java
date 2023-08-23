@@ -5,6 +5,7 @@ import com.jme3.input.InputManager;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import org.foxesworld.newgame.engine.player.Player;
 import org.foxesworld.newgame.engine.providers.sound.SoundManager;
 
 import java.util.HashMap;
@@ -13,8 +14,8 @@ import java.util.Stack;
 
 public class UserInputHelper extends UserInputHandler {
 
-    public UserInputHelper(NiftyJmeDisplay niftyDisplay, SoundManager soundManager, InputManager inputManager, AssetManager assetManager, Camera cam, Node rootNode, Runnable attackCallback, HashMap<String, List<Object>> userInputConfig) {
-        super(niftyDisplay, soundManager, inputManager, assetManager, cam, rootNode, attackCallback, userInputConfig);
+    public UserInputHelper(Player player, Camera cam, Runnable attackCallback) {
+        super(player, cam, attackCallback);
     }
 
     /**

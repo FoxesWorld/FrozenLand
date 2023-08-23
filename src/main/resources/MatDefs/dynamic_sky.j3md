@@ -19,6 +19,6 @@ MaterialDef Dynamic Sky {
             WorldMatrix
         }
     }
-    Technique FixedFunc {
+    Technique {
     }
 }

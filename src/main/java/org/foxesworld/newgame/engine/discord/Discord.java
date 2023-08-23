@@ -2,7 +2,7 @@ package org.foxesworld.newgame.engine.discord;
 
 import club.minnced.discord.rpc.*;
 
-public class Discord {
+public class Discord implements DiscordInterface {
 
     private static DiscordRPC lib;
     private DiscordRichPresence presence;
