@@ -26,6 +26,8 @@ import java.util.Map;
 public class Player extends Node implements PlayerInterface {
 
     private BetterCharacterControl characterControl;
+
+    private  Camera fpsCam;
     private  UserInputHandler userInputHandler;
     private Vector3f jumpForce = new Vector3f(0, 300, 0);
     private AssetManager assetManager;
@@ -56,7 +58,7 @@ public class Player extends Node implements PlayerInterface {
 
     public void addPlayer(Camera cam, Vector3f spawnPoint){
         Player fpsPlayer = (Player) this.clone();
-        Camera fpsCam = cam.clone();
+        fpsCam = cam.clone();
         this.loadFPSLogicWorld(cam, fpsCam, fpsPlayer, spawnPoint);
         fpsPlayer.loadFPSLogicFPSView(cam, fpsCam, this);
         pspace.addAll(this);
@@ -75,7 +77,7 @@ public class Player extends Node implements PlayerInterface {
         stateManager.attach(camShake);
 
         // Load character logic
-        addControl(userInputHandler = new UserInputHandler(this, cam, ()->
+        addControl(userInputHandler = new UserInputHandler(this, ()->
         playerModel.getControl(ActionsControl.class).shot(assetManager,cam.getLocation().add(cam.getDirection().mult(1)),cam.getDirection(),this.rootNode, this.pspace)));
         addControl(new CameraFollowSpatial(getUserInputHandler(), cam, camShake));
         addControl(new ActionsControl(assetManager,soundManager));
@@ -93,13 +95,15 @@ public class Player extends Node implements PlayerInterface {
             @Override
             protected void controlRender(RenderManager rm, ViewPort vp) { }
         });
-        addControl(new FPSViewControl(FPSViewControl.Mode.FPS_SCENE));
-        addControl(new ActionsControl(assetManager,soundManager,playerSpatial.getControl(BetterCharacterControl.class)));
+        addControl(new FPSViewControl(FPSViewControl.Mode.WORLD_SCENE));
+        addControl(new ActionsControl(this));
     }
 
     public Vector3f getPlayerPosition(){
         return userInputHandler.getPlayerPosition();
     }
+
+    public Camera getFpsCam(){ return this.fpsCam;}
 
     public BetterCharacterControl getCharacterControl() {
         return characterControl;
@@ -117,9 +121,7 @@ public class Player extends Node implements PlayerInterface {
         return assetManager;
     }
 
-    public AppStateManager getStateManager() {
-        return stateManager;
-    }
+    public AppStateManager getStateManager() {return stateManager;}
 
     public SoundManager getSoundManager() {
         return soundManager;

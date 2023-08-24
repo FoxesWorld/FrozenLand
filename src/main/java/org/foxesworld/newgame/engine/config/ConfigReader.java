@@ -10,7 +10,6 @@ public class ConfigReader extends ConfigAbstract {
         setCfgFileExtension(".json");
         addCfgFiles(configFiles);
     }
-
     public Map<String, Map> getCfgMaps() {
         return getAllCfgMaps();
     }

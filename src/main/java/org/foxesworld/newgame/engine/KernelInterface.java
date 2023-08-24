@@ -11,14 +11,11 @@ import org.slf4j.Logger;
 
 public interface KernelInterface {
     Node getRootNode();
-
+    AssetManager getAssetManager();
+    Player getPlayer();
+    Camera getCamera();
     Logger getLogger();
     SoundManager getSoundManager();
     MaterialManager getMaterialManager();
-    Player getPlayer();
-
-    AssetManager getAssetManager();
-
-    Camera getCamera();
     BulletAppState getBulletAppState();
 }

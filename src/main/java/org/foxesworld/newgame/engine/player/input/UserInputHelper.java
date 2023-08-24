@@ -6,6 +6,7 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import org.foxesworld.newgame.engine.player.Player;
+import org.foxesworld.newgame.engine.player.PlayerInterface;
 import org.foxesworld.newgame.engine.providers.sound.SoundManager;
 
 import java.util.HashMap;
@@ -14,8 +15,8 @@ import java.util.Stack;
 
 public class UserInputHelper extends UserInputHandler {
 
-    public UserInputHelper(Player player, Camera cam, Runnable attackCallback) {
-        super(player, cam, attackCallback);
+    public UserInputHelper(PlayerInterface player, Camera cam, Runnable attackCallback) {
+        super(player, attackCallback);
     }
 
     /**

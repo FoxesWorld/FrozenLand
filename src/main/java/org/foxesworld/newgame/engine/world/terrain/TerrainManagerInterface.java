@@ -3,7 +3,7 @@ package org.foxesworld.newgame.engine.world.terrain;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 
 public interface TerrainManagerInterface {
-    void generateGrass();
+    void generateFoliage();
 
     TerrainQuad getMountains();
 

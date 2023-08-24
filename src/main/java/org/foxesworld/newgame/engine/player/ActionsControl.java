@@ -41,9 +41,9 @@ public class ActionsControl extends AbstractControl{
         this.playerSounds = soundManager.getSoundBlock("player");
     }
 
-    public ActionsControl(AssetManager assetManager,SoundManager soundManager,BetterCharacterControl character){
-        this(assetManager,soundManager);
-        this.character=character;
+    public ActionsControl(PlayerInterface playerInterface){
+        this(playerInterface.getAssetManager(),playerInterface.getSoundManager());
+        this.character=playerInterface.getCharacterControl();
     }
 
     private void initialize() {

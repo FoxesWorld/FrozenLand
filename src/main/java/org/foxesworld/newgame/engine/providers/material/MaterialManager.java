@@ -90,6 +90,9 @@ public class MaterialManager extends MaterialAbstract {
             case COLOR:
                 setMaterialColor(cfgTitle, parseColor((String) value.get("value")));
                 break;
+            case VECTOR:
+                setMaterialVector(cfgTitle, (String) value.get("value"));
+                break;
         }
     }
 
@@ -124,6 +127,7 @@ public class MaterialManager extends MaterialAbstract {
 
     private enum VarType {
         FLOAT,
+        VECTOR,
         BOOLEAN,
         COLOR
     }
@@ -152,5 +156,9 @@ public class MaterialManager extends MaterialAbstract {
 
     public Map<String, Material> getMaterials() {
         return Materials;
+    }
+
+    public void addMatData(String optName, Object optCfg) {
+        this.matData.put(optName, optCfg);
     }
 }

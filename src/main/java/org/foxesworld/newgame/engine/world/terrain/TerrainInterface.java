@@ -4,8 +4,6 @@ import com.jme3.terrain.geomipmap.TerrainQuad;
 
 public interface TerrainInterface {
     TerrainQuad generateTerrain();
-
     TerrainQuad generateMountains();
-
     void update();
 }

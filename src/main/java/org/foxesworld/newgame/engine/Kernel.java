@@ -19,6 +19,7 @@ import org.foxesworld.newgame.engine.ai.NPC;
 import org.foxesworld.newgame.engine.ai.NPCAI;
 import org.foxesworld.newgame.engine.discord.Discord;
 import org.foxesworld.newgame.engine.player.Player;
+import org.foxesworld.newgame.engine.player.PlayerInterface;
 import org.foxesworld.newgame.engine.providers.material.MaterialManager;
 import org.foxesworld.newgame.engine.providers.model.ModelManager;
 import org.foxesworld.newgame.engine.providers.sound.SoundManager;
@@ -28,7 +29,6 @@ import org.foxesworld.newgame.engine.shaders.LSF;
 import org.foxesworld.newgame.engine.world.skybox.SkyboxGenerator;
 import org.foxesworld.newgame.engine.world.sun.LightingType;
 import org.foxesworld.newgame.engine.world.sun.Sun;
-import org.foxesworld.newgame.engine.world.terrain.gen.TerrainGenerator;
 import org.foxesworld.newgame.engine.world.terrain.TerrainManager;
 import org.foxesworld.newgame.engine.world.terrain.TerrainManagerInterface;
 import org.slf4j.Logger;
@@ -39,10 +39,10 @@ import java.util.Map;
 public class Kernel implements KernelInterface {
 
     private final Logger logger = LoggerFactory.getLogger(Kernel.class);
-    private Map CONFIG;
-    protected AssetManager assetManager;
-    protected Discord discord;
-    protected ViewPort viewPort;
+    private final Map CONFIG;
+    protected final AssetManager assetManager;
+    protected final Discord discord;
+    protected final ViewPort viewPort;
     protected NiftyJmeDisplay niftyDisplay;
     protected AppStateManager stateManager;
     protected SoundManager soundManager;
@@ -75,13 +75,7 @@ public class Kernel implements KernelInterface {
         this.discord.discordRpcStart("default");
         this.genSkyBox("textures/BrightSky.dds");
 
-        terrainManager = new TerrainManager(assetManager, bulletAppState, this);
-
-        //chunkManager = new ChunkManager(new TerrainGenerator(this),  this);
-        //TerrainGenerator terrainGenerator = new TerrainGenerator(this);
-        //terrainGenerator.generateMountains();
-        new TerrainGenerator(this);
-        //rootNode.attachChild(terrainGenerator.generateTerrain());
+        terrainManager = new TerrainManager(this);
         rootNode.attachChild(terrainManager.getTerrain());
         rootNode.attachChild(terrainManager.getMountains());
         this.addSun();
@@ -99,7 +93,7 @@ public class Kernel implements KernelInterface {
     }
 
     private void addSun() {
-        Sun sun = new Sun(assetManager, rootNode, "sun", LightingType.AMBIENT, ColorRGBA.White, 1f);
+        Sun sun = new Sun(assetManager, rootNode, "sun", LightingType.DIRECTIONAL, ColorRGBA.White, 1f);
         sun.setSunOptions(new Vector3f(5, 5, 5), 3f);
         sun.setPosition(new Vector3f(0f, 10f, 0f));
         sun.addSun(materialManager.getMaterial("sun"));
@@ -134,29 +128,24 @@ public class Kernel implements KernelInterface {
         dof.compile();
 
         fpp.addFilter(new FXAAFilter());
-
         viewPort.addProcessor(fpp);
     }
 
     private class AutoUpdateAppState extends BaseAppState {
         @Override
         protected void initialize(Application app) {
-
         }
 
         @Override
         protected void cleanup(Application app) {
-            // Уборка логики после отключения
         }
 
         @Override
         protected void onEnable() {
-            // Логика, когда состояние включается
         }
 
         @Override
         protected void onDisable() {
-            // Логика, когда состояние отключается
         }
 
         @Override
@@ -197,8 +186,6 @@ public class Kernel implements KernelInterface {
         return modelManager;
     }
 
-    //public ChunkManager getChunkManager() {return chunkManager;}
-
     public Camera getCamera() {
         return camera;
     }
@@ -210,7 +197,6 @@ public class Kernel implements KernelInterface {
     public Node getRootNode() {
         return rootNode;
     }
-
     @Override
     public Logger getLogger() {
         return this.logger;
@@ -219,7 +205,6 @@ public class Kernel implements KernelInterface {
     public FilterPostProcessor getFpp() {
         return fpp;
     }
-
     public InputManager getInputManager() {
         return inputManager;
     }

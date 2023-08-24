@@ -1,5 +1,7 @@
 package org.foxesworld.newgame.engine.world.terrain.gen;
 
+import static org.foxesworld.newgame.engine.config.Constants.RAY_DOWN;
+
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
@@ -12,24 +14,19 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainQuad;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 import org.foxesworld.newgame.engine.KernelInterface;
 import org.foxesworld.newgame.engine.config.Constants;
 import org.foxesworld.newgame.engine.utils.LodUtils;
 import org.foxesworld.newgame.engine.utils.Utils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
-import static org.foxesworld.newgame.engine.config.Constants.RAY_DOWN;
-
-
 public class TreeGen {
-
     private Spatial treeModel;
     private KernelInterface kernelInterface;
 
-    public TreeGen(KernelInterface kernelInterface){
+    public TreeGen(KernelInterface kernelInterface) {
         this.kernelInterface = kernelInterface;
         this.initializeTreeModel();
     }
@@ -49,11 +46,12 @@ public class TreeGen {
     }
 
     public List<Spatial> setupTrees() {
-        int forestSize = (int) Utils.getRandomNumberInRange(3999, 4000);
+        int forestSize = (int) Utils.getRandomNumberInRange(500, 800); // Adjust forest density
         List<Spatial> quadForest = new ArrayList<>(forestSize);
         for (int i = 0; i < forestSize; i++) {
             Spatial treeModelCustom = treeModel.clone();
-            treeModelCustom.scale(1 + Utils.getRandomNumberInRange(1, 10), 1 + Utils.getRandomNumberInRange(1, 10), 1 + Utils.getRandomNumberInRange(1, 10));
+            float scaleFactor = 1 + Utils.getRandomNumberInRange(0.5f, 1.5f); // Adjust scale range
+            treeModelCustom.scale(scaleFactor, scaleFactor, scaleFactor);
             quadForest.add(treeModelCustom);
         }
 
@@ -75,30 +73,45 @@ public class TreeGen {
                     if (y < Constants.WATER_LEVEL_HEIGHT)
                         y = 0;
 
-                    Vector3f start = new Vector3f(kernelInterface.getPlayer().getPlayerPosition().x + Utils.getRandomNumberInRange(-1000, 1000), y, kernelInterface.getPlayer().getPlayerPosition().z + Utils.getRandomNumberInRange(-1000, 1000));
+                    Vector3f start = new Vector3f(
+                            kernelInterface.getPlayer().getPlayerPosition().x
+                                    + Utils.getRandomNumberInRange(-800, 800), // Adjust position range
+                            y,
+                            kernelInterface.getPlayer().getPlayerPosition().z
+                                    + Utils.getRandomNumberInRange(-800, 800)); // Adjust position range
                     Ray ray = new Ray(start, RAY_DOWN);
 
                     quad.collideWith(ray, results);
                     CollisionResult hit = results.getClosestCollision();
                     if (hit != null) {
                         if (hit.getContactPoint().y > Constants.WATER_LEVEL_HEIGHT) {
-                            Vector3f plantLocation = new Vector3f(hit.getContactPoint().x, hit.getContactPoint().y, hit.getContactPoint().z);
-                            treeNode.setLocalTranslation(plantLocation.x, plantLocation.y, plantLocation.z);
-                            treeNode.setLocalRotation(new Quaternion().fromAngleAxis(Utils.getRandomNumberInRange(-6.5f, 6.5f) * FastMath.DEG_TO_RAD, new Vector3f(1, 0, 1)));
+                            Vector3f plantLocation = new Vector3f(hit.getContactPoint().x,
+                                    hit.getContactPoint().y, hit.getContactPoint().z);
+                            Quaternion rotation = new Quaternion().fromAngleAxis(
+                                    Utils.getRandomNumberInRange(-15f, 15f) * FastMath.DEG_TO_RAD,
+                                    new Vector3f(0, 1, 0)); // Rotate around Y-axis
+                            treeNode.setLocalTranslation(plantLocation);
+                            treeNode.setLocalRotation(rotation);
 
                             kernelInterface.getRootNode().attachChild(treeNode);
-                            kernelInterface.getLogger().debug("Attached " + treeNode.hashCode() + treeNode.getLocalTranslation().toString());
+                            createCollisionControl(treeNode); // Generate collision for the tree
+                            kernelInterface.getLogger().debug("Attached "
+                                    + treeNode.hashCode()
+                                    + treeNode.getLocalTranslation().toString());
                             break;
                         }
                     } else {
-                        kernelInterface.getLogger().debug("Placement MISS " + treeNode.hashCode() + treeNode.getLocalTranslation().toString());
+                        kernelInterface.getLogger().debug("Placement MISS "
+                                + treeNode.hashCode()
+                                + treeNode.getLocalTranslation().toString());
                     }
                 }
             });
         } else {
             Stream<Spatial> stream = quadForest.stream();
             stream.forEach(treeNode -> {
-                kernelInterface.getLogger().debug("Attached again " + treeNode.hashCode() + treeNode.getLocalTranslation().toString());
+                kernelInterface.getLogger().debug("Attached again "
+                        + treeNode.hashCode() + treeNode.getLocalTranslation().toString());
                 kernelInterface.getRootNode().attachChild(treeNode);
             });
         }

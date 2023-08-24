@@ -28,26 +28,23 @@ import org.foxesworld.newgame.engine.config.Constants;
 
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 public class FractalTerrainGrid implements FractalTerrainGridInterface {
-    final private static Logger LOGGER = Logger.getLogger(FractalTerrainGrid.class.getName());
 
-    private RigidBodyControl landscape;
     private TerrainQuad terrain;
-    private AssetManager assetManager;
+    private final AssetManager assetManager;
     private BulletAppState bulletAppState;
-    private KernelInterface app;
+    private final KernelInterface app;
     private FractalSum base;
     private PerturbFilter perturb;
     private OptimizedErode therm;
     private SmoothFilter smooth;
     private IterativeFilter iterate;
 
-    private float grassScale = 64;
-    private float dirtScale = 16;
-    private float rockScale = 128;
+    private final float grassScale = 64;
+    private final float dirtScale = 16;
+    private final float rockScale = 128;
     private TerrainQuad distantTerrain;
 
     public FractalTerrainGrid(KernelInterface app) {
@@ -58,35 +55,18 @@ public class FractalTerrainGrid implements FractalTerrainGridInterface {
 
     @Override
     public TerrainQuad generateTerrain() {
-        // TERRAIN TEXTURE material
         Material matTerrain = new Material(this.assetManager, "MatDefs/HeightBasedTerrain.j3md");
 
-        //AppSettings settings = app..getSettings();
-        //matTerrain.getAdditionalRenderState().setWireframe(settings.getBoolean(Constants.DEBUG));
-
-        // Parameters to material:
-        // regionXColorMap: X = 1..4 the texture that should be appliad to state X
-        // regionX: a Vector3f containing the following information:
-        //      regionX.x: the start height of the region
-        //      regionX.y: the end height of the region
-        //      regionX.z: the texture scale for the region
-        //  it might not be the most elegant way for storing these 3 values, but it packs the data nicely :)
-        // slopeColorMap: the texture to be used for cliffs, and steep mountain sites
-        // slopeTileFactor: the texture scale for slopes
-        // terrainSize: the total size of the terrain (used for scaling the texture)
-        // GRASS texture
         Texture grass = this.assetManager.loadTexture("textures/terrain/splat/grass.jpg");
         grass.setWrap(Texture.WrapMode.Repeat);
         matTerrain.setTexture("region1ColorMap", grass);
         matTerrain.setVector3("region1", new Vector3f(15, 200, this.grassScale));
 
-        // DIRT texture
         Texture dirt = this.assetManager.loadTexture("textures/terrain/splat/dirt.jpg");
         dirt.setWrap(Texture.WrapMode.Repeat);
         matTerrain.setTexture("region2ColorMap", dirt);
         matTerrain.setVector3("region2", new Vector3f(0, 20, this.dirtScale));
 
-        // ROCK texture
         Texture rock = this.assetManager.loadTexture("textures/terrain/Rock2/rock.jpg");
         rock.setWrap(Texture.WrapMode.Repeat);
         matTerrain.setTexture("region3ColorMap", rock);
@@ -107,7 +87,8 @@ public class FractalTerrainGrid implements FractalTerrainGridInterface {
         this.base.setLacunarity(2.12f);
         this.base.setOctaves(8);
         this.base.setScale(0.02125f);
-        this.base.addModulator((NoiseModulator) in -> ShaderUtils.clamp(in[0] * 0.5f + 0.5f, 0, 1));
+        this.base.addModulator(
+                (NoiseModulator) in -> ShaderUtils.clamp(in[0] * 0.5f + 0.5f, 0, 1));
 
         FilteredBasis ground = new FilteredBasis(this.base);
 
@@ -130,16 +111,16 @@ public class FractalTerrainGrid implements FractalTerrainGridInterface {
 
         ground.addPreFilter(this.iterate);
 
-        this.terrain = new TerrainGrid("terrain", 65, 1025, new FractalTileLoader(ground, 256f)) {
-            protected boolean isNeighbour(int quadIndex) {
-                return quadIndex == 0 || quadIndex == 1 || quadIndex == 2 || quadIndex == 3 ||
-                        quadIndex == 4 || quadIndex == 8 ||
-                        quadIndex == 7 || quadIndex == 11 ||
-                        quadIndex == 12 || quadIndex == 13 || quadIndex == 14 || quadIndex == 15;
+        this.terrain = new TerrainGrid(
+                "terrain", 65, 1025, new FractalTileLoader(ground, 256f)) {
+            private boolean isNeighbour(int quadIndex) {
+                return quadIndex == 0 || quadIndex == 1 || quadIndex == 2
+                        || quadIndex == 3 || quadIndex == 4 || quadIndex == 8
+                        || quadIndex == 7 || quadIndex == 11 || quadIndex == 12
+                        || quadIndex == 13 || quadIndex == 14 || quadIndex == 15;
             }
 
             class UpdateQuadCacheRpg extends UpdateQuadCache {
-
                 public UpdateQuadCacheRpg(Vector3f location) {
                     super(location);
                 }
@@ -154,33 +135,30 @@ public class FractalTerrainGrid implements FractalTerrainGridInterface {
                             if (q == null) {
                                 if (getGridTileLoader() != null) {
                                     q = getGridTileLoader().getTerrainQuadAt(quadCell);
-                                    // only clone the material to the quad if it doesn't have a material of its own
-                                    if (q.getMaterial() == null) q.setMaterial(material.clone());
-                                    log.log(Level.FINE, "Loaded TerrainQuad {0} from TerrainQuadGrid", q.getName());
+                                    if (q.getMaterial() == null)
+                                        q.setMaterial(material.clone());
+                                    log.log(Level.FINE,
+                                            "Loaded TerrainQuad {0} from TerrainQuadGrid",
+                                            q.getName());
                                 }
                             }
                             cache.put(quadCell, q);
-
 
                             final int quadrant = getQuadrant(quadIdx);
                             final TerrainQuad newQuad = q;
 
                             if (!isNeighbour(quadIdx)) {
                                 if (isCenter(quadIdx)) {
-                                    // if it should be attached as a child right now, attach it
-                                    // back on the OpenGL thread:
                                     getControl(UpdateControl.class).enqueue(() -> {
-                                        if (newQuad.getParent() != null) {
-                                            attachQuadAt(newQuad, quadrant, quadCell, true);
-                                        } else {
-                                            attachQuadAt(newQuad, quadrant, quadCell, false);
-                                        }
+                                        attachQuadAt(newQuad, quadrant, quadCell, newQuad.getParent() != null);
                                         return null;
                                     });
                                 } else {
                                     getControl(UpdateControl.class).enqueue(() -> {
                                         removeQuad(newQuad);
-                                        log.log(Level.SEVERE, "Unloaded TerrainQuad {0} from TerrainQuadGrid", newQuad.getQuadrant());
+                                        log.log(Level.SEVERE,
+                                                "Unloaded TerrainQuad {0} from TerrainQuadGrid",
+                                                newQuad.getQuadrant());
                                         return null;
                                     });
                                 }
@@ -188,11 +166,9 @@ public class FractalTerrainGrid implements FractalTerrainGridInterface {
                         }
                     }
 
-                    // back on the OpenGL thread:
                     getControl(UpdateControl.class).enqueue(() -> {
                         for (Spatial s : getChildren()) {
-                            if (s instanceof TerrainQuad) {
-                                TerrainQuad tq = (TerrainQuad) s;
+                            if (s instanceof TerrainQuad tq) {
                                 tq.resetCachedNeighbours();
                             }
                         }
@@ -204,7 +180,6 @@ public class FractalTerrainGrid implements FractalTerrainGridInterface {
 
             @Override
             protected void updateChildren(Vector3f camCell) {
-
                 int dx = 0;
                 int dy = 0;
                 if (currentCamCell != null) {
@@ -228,20 +203,13 @@ public class FractalTerrainGrid implements FractalTerrainGridInterface {
                     yMin = 1;
                 }
 
-                // Touch the items in the cache that we are and will be interested in.
-                // We activate cells in the direction we are moving. If we didn't move
-                // either way in one of the axes (say X or Y axis) then they are all touched.
                 for (int i = yMin; i < yMax; i++) {
                     for (int j = xMin; j < xMax; j++) {
                         cache.get(camCell.add(quadIndex[i * 4 + j]));
                     }
                 }
 
-                // ---------------------------------------------------
-                // ---------------------------------------------------
-
                 if (cacheExecutor == null) {
-                    // use the same executor as the LODControl
                     cacheExecutor = createExecutorService();
                 }
 
@@ -254,11 +222,8 @@ public class FractalTerrainGrid implements FractalTerrainGridInterface {
         this.terrain.setMaterial(matTerrain);
 
         setupPosition();
-
         setupScale();
-
         setUpLODControl();
-
         setUpCollision();
 
         terrain.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
@@ -267,26 +232,26 @@ public class FractalTerrainGrid implements FractalTerrainGridInterface {
     }
 
     private void setupScale() {
-        terrain.setLocalScale(Constants.TERRAIN_SCALE_X, Constants.TERRAIN_SCALE_Y, Constants.TERRAIN_SCALE_Z);
+        terrain.setLocalScale(Constants.TERRAIN_SCALE_X, Constants.TERRAIN_SCALE_Y,
+                Constants.TERRAIN_SCALE_Z);
     }
 
     private void setupPosition() {
-        //terrain postion
         terrain.setLocalTranslation(0, 0, 0);
     }
 
     private void setUpLODControl() {
-        /** 5. The LOD (level of detail) depends on were the camera is: */
-        TerrainLodControl control = new TerrainGridLodControl(this.terrain, app.getCamera());
-        control.setLodCalculator(new DistanceLodCalculator(257, 2.7f)); // patch size, and a multiplier
+        TerrainLodControl control =
+                new TerrainGridLodControl(this.terrain, app.getCamera());
+        control.setLodCalculator(
+                new DistanceLodCalculator(257, 2.7f));
         this.terrain.addControl(control);
     }
 
     private void setUpCollision() {
         ((TerrainGrid) terrain).addListener(new TerrainGridListener() {
             @Override
-            public void gridMoved(Vector3f newCenter) {
-            }
+            public void gridMoved(Vector3f newCenter) {}
 
             @Override
             public void tileAttached(Vector3f cell, TerrainQuad quad) {
@@ -294,10 +259,11 @@ public class FractalTerrainGrid implements FractalTerrainGridInterface {
                 while (quad.getControl(RigidBodyControl.class) != null) {
                     quad.removeControl(RigidBodyControl.class);
                 }
-                quad.addControl(new RigidBodyControl(new HeightfieldCollisionShape(quad.getHeightMap(), terrain.getLocalScale()), 0));
+                quad.addControl(new RigidBodyControl(
+                        new HeightfieldCollisionShape(
+                                quad.getHeightMap(), terrain.getLocalScale()),
+                        0));
                 bulletAppState.getPhysicsSpace().add(quad);
-                //plant trees
-                //positionTrees(quad, true);
                 treeGen.positionTrees(quad, true);
             }
 
@@ -310,11 +276,10 @@ public class FractalTerrainGrid implements FractalTerrainGridInterface {
                 List<Spatial> quadForest = quad.getUserData("quadForest");
                 Stream<Spatial> stream = quadForest.stream();
                 stream.forEach(treeNode -> {
-                    System.out.println("Detached " + treeNode.hashCode() + treeNode.getLocalTranslation().toString());
-                    //app.getGameLogicCore().getForestNode().detachChild(treeNode);
+                    app.getLogger().info("Detached " + treeNode.hashCode() + treeNode.getLocalTranslation().toString());
+                    app.getRootNode().detachChild(treeNode);
                 });
             }
-
         });
     }
 
@@ -328,42 +293,27 @@ public class FractalTerrainGrid implements FractalTerrainGridInterface {
     @Override
     public TerrainQuad generateMountains() {
         Material matTerrain = app.getMaterialManager().getMaterial("terrain");
+        matTerrain.setFloat("Tex1Scale", 64f);
+        matTerrain.setFloat("Tex2Scale", 64f);
+        matTerrain.setFloat("Tex3Scale", 64f);
 
-        /** 2. Create the height map */
-        AbstractHeightMap heightmap = null;
-        Texture heightMapImage = assetManager.loadTexture(
-                "textures/terrain/splat/horizon.png");
+        AbstractHeightMap heightmap;
+        Texture heightMapImage = assetManager.loadTexture("textures/terrain/splat/horizon.png");
         heightmap = new ImageBasedHeightMap(heightMapImage.getImage());
         heightmap.load();
         heightmap.smooth(0.65f, 1);
         heightmap.flatten((byte) 2);
 
-        /** 3. We have prepared material and heightmap.
-         * Now we createCharacter the actual distantTerrain:
-         * 3.1) Create a TerrainQuad and name it "my distantTerrain".
-         * 3.2) A good value for distantTerrain tiles is 64x64 -- so we supply 64+1=65.
-         * 3.3) We prepared a heightmap of size 512x512 -- so we supply 512+1=513.
-         * 3.4) As LOD step scale we supply Vector3f(1,1,1).
-         * 3.5) We supply the prepared heightmap itself.
-         */
-
         int patchSize = 65;
-        distantTerrain = new TerrainQuad(
-                "Distant Terrain",
-                patchSize,
-                2049,
-                heightmap.getHeightMap());
+        distantTerrain = new TerrainQuad("Distant Terrain", patchSize, 2049, heightmap.getHeightMap());
 
-        /** 4. We give the distantTerrain its material, position & scale it, and attach it. */
         distantTerrain.setMaterial(matTerrain);
         distantTerrain.setLocalTranslation(0, Constants.MOUNTAINS_HEIGHT_OFFSET, 0);
         distantTerrain.setLocalScale(6f, 19f, 6f);
 
-        /** 5. The LOD (level of detail) depends on were the camera is: */
         TerrainLodControl control = new TerrainLodControl(distantTerrain, app.getCamera());
         distantTerrain.addControl(control);
         distantTerrain.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
         return distantTerrain;
     }
-
 }

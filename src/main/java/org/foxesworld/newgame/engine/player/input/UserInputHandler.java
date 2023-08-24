@@ -21,6 +21,7 @@ import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import org.foxesworld.newgame.engine.player.CharacterSettings;
 import org.foxesworld.newgame.engine.player.Player;
+import org.foxesworld.newgame.engine.player.PlayerInterface;
 import org.foxesworld.newgame.engine.providers.sound.SoundManager;
 import org.foxesworld.newgame.engine.ui.HUDController;
 
@@ -44,7 +45,7 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
     final Quaternion tmpRot = new Quaternion();
     final Vector3f tmpV3 = new Vector3f();
 
-    public UserInputHandler(Player player, Camera cam, Runnable attackCallback) {
+    public UserInputHandler(PlayerInterface player, Runnable attackCallback) {
         this.soundManager = player.getSoundManager();
         this.playerSounds = soundManager.getSoundBlock("player");
         this.inputManager = player.getInputManager();
@@ -52,7 +53,7 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         this.nifty = player.getNiftyDisplay().getNifty();
         this.rootNode = player.getRootNode();
         this.attackCallback = attackCallback;
-        this.cam = cam;
+        this.cam = player.getFpsCam();
         setUserInputConfig((HashMap<String, List<Object>>) player.getCFG().get("userInput"));
         this.characterSettings = new CharacterSettings();
         this.nifty.fromXml("ui/userData.xml", "hud", new HUDController());
