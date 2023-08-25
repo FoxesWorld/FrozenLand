@@ -1,9 +1,8 @@
 package org.foxesworld.newgame.engine.world.terrain;
 
-import com.jme3.math.Vector3f;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import org.foxesworld.newgame.engine.KernelInterface;
-import org.foxesworld.newgame.engine.world.terrain.gen.FractalTerrainGrid;
+import org.foxesworld.newgame.engine.world.terrain.gen.GenAdaptor;
 
 public class TerrainManager implements TerrainManagerInterface {
     private TerrainInterface terrainBuilder;
@@ -13,7 +12,7 @@ public class TerrainManager implements TerrainManagerInterface {
 
     public TerrainManager(KernelInterface app) {
         this.kernelInterface = app;
-        terrainBuilder = new FractalTerrainGrid(app);
+        terrainBuilder = new GenAdaptor(app);
         generateTerrain();
     }
 
