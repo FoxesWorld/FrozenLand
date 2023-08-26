@@ -199,15 +199,25 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
     }
 
     private void updateMovementAudio(float tpf) {
-        float interval = Math.max(0.05f, 0.3f - characterSettings.getCurrentSpeed() * 0.01f);
+        float speed = characterSettings.getCurrentSpeed();
+        float interval = Math.max(1f, speed * 0.5f) / 2;
+
         if (!getPlayerState().equals(PlayerState.STANDING)) {
             if ((walkAudio == null || !walkAudio.getStatus().equals(AudioSource.Status.Playing))) {
                 playWalkAudio(getPlayerState().toString().toLowerCase());
+            } else {
+                interval -= tpf * speed; // Уменьшаем интервал на прошедшее время, умноженное на скорость
+                if (interval <= 0) {
+                    interval = Math.max(1f, speed * 0.5f) / 2;
+                    playWalkAudio(getPlayerState().toString().toLowerCase());
+                }
             }
         } else {
             stopWalkAudio();
         }
     }
+
+
 
     private void playWalkAudio(String userState) {
         stopWalkAudio();

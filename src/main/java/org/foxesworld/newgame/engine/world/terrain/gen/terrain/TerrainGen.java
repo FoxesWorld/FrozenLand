@@ -19,7 +19,6 @@ import com.jme3.terrain.noise.fractal.FractalSum;
 import com.jme3.terrain.noise.modulator.NoiseModulator;
 import com.jme3.texture.Texture;
 import org.foxesworld.newgame.engine.KernelInterface;
-
 public class TerrainGen {
     private AssetManager assetManager;
     private  KernelInterface kernelInterface;
@@ -32,6 +31,7 @@ public class TerrainGen {
     private final float grassScale = 64;
     private final float dirtScale = 16;
     private final float rockScale = 128;
+
 
     public TerrainGen(KernelInterface kernelInterface){
         this.kernelInterface = kernelInterface;
@@ -191,12 +191,12 @@ public class TerrainGen {
     private Material matSet(){
         Material material = new Material(this.assetManager, "MatDefs/HeightBasedTerrain.j3md");
 
-        Texture grass = this.assetManager.loadTexture("textures/terrain/splat/grass.jpg");
+        Texture grass = this.assetManager.loadTexture("textures/terrain/snow_02_diff_4k.jpg");
         grass.setWrap(Texture.WrapMode.Repeat);
         material.setTexture("region1ColorMap", grass);
         material.setVector3("region1", new Vector3f(15, 200, this.grassScale));
 
-        Texture dirt = this.assetManager.loadTexture("textures/terrain/splat/forest_ground_04_diff_4k.jpg");
+        Texture dirt = this.assetManager.loadTexture("textures/terrain/snow_02_diff_4k.jpg");
         dirt.setWrap(Texture.WrapMode.Repeat);
         material.setTexture("region2ColorMap", dirt);
         material.setVector3("region2", new Vector3f(0, 20, this.dirtScale));

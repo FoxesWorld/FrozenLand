@@ -27,7 +27,7 @@ public class NewGame extends SimpleApplication {
         cfg.setResolution(1360, 768);
         cfg.setFullscreen(false);
         cfg.setSamples(16);
-        cfg.setTitle("NewGame");
+        cfg.setTitle("FrozenLand");
         app.setShowSettings(true);
         app.setDisplayFps(true);
         app.setDisplayStatView(false);
@@ -39,10 +39,10 @@ public class NewGame extends SimpleApplication {
     public void simpleInitApp() {
         flyCam.setMoveSpeed(50);
         stateManager.attach(bulletAppState);
-        //bulletAppState.setDebugEnabled(true);
+        bulletAppState.setDebugEnabled(true);
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
         fpp = new FilterPostProcessor(assetManager);
-        new Kernel(stateManager, niftyDisplay, viewPort, assetManager, cam, rootNode, fpp, inputManager, bulletAppState, CONFIG);
+        new Kernel(this, niftyDisplay, fpp, bulletAppState, CONFIG);
         int numSamples = getContext().getSettings().getSamples();
         if (numSamples > 0) {
             fpp.setNumSamples(numSamples);

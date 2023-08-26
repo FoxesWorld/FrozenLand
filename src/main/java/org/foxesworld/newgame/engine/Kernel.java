@@ -14,19 +14,18 @@ import com.jme3.post.filters.FXAAFilter;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
+import org.foxesworld.newgame.NewGame;
 import org.foxesworld.newgame.engine.ai.NPC;
 import org.foxesworld.newgame.engine.ai.NPCAI;
 import org.foxesworld.newgame.engine.discord.Discord;
 import org.foxesworld.newgame.engine.player.Player;
-import org.foxesworld.newgame.engine.player.PlayerInterface;
 import org.foxesworld.newgame.engine.providers.material.MaterialManager;
 import org.foxesworld.newgame.engine.providers.model.ModelManager;
 import org.foxesworld.newgame.engine.providers.sound.SoundManager;
 import org.foxesworld.newgame.engine.shaders.Bloom;
 import org.foxesworld.newgame.engine.shaders.DOF;
 import org.foxesworld.newgame.engine.shaders.LSF;
-import org.foxesworld.newgame.engine.world.skybox.SkyboxGenerator;
+import org.foxesworld.newgame.engine.world.sky.DynamicSky;
 import org.foxesworld.newgame.engine.world.sun.LightingType;
 import org.foxesworld.newgame.engine.world.sun.Sun;
 import org.foxesworld.newgame.engine.world.terrain.TerrainManager;
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-public class Kernel implements KernelInterface {
+public class Kernel extends NewGame implements KernelInterface {
 
     private final Logger logger = LoggerFactory.getLogger(Kernel.class);
     private final Map CONFIG;
@@ -48,37 +47,42 @@ public class Kernel implements KernelInterface {
     protected SoundManager soundManager;
     protected MaterialManager materialManager;
     protected ModelManager modelManager;
+
     protected Camera camera;
     protected BulletAppState bulletAppState;
+
     protected Node rootNode;
     protected FilterPostProcessor fpp;
     protected InputManager inputManager;
+    protected DynamicSky sky;
     private TerrainManagerInterface terrainManager;
+
     protected Player player;
     NPCAI npcAI;
 
-    public Kernel(AppStateManager stateManager, NiftyJmeDisplay niftyDisplay, ViewPort viewPort, AssetManager assetManager, Camera camera, Node rootNode, FilterPostProcessor fpp, InputManager inputManager, BulletAppState bulletAppState, Map CONFIG) {
-        this.stateManager = stateManager;
-        this.assetManager = assetManager;
-        this.viewPort = viewPort;
+    public Kernel(NewGame newGame, NiftyJmeDisplay niftyDisplay, FilterPostProcessor fpp, BulletAppState bulletAppState, Map CONFIG) {
+        this.stateManager = newGame.getStateManager();
+        this.assetManager = newGame.getAssetManager();
+        this.inputManager = newGame.getInputManager();
+        this.camera = newGame.getCamera();
+        this.rootNode = newGame.getRootNode();
+        this.viewPort = newGame.getViewPort();
         this.niftyDisplay = niftyDisplay;
         this.soundManager = new SoundManager(this);
         this.materialManager = new MaterialManager(this);
         this.modelManager = new ModelManager(assetManager, bulletAppState, rootNode);
-        this.camera = camera;
-        this.rootNode = rootNode;
+
         this.fpp = fpp;
-        this.inputManager = inputManager;
         this.bulletAppState = bulletAppState;
         this.CONFIG = CONFIG;
         this.discord = new Discord("Infinite world with border", this.getClass().getTypeName());
         this.discord.discordRpcStart("default");
-        this.genSkyBox("textures/BrightSky.dds");
+        this.genSkyBox();
 
         terrainManager = new TerrainManager(this);
         rootNode.attachChild(terrainManager.getTerrain());
         rootNode.attachChild(terrainManager.getMountains());
-        this.addSun();
+        //this.addSun();
         addShaders(fpp);
 
         player = new Player(this);
@@ -86,10 +90,8 @@ public class Kernel implements KernelInterface {
 
     }
 
-    private void genSkyBox(String texture) {
-        SkyboxGenerator sky = new SkyboxGenerator(assetManager);
-        Spatial skybox = sky.generateSkybox(texture);
-        rootNode.attachChild(skybox);
+    private void genSkyBox() {
+        sky = new DynamicSky(assetManager, viewPort, rootNode);
     }
 
     private void addSun() {
@@ -131,29 +133,10 @@ public class Kernel implements KernelInterface {
         viewPort.addProcessor(fpp);
     }
 
-    private class AutoUpdateAppState extends BaseAppState {
-        @Override
-        protected void initialize(Application app) {
-        }
-
-        @Override
-        protected void cleanup(Application app) {
-        }
-
-        @Override
-        protected void onEnable() {
-        }
-
-        @Override
-        protected void onDisable() {
-        }
-
-        @Override
-        public void update(float tpf) {
-            terrainManager.update(tpf);
-        }
+    @Override
+    public void simpleUpdate(float tpf) {
+        sky.updateTime();
     }
-
     public Map getCONFIG() {
         return CONFIG;
     }

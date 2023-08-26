@@ -20,7 +20,6 @@ public class LodUtils {
         Geometry geometry = (Geometry) ((Node) model).getChild(0);
         createModelLod(geometry);
     }
-
     private static void createModelLod(Spatial geometry) {
         LodGenerator lod = new LodGenerator((Geometry) geometry);
         lod.bakeLods(LodGenerator.TriangleReductionMethod.COLLAPSE_COST, 0.25f, 0.5f, 0.75f);

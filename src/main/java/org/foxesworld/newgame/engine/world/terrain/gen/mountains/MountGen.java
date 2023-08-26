@@ -29,7 +29,7 @@ public class MountGen {
         matTerrain.setFloat("Tex3Scale", 64f);
 
         AbstractHeightMap heightmap;
-        Texture heightMapImage = assetManager.loadTexture("textures/terrain/splat/horizon.png");
+        Texture heightMapImage = assetManager.loadTexture("textures/terrain/horizon.png");
         heightmap = new ImageBasedHeightMap(heightMapImage.getImage());
         heightmap.load();
         heightmap.smooth(0.65f, 1);

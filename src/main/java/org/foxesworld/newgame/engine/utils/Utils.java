@@ -11,11 +11,7 @@ public class Utils {
     public static float getRandomNumber() {
         return random.nextInt(0, 100);
     }
-    public static float getRandomNumberInRange(float min, float max) {
-        return (float) random.doubles(min, max).findAny().getAsDouble();
-    }
-
-
+    public static float getRandomNumberInRange(float min, float max) { return (float) random.doubles(min, max).findAny().getAsDouble();}
     public static boolean isBetween(int x, int lower, int upper) {
         return lower <= x && x <= upper;
     }

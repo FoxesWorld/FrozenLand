@@ -4,7 +4,7 @@ import club.minnced.discord.rpc.*;
 
 public class Discord implements DiscordInterface {
 
-    private static DiscordRPC lib;
+    private DiscordRPC lib;
     private DiscordRichPresence presence;
     private String applicationId = "712667904956432456";
 
@@ -14,7 +14,7 @@ public class Discord implements DiscordInterface {
         DiscordEventHandlers handlers = new DiscordEventHandlers();
         handlers.ready = (user) -> {
             //Instance.setUserLogin(user.username);
-            //System.out.println(user.discriminator);
+            System.out.println(user.discriminator);
         };
         lib.Discord_Initialize(applicationId, handlers, true, steamId);
         presence = new DiscordRichPresence();
@@ -24,6 +24,7 @@ public class Discord implements DiscordInterface {
         lib.Discord_UpdatePresence(presence);
     }
 
+    @Override
     public void discordRpcStart(String icon) {
         presence.largeImageKey = icon;
         lib.Discord_UpdatePresence(presence);
@@ -41,7 +42,8 @@ public class Discord implements DiscordInterface {
         t.start();
     }
 
-    public static DiscordRPC getLib() {
+    @Override
+    public DiscordRPC getDiscordLib() {
         return lib;
     }
 }
