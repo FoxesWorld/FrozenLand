@@ -17,17 +17,13 @@ import java.util.Date;
 
 public class DynamicSun extends Node {
     private static final Sphere sphereMesh = new Sphere(40, 40, 900, false, true);
-    
     private ViewPort viewPort = null;
     private AssetManager assetManager = null;
-    
     private SunSystem sunSystem = new SunSystem(new Date(), 0, 0, 0);
     private SkyBillboardItem sun;
-    
     private DirectionalLight sunLight = null;
     private Vector3f lightDir = sunSystem.getPosition();
     private Vector3f lightPosition = new Vector3f();
-    
     private float scaling = 900;
     
     public DynamicSun(AssetManager assetManager, ViewPort viewPort, Node rootNode, Float scaling) {

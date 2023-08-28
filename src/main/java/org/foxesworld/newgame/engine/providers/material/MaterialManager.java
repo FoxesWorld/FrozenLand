@@ -2,11 +2,9 @@ package org.foxesworld.newgame.engine.providers.material;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.texture.Texture;
-import org.foxesworld.newgame.engine.Kernel;
 import org.foxesworld.newgame.engine.KernelInterface;
 
 import java.io.IOException;
@@ -17,11 +15,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MaterialManager extends MaterialAbstract {
-
-    private String matIndexFile = "materialOptions.json";
-    private String matFolder = "";
     private Map<String, Object> matData;
-    private Map<String, Material> Materials = new HashMap<>();
+    private final Map<String, Material> Materials = new HashMap<>();
 
     public MaterialManager(KernelInterface kernelInterface) {
         setAssetManager(kernelInterface);
@@ -29,23 +24,25 @@ public class MaterialManager extends MaterialAbstract {
     @Override
     public void addMaterials() {
         getKernelInterface().getLogger().info("Adding materials");
-        String[] textures = new String[]{"soil", "sand", "sun", "terrain"};
-        for (int c = 0; c < textures.length; c++) {
-            String mat = textures[c];
-            getKernelInterface().getLogger().info("  - Adding '" + mat + "' material");
-            Materials.put(mat, createMat(mat));
+        String[] textures = new String[]{"soil#default", "sand#default", "sun#default", "terrain#default", "terrain#mount"};
+        for (String texture : textures) {
+            String[] matArr = texture.split("#");
+            String mat = matArr[0];
+            String type = matArr[1];
+            getKernelInterface().getLogger().info("  - Adding '" + mat + "' material of type " + type);
+            Materials.put(mat + '#' + type, createMat(mat, type));
         }
     }
     @Override
-    public Material createMat(String file) {
-        String path = "textures/" + file + "/";
-        matData = readMatConfig(MaterialManager.class.getClassLoader().getResourceAsStream(path + matIndexFile));
+    public Material createMat(String dir, String type) {
+        String baseDir = "textures/" + dir + '/';
+        matData = readMatConfig(MaterialManager.class.getClassLoader().getResourceAsStream(baseDir + "/matOpt/" + type + ".json"));
         initMaterial(String.valueOf(matData.get("matDef")));
         AtomicInteger textNum = new AtomicInteger();
         AtomicInteger varNum = new AtomicInteger();
-        handleTextures(path, (mapName, textureInstanceMap) -> {
+        handleTextures((mapName, textureInstanceMap) -> {
             TextureWrap wrapType = TextureWrap.valueOf((String) textureInstanceMap.get("wrap"));
-            Texture thisTexture = getKernelInterface().getAssetManager().loadTexture(path + "textures/" + textureInstanceMap.get("texture"));
+            Texture thisTexture = getKernelInterface().getAssetManager().loadTexture(baseDir + "textures/" + textureInstanceMap.get("texture"));
             wrapType(wrapType, thisTexture);
             getMaterial().setTexture(mapName, thisTexture);
             textNum.getAndIncrement();
@@ -55,7 +52,7 @@ public class MaterialManager extends MaterialAbstract {
             inputType(cfgTitle, value);
             varNum.getAndIncrement();
         });
-        getKernelInterface().getLogger().info("    - "+file + " has " + textNum + " textures and " + varNum + " vars");
+        getKernelInterface().getLogger().info("    - "+ dir + '#'+type + " has " + textNum + " textures and " + varNum + " vars");
 
         return getMaterial();
     }
@@ -79,31 +76,16 @@ public class MaterialManager extends MaterialAbstract {
     private void inputType(String cfgTitle, Map<String, Object> value) {
         VarType inputType = VarType.valueOf(((String) value.get("type")).toUpperCase());
         switch (inputType) {
-            case FLOAT:
-                setMaterialFloat(cfgTitle, (Integer) value.get("value"));
-                break;
-            case BOOLEAN:
-                setMaterialBoolean(cfgTitle, (Boolean) value.get("value"));
-                break;
-            case COLOR:
-                setMaterialColor(cfgTitle, parseColor((String) value.get("value")));
-                break;
-            case VECTOR:
-                setMaterialVector(cfgTitle, (String) value.get("value"));
-                break;
+            case FLOAT -> setMaterialFloat(cfgTitle, (Integer) value.get("value"));
+            case BOOLEAN -> setMaterialBoolean(cfgTitle, (Boolean) value.get("value"));
+            case COLOR -> setMaterialColor(cfgTitle, parseColor((String) value.get("value")));
+            case VECTOR -> setMaterialVector(cfgTitle, (String) value.get("value"));
         }
     }
 
-    private void handleTextures(String path, BiConsumer<String, Map<String, Object>> consumer) {
+    private void handleTextures(BiConsumer<String, Map<String, Object>> consumer) {
         LinkedHashMap<String, Map<String, Object>> texturesMap = (LinkedHashMap<String, Map<String, Object>>) matData.get("textures");
-        texturesMap.forEach((mapName, textureInstanceMap) -> {
-            //TextureWrap wrapType = TextureWrap.valueOf((String) textureInstanceMap.get("wrap"));
-            //Texture thisTexture = getAssetManager().loadTexture(path + "/" + textureInstanceMap.get("texture"));
-            //wrapType(wrapType, thisTexture);
-            //System.out.println("Setting WrapType " + wrapType + " of " + thisTexture.getName());
-
-            consumer.accept(mapName, textureInstanceMap);
-        });
+        texturesMap.forEach(consumer::accept);
     }
 
     private void handleVars(BiConsumer<String, Map<String, Object>> consumer) {
@@ -148,24 +130,11 @@ public class MaterialManager extends MaterialAbstract {
     private interface BiConsumer<T, U> {
         void accept(T t, U u);
     }
-
     public Material getMaterial(String mat) {
         return Materials.get(mat);
     }
-
-    public Map<String, Material> getMaterials() {
-        return Materials;
-    }
-
     public void addMatData(String optName, Object optCfg) {
         this.matData.put(optName, optCfg);
     }
 
-    public void setMatIndexFile(String matIndexFile) {
-        this.matIndexFile = matIndexFile;
-    }
-
-    public void setMatFolder(String matFolder) {
-        this.matFolder = matFolder;
-    }
 }

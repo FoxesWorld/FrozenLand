@@ -42,7 +42,7 @@ public class TerrainGen {
 
     public TerrainQuad generateTerrain(float baseRoughness,float baseFrequency, float baseAmplitude, float baseLacunarity, int baseOctaves, float baseScale) {
         TerrainQuad terrain;
-        Material matTerrain = this.matSet("terrain");
+        Material matTerrain = this.kernelInterface.getMaterialManager().getMaterial("terrain#default");
 
         this.base = new FractalSum();
         this.base.setRoughness(baseRoughness);
@@ -189,13 +189,4 @@ public class TerrainGen {
 
         return terrain;
     }
-
-    private Material matSet(String mat){
-        MaterialManager materialManager = new MaterialManager(kernelInterface);
-        materialManager.setMatIndexFile("matVector.json");
-
-
-        return  materialManager.createMat(mat);
-    }
-
 }

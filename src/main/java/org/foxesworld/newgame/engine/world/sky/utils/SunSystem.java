@@ -18,9 +18,7 @@ public class SunSystem {
     double lambdaOffset;
     double betaOffset;
     double rOffset;
-
     Date currentDate;
-
     Vector3f sunPosition = new Vector3f();
     private boolean debug = true;
     private double xs;

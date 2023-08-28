@@ -83,7 +83,6 @@ public class Kernel extends NewGame implements KernelInterface {
         terrainManager = new TerrainManager(this);
         rootNode.attachChild(terrainManager.getTerrain());
         rootNode.attachChild(terrainManager.getMountains());
-        //this.addSun();
         addShaders(fpp);
 
         player = new Player(this);

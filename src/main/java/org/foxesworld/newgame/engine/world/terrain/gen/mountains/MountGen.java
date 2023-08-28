@@ -23,7 +23,7 @@ public class MountGen {
     }
 
     public TerrainQuad generateMountains() {
-        Material matTerrain = kernelInterface.getMaterialManager().getMaterial("terrain");
+        Material matTerrain = kernelInterface.getMaterialManager().getMaterial("terrain#mount");
 
         AbstractHeightMap heightmap;
         Texture heightMapImage = assetManager.loadTexture("textures/terrain/textures/horizon.png");
