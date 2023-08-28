@@ -70,6 +70,7 @@ public class Kernel extends NewGame implements KernelInterface {
         this.niftyDisplay = niftyDisplay;
         this.soundManager = new SoundManager(this);
         this.materialManager = new MaterialManager(this);
+        this.materialManager.addMaterials();
         this.modelManager = new ModelManager(assetManager, bulletAppState, rootNode);
 
         this.fpp = fpp;

@@ -19,6 +19,8 @@ import com.jme3.terrain.noise.fractal.FractalSum;
 import com.jme3.terrain.noise.modulator.NoiseModulator;
 import com.jme3.texture.Texture;
 import org.foxesworld.newgame.engine.KernelInterface;
+import org.foxesworld.newgame.engine.providers.material.MaterialManager;
+
 public class TerrainGen {
     private AssetManager assetManager;
     private  KernelInterface kernelInterface;
@@ -40,7 +42,7 @@ public class TerrainGen {
 
     public TerrainQuad generateTerrain(float baseRoughness,float baseFrequency, float baseAmplitude, float baseLacunarity, int baseOctaves, float baseScale) {
         TerrainQuad terrain;
-        Material matTerrain = this.matSet();
+        Material matTerrain = this.matSet("terrain");
 
         this.base = new FractalSum();
         this.base.setRoughness(baseRoughness);
@@ -188,33 +190,12 @@ public class TerrainGen {
         return terrain;
     }
 
-    private Material matSet(){
-        Material material = new Material(this.assetManager, "MatDefs/HeightBasedTerrain.j3md");
+    private Material matSet(String mat){
+        MaterialManager materialManager = new MaterialManager(kernelInterface);
+        materialManager.setMatIndexFile("matVector.json");
 
-        Texture grass = this.assetManager.loadTexture("textures/terrain/snow_02_diff_4k.jpg");
-        grass.setWrap(Texture.WrapMode.Repeat);
-        material.setTexture("region1ColorMap", grass);
-        material.setVector3("region1", new Vector3f(15, 200, this.grassScale));
 
-        Texture dirt = this.assetManager.loadTexture("textures/terrain/snow_02_diff_4k.jpg");
-        dirt.setWrap(Texture.WrapMode.Repeat);
-        material.setTexture("region2ColorMap", dirt);
-        material.setVector3("region2", new Vector3f(0, 20, this.dirtScale));
-
-        Texture rock = this.assetManager.loadTexture("textures/terrain/Rock2/rock.jpg");
-        rock.setWrap(Texture.WrapMode.Repeat);
-        material.setTexture("region3ColorMap", rock);
-        material.setVector3("region3", new Vector3f(198, 260, this.rockScale));
-
-        material.setTexture("region4ColorMap", rock);
-        material.setVector3("region4", new Vector3f(198, 260, this.rockScale));
-
-        material.setTexture("slopeColorMap", rock);
-        material.setFloat("slopeTileFactor", 32);
-
-        material.setFloat("terrainSize", 513);
-
-        return  material;
+        return  materialManager.createMat(mat);
     }
 
 }

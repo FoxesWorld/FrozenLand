@@ -18,17 +18,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MaterialManager extends MaterialAbstract {
 
-    private static final String matIndexFile = "materialOptions.json";
+    private String matIndexFile = "materialOptions.json";
+    private String matFolder = "";
     private Map<String, Object> matData;
     private Map<String, Material> Materials = new HashMap<>();
 
     public MaterialManager(KernelInterface kernelInterface) {
-        //this.Materials = Materials;
         setAssetManager(kernelInterface);
-        addMaterials();
     }
-
-    private void addMaterials() {
+    @Override
+    public void addMaterials() {
         getKernelInterface().getLogger().info("Adding materials");
         String[] textures = new String[]{"soil", "sand", "sun", "terrain"};
         for (int c = 0; c < textures.length; c++) {
@@ -37,7 +36,6 @@ public class MaterialManager extends MaterialAbstract {
             Materials.put(mat, createMat(mat));
         }
     }
-
     @Override
     public Material createMat(String file) {
         String path = "textures/" + file + "/";
@@ -47,7 +45,7 @@ public class MaterialManager extends MaterialAbstract {
         AtomicInteger varNum = new AtomicInteger();
         handleTextures(path, (mapName, textureInstanceMap) -> {
             TextureWrap wrapType = TextureWrap.valueOf((String) textureInstanceMap.get("wrap"));
-            Texture thisTexture = getKernelInterface().getAssetManager().loadTexture(path + textureInstanceMap.get("texture"));
+            Texture thisTexture = getKernelInterface().getAssetManager().loadTexture(path + "textures/" + textureInstanceMap.get("texture"));
             wrapType(wrapType, thisTexture);
             getMaterial().setTexture(mapName, thisTexture);
             textNum.getAndIncrement();
@@ -141,6 +139,7 @@ public class MaterialManager extends MaterialAbstract {
             };
             map = mapper.readValue(is, typeRef);
         } catch (IOException ignored) {
+            System.out.println(ignored);
         }
         return map;
     }
@@ -160,5 +159,13 @@ public class MaterialManager extends MaterialAbstract {
 
     public void addMatData(String optName, Object optCfg) {
         this.matData.put(optName, optCfg);
+    }
+
+    public void setMatIndexFile(String matIndexFile) {
+        this.matIndexFile = matIndexFile;
+    }
+
+    public void setMatFolder(String matFolder) {
+        this.matFolder = matFolder;
     }
 }

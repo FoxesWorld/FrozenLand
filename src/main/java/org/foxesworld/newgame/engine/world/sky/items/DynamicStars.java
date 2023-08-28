@@ -29,7 +29,7 @@ public class DynamicStars extends Node{
         mat.setTexture("ColorMap", assetManager.loadTexture("textures/sky/star.png"));
         mat.getAdditionalRenderState().setDepthWrite(false);
         mat.setColor("Color", new ColorRGBA(1f,1f,1f, 0.4f));
-        //mat.getAdditionalRenderState().setBlendMode(BlendMode.Additive);
+        mat.getAdditionalRenderState().setBlendMode(BlendMode.Additive);
         mat.getAdditionalRenderState().setBlendMode(BlendMode.AlphaAdditive);
         stars = new SkyBillboardItem[stars_count];
         for(int i = 0; i < stars_count; i++){

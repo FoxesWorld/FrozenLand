@@ -39,7 +39,7 @@ public class NewGame extends SimpleApplication {
     public void simpleInitApp() {
         flyCam.setMoveSpeed(50);
         stateManager.attach(bulletAppState);
-        bulletAppState.setDebugEnabled(true);
+        //bulletAppState.setDebugEnabled(true);
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
         fpp = new FilterPostProcessor(assetManager);
         new Kernel(this, niftyDisplay, fpp, bulletAppState, CONFIG);
