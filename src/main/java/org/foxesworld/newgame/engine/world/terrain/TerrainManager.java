@@ -2,6 +2,7 @@ package org.foxesworld.newgame.engine.world.terrain;
 
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import org.foxesworld.newgame.engine.KernelInterface;
+import org.foxesworld.newgame.engine.world.WorldUpdate;
 import org.foxesworld.newgame.engine.world.terrain.gen.GenAdaptor;
 
 public class TerrainManager implements TerrainManagerInterface {
@@ -21,9 +22,11 @@ public class TerrainManager implements TerrainManagerInterface {
         mountains = terrainBuilder.generateMountains();
     }
 
+    @Override
     public void generateFoliage() {
         //IMPORTANT
     }
+    @Override
     public TerrainQuad getTerrain() {
         return terrain;
     }
@@ -33,6 +36,7 @@ public class TerrainManager implements TerrainManagerInterface {
         return mountains;
     }
 
+    @Override
     public void update(float tpf) {
         generateTerrain();
     }

@@ -26,7 +26,6 @@ import java.util.Map;
 public class Player extends Node implements PlayerInterface {
 
     private BetterCharacterControl characterControl;
-
     private  Camera fpsCam;
     private  UserInputHandler userInputHandler;
     private Vector3f jumpForce = new Vector3f(0, 300, 0);

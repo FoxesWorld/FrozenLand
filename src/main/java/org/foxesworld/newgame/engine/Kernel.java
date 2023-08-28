@@ -1,19 +1,21 @@
 package org.foxesworld.newgame.engine;
 
-import com.jme3.app.Application;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.input.InputManager;
-import com.jme3.math.ColorRGBA;
+import com.jme3.light.DirectionalLight;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.FXAAFilter;
 import com.jme3.renderer.Camera;
+import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
+import com.jme3.scene.control.AbstractControl;
+import com.jme3.shadow.DirectionalLightShadowFilter;
 import org.foxesworld.newgame.NewGame;
 import org.foxesworld.newgame.engine.ai.NPC;
 import org.foxesworld.newgame.engine.ai.NPCAI;
@@ -26,8 +28,6 @@ import org.foxesworld.newgame.engine.shaders.Bloom;
 import org.foxesworld.newgame.engine.shaders.DOF;
 import org.foxesworld.newgame.engine.shaders.LSF;
 import org.foxesworld.newgame.engine.world.sky.DynamicSky;
-import org.foxesworld.newgame.engine.world.sun.LightingType;
-import org.foxesworld.newgame.engine.world.sun.Sun;
 import org.foxesworld.newgame.engine.world.terrain.TerrainManager;
 import org.foxesworld.newgame.engine.world.terrain.TerrainManagerInterface;
 import org.slf4j.Logger;
@@ -78,7 +78,9 @@ public class Kernel extends NewGame implements KernelInterface {
         this.CONFIG = CONFIG;
         this.discord = new Discord("Infinite world with border", this.getClass().getTypeName());
         this.discord.discordRpcStart("default");
-        this.genSkyBox();
+        this.sky = new DynamicSky(assetManager, viewPort, rootNode);
+        sky.updateTime();
+
 
         terrainManager = new TerrainManager(this);
         rootNode.attachChild(terrainManager.getTerrain());
@@ -86,19 +88,8 @@ public class Kernel extends NewGame implements KernelInterface {
         addShaders(fpp);
 
         player = new Player(this);
-        player.addPlayer(camera, new Vector3f(0,300,0));
+        player.addPlayer(camera, new Vector3f(0, 300, 0));
 
-    }
-
-    private void genSkyBox() {
-        sky = new DynamicSky(assetManager, viewPort, rootNode);
-    }
-
-    private void addSun() {
-        Sun sun = new Sun(assetManager, rootNode, "sun", LightingType.DIRECTIONAL, ColorRGBA.White, 1f);
-        sun.setSunOptions(new Vector3f(5, 5, 5), 3f);
-        sun.setPosition(new Vector3f(0f, 10f, 0f));
-        sun.addSun(materialManager.getMaterial("sun"));
     }
 
     private void ncpTest() {
@@ -131,16 +122,20 @@ public class Kernel extends NewGame implements KernelInterface {
 
         fpp.addFilter(new FXAAFilter());
         viewPort.addProcessor(fpp);
+
+        //Shadows EXP
+        FilterPostProcessor processor = new FilterPostProcessor(assetManager);
+        DirectionalLightShadowFilter filter = new DirectionalLightShadowFilter(assetManager, 2048, 1);
+        filter.setLight(new DirectionalLight(sky.getSunDirection()).clone());
+        processor.addFilter(filter);
+        viewPort.addProcessor(processor);
     }
 
-    @Override
-    public void simpleUpdate(float tpf) {
-        sky.updateTime();
-    }
     public Map getCONFIG() {
         return CONFIG;
     }
 
+    @Override
     public AssetManager getAssetManager() {
         return assetManager;
     }
@@ -153,14 +148,17 @@ public class Kernel extends NewGame implements KernelInterface {
         return niftyDisplay;
     }
 
+    @Override
     public AppStateManager getStateManager() {
         return stateManager;
     }
 
+    @Override
     public SoundManager getSoundManager() {
         return soundManager;
     }
 
+    @Override
     public MaterialManager getMaterialManager() {
         return materialManager;
     }
@@ -169,17 +167,21 @@ public class Kernel extends NewGame implements KernelInterface {
         return modelManager;
     }
 
+    @Override
     public Camera getCamera() {
         return camera;
     }
 
+    @Override
     public BulletAppState getBulletAppState() {
         return bulletAppState;
     }
 
+    @Override
     public Node getRootNode() {
         return rootNode;
     }
+
     @Override
     public Logger getLogger() {
         return this.logger;
@@ -188,9 +190,13 @@ public class Kernel extends NewGame implements KernelInterface {
     public FilterPostProcessor getFpp() {
         return fpp;
     }
+
+    @Override
     public InputManager getInputManager() {
         return inputManager;
     }
+
+    @Override
     public Player getPlayer() {
         return player;
     }

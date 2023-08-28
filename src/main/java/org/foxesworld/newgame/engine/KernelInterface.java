@@ -18,4 +18,5 @@ public interface KernelInterface {
     SoundManager getSoundManager();
     MaterialManager getMaterialManager();
     BulletAppState getBulletAppState();
+    void update();
 }

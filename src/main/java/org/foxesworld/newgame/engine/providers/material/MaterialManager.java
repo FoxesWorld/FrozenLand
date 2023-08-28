@@ -133,8 +133,4 @@ public class MaterialManager extends MaterialAbstract {
     public Material getMaterial(String mat) {
         return Materials.get(mat);
     }
-    public void addMatData(String optName, Object optCfg) {
-        this.matData.put(optName, optCfg);
-    }
-
 }

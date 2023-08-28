@@ -50,11 +50,6 @@ public class NewGame extends SimpleApplication {
         guiViewPort.addProcessor(niftyDisplay);
     }
 
-    @Override
-    public void simpleUpdate(float tpf) {
-
-    }
-
     private  void setIcon(AppSettings settings, NewGame app){
         BufferedImage[] icons = null;
         try {

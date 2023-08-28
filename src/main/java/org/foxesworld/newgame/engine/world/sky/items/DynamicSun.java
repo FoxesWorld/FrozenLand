@@ -81,4 +81,8 @@ public class DynamicSun extends Node {
         sunLight.setDirection(lightDir);
         sun.setLocalTranslation(lightPosition.mult(0.95f));
     }
+
+    public SkyBillboardItem getSun(){
+        return sun;
+    }
 }
