@@ -25,10 +25,11 @@ dependencies {
     implementation files('lib/gson.jar')
     implementation files('lib/lwjgl.jar')
     implementation files('lib/jinput.jar')
-    implementation files('lib/jbullet.jar')
+    implementation files('lib/Minie-7.6.0+big3.jar')
     implementation files('lib/vecmath.jar')
     implementation files('lib/xpp3.jar')
     implementation files('lib/cfgProvider-1.5.0-Release.jar')
+    implementation files('lib/SkyControl-1.0.4.jar')
 
     implementation files('lib/j-ogg-vorbis.jar')
     implementation files('lib/j3map-1.0-SNAPSHOT.jar')
@@ -60,6 +61,8 @@ dependencies {
     implementation files('lib/nifty-default-controls.jar')
     implementation files('lib/nifty-default-styles-0.0.1.jar')
     implementation  files('lib/java-discord-rpc-2.0.1-all.jar')
+    implementation files('lib/zay-es-1.5.0.jar')
+    implementation files('lib/Heart-8.7.0.jar')
 
 
 

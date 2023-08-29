@@ -50,7 +50,9 @@ public class TreeGen {
         List<Spatial> quadForest = new ArrayList<>(forestSize);
         for (int i = 0; i < forestSize; i++) {
             Spatial treeModelCustom = treeModel.clone();
-            float scaleFactor = 1 + Utils.getRandomNumberInRange(0.5f, 1.5f); // Adjust scale range
+            float scaleFactor = 1 + Utils.getRandomNumberInRange(0.2f, 1.5f); // Adjust scale range
+            treeModelCustom.setShadowMode(RenderQueue.ShadowMode.Cast);
+            treeModelCustom.setCullHint(Spatial.CullHint.Never);
             treeModelCustom.scale(scaleFactor, scaleFactor, scaleFactor);
             quadForest.add(treeModelCustom);
         }
@@ -58,7 +60,7 @@ public class TreeGen {
         return quadForest;
     }
 
-    public void positionTrees(TerrainQuad quad, boolean parallel) {
+    public void positionTrees(TerrainQuad quad) {
         List<Spatial> quadForest = quad.getUserData("quadForest");
         if (quadForest == null) {
             quadForest = setupTrees();

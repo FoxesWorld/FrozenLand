@@ -56,7 +56,7 @@ public class TerrainGenHelper {
                                 quad.getHeightMap(), terrain.getLocalScale()),
                         0));
                 kernelInterface.getBulletAppState().getPhysicsSpace().add(quad);
-                treeGen.positionTrees(quad, true);
+                treeGen.positionTrees(quad);
             }
 
             @Override

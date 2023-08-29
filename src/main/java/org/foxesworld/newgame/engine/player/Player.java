@@ -16,7 +16,7 @@ import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
-import org.foxesworld.newgame.engine.Kernel;
+import org.foxesworld.newgame.engine.KernelInterface;
 import org.foxesworld.newgame.engine.player.camera.CameraFollowSpatial;
 import org.foxesworld.newgame.engine.player.camera.ShakeCam;
 import org.foxesworld.newgame.engine.player.input.FPSViewControl;
@@ -42,8 +42,8 @@ public class Player extends Node implements PlayerInterface {
     private Map CFG;
     private J3map playerSpecs;
 
-    public Player(Kernel kernel){
-        this.stateManager = kernel.getStateManager();
+    public Player(KernelInterface kernel){
+        this.stateManager = kernel.appStateManager();
         this.soundManager = kernel.getSoundManager();
         this.niftyDisplay = kernel.getNiftyDisplay();
         this.assetManager = kernel.getAssetManager();
@@ -64,12 +64,12 @@ public class Player extends Node implements PlayerInterface {
     public void addPlayer(Camera cam, Vector3f spawnPoint){
         Player fpsPlayer = (Player) this.clone();
         fpsCam = cam.clone();
-        this.loadFPSLogicWorld(cam, fpsCam, fpsPlayer, spawnPoint);
+        this.loadFPSLogicWorld(cam, fpsPlayer, spawnPoint);
         fpsPlayer.loadFPSLogicFPSView(cam, fpsCam, this);
         pspace.addAll(this);
         rootNode.attachChild(this);
     }
-    public void loadFPSLogicWorld(Camera cam, Camera fpsCam, Spatial playerModel, Vector3f spawnPoint){
+    public void loadFPSLogicWorld(Camera cam, Spatial playerModel, Vector3f spawnPoint){
         BoundingBox jesseBbox=(BoundingBox)getWorldBound();
         characterControl = new BetterCharacterControl(jesseBbox.getXExtent(), jesseBbox.getYExtent(), playerSpecs.getFloat("mass"));
         characterControl.setJumpForce(jumpForce);
@@ -103,51 +103,47 @@ public class Player extends Node implements PlayerInterface {
         addControl(new FPSViewControl(FPSViewControl.Mode.WORLD_SCENE));
         addControl(new ActionsControl(this));
     }
-
+    @Override
     public Vector3f getPlayerPosition(){
         return userInputHandler.getPlayerPosition();
     }
-
+    @Override
     public Camera getFpsCam(){ return this.fpsCam;}
-
+    @Override
     public BetterCharacterControl getCharacterControl() {
         return characterControl;
     }
-
+    @Override
     public UserInputHandler getUserInputHandler() {
         return userInputHandler;
     }
-
+    @Override
     public Vector3f getJumpForce() {
         return jumpForce;
     }
-
+    @Override
     public AssetManager getAssetManager() {
         return assetManager;
     }
-
+    @Override
     public AppStateManager getStateManager() {return stateManager;}
-
+    @Override
     public SoundManager getSoundManager() {
         return soundManager;
     }
-
+    @Deprecated
     public NiftyJmeDisplay getNiftyDisplay() {
         return niftyDisplay;
     }
-
+    @Override
     public InputManager getInputManager() {
         return inputManager;
     }
-
+    @Override
     public Node getRootNode() {
         return rootNode;
     }
-
-    public PhysicsSpace getPspace() {
-        return pspace;
-    }
-
+    @Override
     public Map getCFG() {
         return CFG;
     }

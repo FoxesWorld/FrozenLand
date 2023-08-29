@@ -17,9 +17,7 @@ import com.jme3.terrain.noise.filter.PerturbFilter;
 import com.jme3.terrain.noise.filter.SmoothFilter;
 import com.jme3.terrain.noise.fractal.FractalSum;
 import com.jme3.terrain.noise.modulator.NoiseModulator;
-import com.jme3.texture.Texture;
 import org.foxesworld.newgame.engine.KernelInterface;
-import org.foxesworld.newgame.engine.providers.material.MaterialManager;
 
 public class TerrainGen {
     private AssetManager assetManager;
@@ -30,9 +28,6 @@ public class TerrainGen {
     private OptimizedErode therm;
     private SmoothFilter smooth;
     private IterativeFilter iterate;
-    private final float grassScale = 64;
-    private final float dirtScale = 16;
-    private final float rockScale = 128;
 
 
     public TerrainGen(KernelInterface kernelInterface){
