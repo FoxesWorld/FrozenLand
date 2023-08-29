@@ -1,5 +1,10 @@
 package org.foxesworld.newgame;
 
+import codex.j3map.J3mapFactory;
+import codex.j3map.processors.BooleanProcessor;
+import codex.j3map.processors.FloatProcessor;
+import codex.j3map.processors.IntegerProcessor;
+import codex.j3map.processors.StringProcessor;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.niftygui.NiftyJmeDisplay;
@@ -39,7 +44,13 @@ public class NewGame extends SimpleApplication {
     public void simpleInitApp() {
         flyCam.setMoveSpeed(50);
         stateManager.attach(bulletAppState);
-        //bulletAppState.setDebugEnabled(true);
+        bulletAppState.setDebugEnabled(true);
+        assetManager.registerLoader(J3mapFactory.class, "j3map");
+        J3mapFactory.registerAllProcessors(
+                BooleanProcessor.class,
+                StringProcessor.class,
+                IntegerProcessor.class,
+                FloatProcessor.class);
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
         fpp = new FilterPostProcessor(assetManager);
         new Kernel(this, niftyDisplay, fpp, bulletAppState, CONFIG);

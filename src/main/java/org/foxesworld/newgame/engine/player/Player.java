@@ -1,5 +1,6 @@
 package org.foxesworld.newgame.engine.player;
 
+import codex.j3map.J3map;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.bounding.BoundingBox;
@@ -11,6 +12,7 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
@@ -28,7 +30,7 @@ public class Player extends Node implements PlayerInterface {
     private BetterCharacterControl characterControl;
     private  Camera fpsCam;
     private  UserInputHandler userInputHandler;
-    private Vector3f jumpForce = new Vector3f(0, 300, 0);
+    private Vector3f jumpForce;
     private AssetManager assetManager;
     private  AppStateManager stateManager;
     private Spatial actorLoad;
@@ -38,6 +40,7 @@ public class Player extends Node implements PlayerInterface {
     private Node rootNode;
     private PhysicsSpace pspace;
     private Map CFG;
+    private J3map playerSpecs;
 
     public Player(Kernel kernel){
         this.stateManager = kernel.getStateManager();
@@ -49,10 +52,13 @@ public class Player extends Node implements PlayerInterface {
         this.inputManager = kernel.getInputManager();
         this.CFG = kernel.getCONFIG();
 
-        actorLoad = assetManager.loadModel("Models/char.glb");
-        actorLoad.setLocalScale(1f);
+        playerSpecs = (J3map)assetManager.loadAsset("properties/player.j3map");
+        jumpForce = new Vector3f(0, playerSpecs.getFloat("jumpForce"), 0);
+        actorLoad = assetManager.loadModel(playerSpecs.getString("model"));
+        actorLoad.setLocalScale(playerSpecs.getFloat("scale"));
         this.attachChild(actorLoad);
-        this.setCullHint(CullHint.Never);
+        this.setCullHint(CullHint.valueOf(playerSpecs.getString("cullHint")));
+        this.setShadowMode(RenderQueue.ShadowMode.valueOf(playerSpecs.getString("shadowMode")));
     }
 
     public void addPlayer(Camera cam, Vector3f spawnPoint){
@@ -65,7 +71,7 @@ public class Player extends Node implements PlayerInterface {
     }
     public void loadFPSLogicWorld(Camera cam, Camera fpsCam, Spatial playerModel, Vector3f spawnPoint){
         BoundingBox jesseBbox=(BoundingBox)getWorldBound();
-        characterControl = new BetterCharacterControl(jesseBbox.getXExtent(), jesseBbox.getYExtent(), 50f);
+        characterControl = new BetterCharacterControl(jesseBbox.getXExtent(), jesseBbox.getYExtent(), playerSpecs.getFloat("mass"));
         characterControl.setJumpForce(jumpForce);
         addControl(characterControl);
 
@@ -75,7 +81,7 @@ public class Player extends Node implements PlayerInterface {
         ShakeCam camShake = new ShakeCam(cam);
         stateManager.attach(camShake);
 
-        // Load character logic
+        // Load playerSpecs logic
         addControl(userInputHandler = new UserInputHandler(this, ()->
         playerModel.getControl(ActionsControl.class).shot(assetManager,cam.getLocation().add(cam.getDirection().mult(1)),cam.getDirection(),this.rootNode, this.pspace)));
         addControl(new CameraFollowSpatial(getUserInputHandler(), cam, camShake));

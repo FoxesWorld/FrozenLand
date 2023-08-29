@@ -31,6 +31,7 @@ dependencies {
     implementation files('lib/cfgProvider-1.5.0-Release.jar')
 
     implementation files('lib/j-ogg-vorbis.jar')
+    implementation files('lib/j3map-1.0-SNAPSHOT.jar')
     implementation files('lib/jme3-jogg.jar')
 
     implementation files('lib/lwjgl-platform-natives-windows.jar')
