@@ -1,13 +1,7 @@
 package org.foxesworld.newgame.engine.player.input;
 
-import com.jme3.asset.AssetManager;
-import com.jme3.input.InputManager;
-import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
-import com.jme3.scene.Node;
-import org.foxesworld.newgame.engine.player.Player;
 import org.foxesworld.newgame.engine.player.PlayerInterface;
-import org.foxesworld.newgame.engine.providers.sound.SoundManager;
 
 import java.util.HashMap;
 import java.util.List;

@@ -20,9 +20,8 @@ import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import org.foxesworld.newgame.engine.player.CharacterSettings;
-import org.foxesworld.newgame.engine.player.Player;
 import org.foxesworld.newgame.engine.player.PlayerInterface;
-import org.foxesworld.newgame.engine.providers.sound.SoundManager;
+import org.foxesworld.newgame.engine.providers.sound.SoundProvider;
 import org.foxesworld.newgame.engine.ui.HUDController;
 
 import java.util.*;
@@ -39,15 +38,15 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
     private boolean[] directions = new boolean[4];
     private final AssetManager assetManager;
     private final Map<String, List<AudioNode>> playerSounds;
-    private  final SoundManager soundManager;
+    private  final SoundProvider soundProvider;
     private final Nifty nifty;
     final float[] angles = {0, 0, 0};
     final Quaternion tmpRot = new Quaternion();
     final Vector3f tmpV3 = new Vector3f();
 
     public UserInputHandler(PlayerInterface player, Runnable attackCallback) {
-        this.soundManager = player.getSoundManager();
-        this.playerSounds = soundManager.getSoundBlock("player");
+        this.soundProvider = player.getSoundManager();
+        this.playerSounds = soundProvider.getSoundBlock("player");
         this.inputManager = player.getInputManager();
         this.assetManager = player.getAssetManager();
         this.nifty = player.getNiftyDisplay().getNifty();
@@ -165,7 +164,7 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         setPlayerState(direction, tpf);
 
         updateMovementAudio(tpf);
-        soundManager.update(tpf);
+        soundProvider.update(tpf);
         updateHUDText(new String[]{"speed", "playerState", "posX", "posY", "posZ"}, new String[]{
                 String.valueOf(characterSettings.getCurrentSpeed()),
                 String.valueOf(getPlayerState()),

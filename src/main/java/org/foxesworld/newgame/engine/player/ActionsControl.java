@@ -14,7 +14,7 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
-import org.foxesworld.newgame.engine.providers.sound.SoundManager;
+import org.foxesworld.newgame.engine.providers.sound.SoundProvider;
 import wf.frk.f3banimation.AnimChannel;
 import wf.frk.f3banimation.Animation;
 import wf.frk.f3banimation.AnimationGroupControl;
@@ -32,13 +32,13 @@ public class ActionsControl extends AbstractControl {
     private AnimationGroupControl anims;
     private final Map<String, List<AudioNode>> playerSounds;
     private AudioNode jumpUp, jumpDown;
-    private SoundManager soundManager;
+    private SoundProvider soundProvider;
     private AssetManager assetManager;
 
-    public ActionsControl(AssetManager assetManager, SoundManager soundManager) {
-        this.soundManager = soundManager;
+    public ActionsControl(AssetManager assetManager, SoundProvider soundProvider) {
+        this.soundProvider = soundProvider;
         this.assetManager = assetManager;
-        this.playerSounds = soundManager.getSoundBlock("player");
+        this.playerSounds = soundProvider.getSoundBlock("player");
     }
 
     public ActionsControl(PlayerInterface playerInterface) {

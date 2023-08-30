@@ -22,59 +22,60 @@ repositories {
 }
 
 dependencies {
-    implementation files('lib/gson.jar')
-    implementation files('lib/lwjgl.jar')
-    implementation files('lib/jinput.jar')
-    implementation files('lib/Minie-7.6.0+big3.jar')
-    implementation files('lib/vecmath.jar')
-    implementation files('lib/xpp3.jar')
-    implementation files('lib/cfgProvider-1.5.0-Release.jar')
-    implementation files('lib/SkyControl-1.0.4.jar')
-
-    implementation files('lib/j-ogg-vorbis.jar')
-    implementation files('lib/j3map-1.0-SNAPSHOT.jar')
-    implementation files('lib/jme3-jogg.jar')
-
-    implementation files('lib/lwjgl-platform-natives-windows.jar')
+    //JME
     implementation files('lib/jme3-core.jar')
-    implementation files('lib/jme3-jbullet.jar')
-    implementation files('lib/jme3-lwjgl-3.6.1-stable.jar')
     implementation files('lib/jme3-desktop.jar')
+    implementation files('lib/jme3-lwjgl-3.6.1-stable.jar')
+    implementation files('lib/lwjgl.jar')
+    implementation files('lib/jme3-awt-dialogs.jar')
+    implementation files('lib/Minie-7.6.0+big3.jar')
+    implementation files('lib/SkyControl-1.0.4.jar')
     implementation files('lib/jme3-plugins.jar')
     implementation files('lib/jme3-terrain-3.6.1-stable.jar')
     implementation files('lib/jme3-effects.jar')
-    implementation files('lib/jme3-awt-dialogs.jar')
-    implementation files('lib/lemur-1.11.0.jar')
-    implementation files('lib/vlc4j.jar')
+
+    //Third Party
+    implementation files('lib/cfgProvider-1.5.0-Release.jar')
+    implementation files('lib/j3map-1.0-SNAPSHOT.jar')
+
+    //PARSERS
+    implementation files('lib/gson.jar')
+    implementation files('lib/xpp3.jar')
+
+    //MEDIA
+    implementation files('lib/j-ogg-vorbis.jar')
+    implementation files('lib/jme3-jogg.jar')
+    //implementation files('lib/vlc4j.jar')
+    //implementation files('lib/jinput.jar')
+    //implementation files('lib/vecmath.jar')
+
+    //LEMUR
+    implementation files('lib/lemur-1.16.0.jar')
+    implementation files('lib/lemur-proto-1.13.0.jar')
+    implementation files('lib/lemur-props-1.2.0.jar')
 
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.19.0'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.19.0'
     implementation group: 'com.sudoplay.joise', name: 'joise', version: '1.1.0'
-    implementation group: 'com.personthecat', name: 'fastnoise', version: '0.9'
+    //implementation group: 'com.personthecat', name: 'fastnoise', version: '0.9'
     implementation group: 'com.simsilica', name: 'sio2', version: '1.8.0'
     implementation files("lib/sim-arboreal-1.0.1-SNAPSHOT.jar")
 
-
+    //NIFTY (Must die)
     implementation files('lib/jme3-niftygui-3.6.0-stable.jar')
     implementation files('lib/jME3-niftygui.jar')
     implementation files('lib/nifty.jar')
     implementation files('lib/nifty-default-controls.jar')
     implementation files('lib/nifty-default-styles-0.0.1.jar')
+
+    //ETC
+    implementation  'wf.frk:jme-effekseer-native:0.4'
+    implementation  "wf.frk:jme_f3b:0.92"
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.19.0'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.19.0'
     implementation  files('lib/java-discord-rpc-2.0.1-all.jar')
     implementation files('lib/zay-es-1.5.0.jar')
     implementation files('lib/Heart-8.7.0.jar')
 
-
-
-    implementation  'wf.frk:jme-effekseer-native:0.4'
-    implementation (group: 'com.jme3.phonon', name: 'jme_phonon', version: '0.3.7', ext: 'jar', classifier: '')
-    implementation  "wf.frk:jme3-bullet-vhacd:1.0.5"
-    implementation  "wf.frk:jme_f3b:0.92"
-
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.19.0'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.19.0'
-
-
-
-
+    runtimeOnly  "org.codehaus.groovy:groovy-all:2.4.5"
 }

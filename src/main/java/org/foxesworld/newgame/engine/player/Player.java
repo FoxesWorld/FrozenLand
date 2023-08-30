@@ -21,7 +21,7 @@ import org.foxesworld.newgame.engine.player.camera.CameraFollowSpatial;
 import org.foxesworld.newgame.engine.player.camera.ShakeCam;
 import org.foxesworld.newgame.engine.player.input.FPSViewControl;
 import org.foxesworld.newgame.engine.player.input.UserInputHandler;
-import org.foxesworld.newgame.engine.providers.sound.SoundManager;
+import org.foxesworld.newgame.engine.providers.sound.SoundProvider;
 
 import java.util.Map;
 
@@ -34,7 +34,7 @@ public class Player extends Node implements PlayerInterface {
     private AssetManager assetManager;
     private  AppStateManager stateManager;
     private Spatial actorLoad;
-    private SoundManager soundManager;
+    private SoundProvider soundProvider;
     private  NiftyJmeDisplay niftyDisplay;
     private InputManager inputManager;
     private Node rootNode;
@@ -44,7 +44,7 @@ public class Player extends Node implements PlayerInterface {
 
     public Player(KernelInterface kernel){
         this.stateManager = kernel.appStateManager();
-        this.soundManager = kernel.getSoundManager();
+        this.soundProvider = kernel.getSoundManager();
         this.niftyDisplay = kernel.getNiftyDisplay();
         this.assetManager = kernel.getAssetManager();
         this.rootNode = kernel.getRootNode();
@@ -85,7 +85,7 @@ public class Player extends Node implements PlayerInterface {
         addControl(userInputHandler = new UserInputHandler(this, ()->
         playerModel.getControl(ActionsControl.class).shot(assetManager,cam.getLocation().add(cam.getDirection().mult(1)),cam.getDirection(),this.rootNode, this.pspace)));
         addControl(new CameraFollowSpatial(getUserInputHandler(), cam, camShake));
-        addControl(new ActionsControl(assetManager,soundManager));
+        addControl(new ActionsControl(assetManager, soundProvider));
         addControl(new FPSViewControl(FPSViewControl.Mode.WORLD_SCENE));
     }
 
@@ -128,8 +128,8 @@ public class Player extends Node implements PlayerInterface {
     @Override
     public AppStateManager getStateManager() {return stateManager;}
     @Override
-    public SoundManager getSoundManager() {
-        return soundManager;
+    public SoundProvider getSoundManager() {
+        return soundProvider;
     }
     @Deprecated
     public NiftyJmeDisplay getNiftyDisplay() {

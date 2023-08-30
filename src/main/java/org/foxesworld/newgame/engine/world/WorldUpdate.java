@@ -1,20 +1,42 @@
 package org.foxesworld.newgame.engine.world;
 
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
-import com.jme3.scene.control.AbstractControl;
+import com.jme3.app.Application;
+import com.jme3.app.state.BaseAppState;
+import org.foxesworld.newgame.engine.KernelInterface;
 
-import javax.sound.sampled.Control;
+public class WorldUpdate extends BaseAppState {
+    private long time = 0;
 
-public class WorldUpdate extends AbstractControl {
+    public WorldUpdate(KernelInterface kernelInterface){
 
-    @Override
-    protected void controlUpdate(float v) {
-        System.out.println("Updated " + v);
     }
 
     @Override
-    protected void controlRender(RenderManager renderManager, ViewPort viewPort) {
+    protected void initialize(Application application) {
 
+    }
+
+    @Override
+    protected void cleanup(Application application) {
+
+    }
+
+    @Override
+    protected void onEnable() {
+
+    }
+
+    @Override
+    protected void onDisable() {
+
+    }
+
+    @Override
+    public void update(float tpf){
+        time+=1;
+        if(time % 800 == 0) {
+            //System.out.println("Second");
+            time = 0;
+        }
     }
 }

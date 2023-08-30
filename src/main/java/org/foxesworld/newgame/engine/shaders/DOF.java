@@ -2,14 +2,16 @@ package org.foxesworld.newgame.engine.shaders;
 
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.DepthOfFieldFilter;
+import org.foxesworld.newgame.engine.KernelInterface;
 
-public class DOF {
+public class DOF extends Shaders {
 
     private FilterPostProcessor fpp;
     private  DepthOfFieldFilter dof;
 
-    public DOF(FilterPostProcessor fpp) {
-        this.fpp = fpp;
+    public DOF(KernelInterface kernelInterface) {
+        super(kernelInterface);
+        this.fpp = kernelInterface.getFpp();
         this.dof = new DepthOfFieldFilter();
     }
 

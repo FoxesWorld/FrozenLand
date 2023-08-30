@@ -9,14 +9,14 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import org.foxesworld.newgame.engine.player.input.UserInputHandler;
-import org.foxesworld.newgame.engine.providers.sound.SoundManager;
+import org.foxesworld.newgame.engine.providers.sound.SoundProvider;
 
 import java.util.Map;
 
 public interface PlayerInterface {
     BetterCharacterControl getCharacterControl();
     AssetManager getAssetManager();
-    SoundManager getSoundManager();
+    SoundProvider getSoundManager();
     Node getRootNode();
     Camera getFpsCam();
     AppStateManager getStateManager();

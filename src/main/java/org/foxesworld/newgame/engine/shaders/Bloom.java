@@ -2,14 +2,16 @@ package org.foxesworld.newgame.engine.shaders;
 
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.BloomFilter;
+import org.foxesworld.newgame.engine.KernelInterface;
 
-public class Bloom {
+public class Bloom extends Shaders {
 
     private BloomFilter bloom;
     private  FilterPostProcessor fpp;
 
-    public Bloom(FilterPostProcessor fpp) {
-        this.fpp = fpp;
+    public Bloom(KernelInterface kernelInterface) {
+        super(kernelInterface);
+        this.fpp = kernelInterface.getFpp();
         bloom = new BloomFilter();
     }
 

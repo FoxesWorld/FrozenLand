@@ -9,6 +9,7 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.post.FilterPostProcessor;
+import com.jme3.renderer.ViewPort;
 import com.jme3.system.AppSettings;
 import com.simsilica.lemur.GuiGlobals;
 import org.foxesworld.newgame.engine.Kernel;
@@ -48,6 +49,7 @@ public class NewGame extends SimpleApplication implements NewGameInterface {
         app.setDisplayFps(true);
         app.setDisplayStatView(false);
         app.setSettings(cfg);
+        setIcon(cfg);
         app.start();
     }
 
@@ -78,19 +80,15 @@ public class NewGame extends SimpleApplication implements NewGameInterface {
         stateManager.attach(new Kernel(this));
     }
 
-    @Deprecated
-    private void setIcon(AppSettings settings, NewGame app) {
-        BufferedImage[] icons = null;
+    private static void setIcon(AppSettings settings) {
         try {
-            icons = new BufferedImage[]{
-                    ImageIO.read(app.getClass().getResourceAsStream("Icons/icon128x128.png")),
-                    ImageIO.read(app.getClass().getResourceAsStream("Icons/icon64x64.png")),
-                    ImageIO.read(app.getClass().getResourceAsStream("Icons/icon32x32.png"))
+            BufferedImage[] icons = new BufferedImage[] {
+                    ImageIO.read(NewGame.class.getResource( "/test64.png" )),
+                    ImageIO.read(NewGame.class.getResource( "/test32.png" )),
+                    ImageIO.read(NewGame.class.getResource( "/test16.png" ))
             };
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        settings.setIcons(icons);
+            settings.setIcons(icons);
+        } catch(IOException e) {}
     }
     @Override
     public BulletAppState getBulletAppState() {
