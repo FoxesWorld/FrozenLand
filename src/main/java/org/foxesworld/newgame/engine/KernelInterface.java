@@ -4,7 +4,6 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.input.InputManager;
-import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
@@ -19,6 +18,7 @@ import java.util.Map;
 
 public interface KernelInterface {
     Node getRootNode();
+    Node getGuiNode();
     Sky getSky();
     ViewPort getViewPort();
     FilterPostProcessor getFpp();
@@ -26,7 +26,6 @@ public interface KernelInterface {
     Map getCONFIG();
     AppStateManager appStateManager();
     InputManager getInputManager();
-    NiftyJmeDisplay getNiftyDisplay();
     Player getPlayer();
     Camera getCamera();
     Logger getLogger();

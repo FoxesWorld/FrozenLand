@@ -8,38 +8,43 @@ import com.jme3.input.InputManager;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
-import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
+import com.jme3.math.*;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
-import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.elements.Element;
-import de.lessvoid.nifty.elements.render.TextRenderer;
-import de.lessvoid.nifty.screen.Screen;
+import com.simsilica.lemur.Button;
+import com.simsilica.lemur.Container;
+import com.simsilica.lemur.Label;
+import com.simsilica.lemur.*;
+import com.simsilica.lemur.component.IconComponent;
+import com.simsilica.lemur.component.QuadBackgroundComponent;
+import com.simsilica.lemur.event.PopupState;
+import com.simsilica.lemur.style.ElementId;
 import org.foxesworld.newgame.engine.player.CharacterSettings;
 import org.foxesworld.newgame.engine.player.PlayerInterface;
 import org.foxesworld.newgame.engine.providers.sound.SoundProvider;
-import org.foxesworld.newgame.engine.ui.HUDController;
+import org.foxesworld.newgame.engine.ui.UserInfo;
 
+import java.awt.*;
+import java.util.List;
 import java.util.*;
 
 public class UserInputHandler extends UserInputAbstract implements UserInputHandlerI {
 
+    private UserInfo userInfoBox;
     private BetterCharacterControl characterControl;
     protected final CharacterSettings characterSettings;
     private final InputManager inputManager;
     private final Camera cam;
     private final Node rootNode;
+    private final Node guiNode;
     private AudioNode walkAudio;
     private final Runnable attackCallback;
     private boolean[] directions = new boolean[4];
     private final AssetManager assetManager;
     private final Map<String, List<AudioNode>> playerSounds;
     private  final SoundProvider soundProvider;
-    private final Nifty nifty;
     final float[] angles = {0, 0, 0};
     final Quaternion tmpRot = new Quaternion();
     final Vector3f tmpV3 = new Vector3f();
@@ -49,13 +54,13 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         this.playerSounds = soundProvider.getSoundBlock("player");
         this.inputManager = player.getInputManager();
         this.assetManager = player.getAssetManager();
-        this.nifty = player.getNiftyDisplay().getNifty();
         this.rootNode = player.getRootNode();
+        this.guiNode = player.getGuiNode();
         this.attackCallback = attackCallback;
         this.cam = player.getFpsCam();
         setUserInputConfig((HashMap<String, List<Object>>) player.getCFG().get("userInput"));
         this.characterSettings = new CharacterSettings();
-        this.nifty.fromXml("ui/userData.xml", "hud", new HUDController());
+        this.userInfoBox = new UserInfo(player);
     }
 
     @Override
@@ -66,6 +71,7 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
                     System.err.println(getClass() + " can be attached only to a spatial that has a BetterCharacterControl");
                 return;
             }
+            userInfoBox.showWindow();
             inputManager.setCursorVisible(false);
             inputInit(UserInputHelper.getInputMaps(getUserInputConfig()));
             setInit(true);
@@ -165,13 +171,14 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
 
         updateMovementAudio(tpf);
         soundProvider.update(tpf);
-        updateHUDText(new String[]{"speed", "playerState", "posX", "posY", "posZ"}, new String[]{
+        /*updateHUDText(new String[]{"speed", "playerState", "posX", "posY", "posZ"}, new String[]{
                 String.valueOf(characterSettings.getCurrentSpeed()),
                 String.valueOf(getPlayerState()),
                 String.valueOf(this.getPlayerPosition().x),
                 String.valueOf(this.getPlayerPosition().y),
                 String.valueOf(this.getPlayerPosition().z)
         });
+        */
     }
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
@@ -236,6 +243,7 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
             walkAudio = null;
         }
     }
+    /*
     private void updateHUDText(String[] elementIds, String[] values) {
         if (nifty != null) {
             Screen currentScreen = nifty.getCurrentScreen();
@@ -255,6 +263,7 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
             }
         }
     }
+    */
 
     public AudioNode getRandomAudioNode(String event) {
         Random random = new Random();
@@ -273,6 +282,5 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
             return new Vector3f(0,0,0);
         }
     }
-
 
 }

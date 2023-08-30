@@ -8,7 +8,6 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.input.InputManager;
 import com.jme3.math.Vector3f;
-import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -35,9 +34,9 @@ public class Player extends Node implements PlayerInterface {
     private  AppStateManager stateManager;
     private Spatial actorLoad;
     private SoundProvider soundProvider;
-    private  NiftyJmeDisplay niftyDisplay;
     private InputManager inputManager;
     private Node rootNode;
+    private  Node guiNode;
     private PhysicsSpace pspace;
     private Map CFG;
     private J3map playerSpecs;
@@ -45,9 +44,9 @@ public class Player extends Node implements PlayerInterface {
     public Player(KernelInterface kernel){
         this.stateManager = kernel.appStateManager();
         this.soundProvider = kernel.getSoundManager();
-        this.niftyDisplay = kernel.getNiftyDisplay();
         this.assetManager = kernel.getAssetManager();
         this.rootNode = kernel.getRootNode();
+        this.guiNode = kernel.getGuiNode();
         this.pspace = kernel.getBulletAppState().getPhysicsSpace();
         this.inputManager = kernel.getInputManager();
         this.CFG = kernel.getCONFIG();
@@ -131,10 +130,6 @@ public class Player extends Node implements PlayerInterface {
     public SoundProvider getSoundManager() {
         return soundProvider;
     }
-    @Deprecated
-    public NiftyJmeDisplay getNiftyDisplay() {
-        return niftyDisplay;
-    }
     @Override
     public InputManager getInputManager() {
         return inputManager;
@@ -142,6 +137,10 @@ public class Player extends Node implements PlayerInterface {
     @Override
     public Node getRootNode() {
         return rootNode;
+    }
+    @Override
+    public Node getGuiNode() {
+        return guiNode;
     }
     @Override
     public Map getCFG() {

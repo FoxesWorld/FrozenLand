@@ -7,7 +7,6 @@ import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.input.InputManager;
 import com.jme3.math.Vector3f;
-import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
@@ -35,7 +34,6 @@ public class Kernel extends BaseAppState implements KernelInterface {
     protected final AssetManager assetManager;
     protected final Discord discord;
     protected final ViewPort viewPort;
-    protected NiftyJmeDisplay niftyDisplay;
     protected AppStateManager stateManager;
     protected SoundProvider soundProvider;
     protected MaterialProvider materialProvider;
@@ -44,6 +42,7 @@ public class Kernel extends BaseAppState implements KernelInterface {
     protected Camera camera;
     protected BulletAppState bulletAppState;
     protected Node rootNode;
+    protected Node guiNode;
     protected FilterPostProcessor fpp;
     protected InputManager inputManager;
     protected Sky sky;
@@ -61,9 +60,9 @@ public class Kernel extends BaseAppState implements KernelInterface {
         this.viewPort = newGame.getViewPort();
         this.bulletAppState = newGame.getBulletAppState();
         this.fpp = newGame.getFpp();
-        this.niftyDisplay = newGame.getNifty();
         this.CONFIG = newGame.getCONFIG();
         this.logger = newGame.getLogger();
+        this.guiNode = newGame.getGuiNode();
         this.soundProvider = new SoundProvider(this);
         this.materialProvider = new MaterialProvider(this);
         this.materialProvider.addMaterials();
@@ -107,10 +106,6 @@ public class Kernel extends BaseAppState implements KernelInterface {
     public AppStateManager appStateManager(){ return newGame.getStateManager(); }
     @Override
     public InputManager getInputManager(){ return  newGame.getInputManager();}
-    @Deprecated
-    public NiftyJmeDisplay getNiftyDisplay() {
-        return niftyDisplay;
-    }
     @Override
     public SoundProvider getSoundManager() {
         return soundProvider;
@@ -147,7 +142,10 @@ public class Kernel extends BaseAppState implements KernelInterface {
     public ViewPort getViewPort() {
         return this.viewPort;
     }
-
+    @Override
+    public Node getGuiNode() {
+        return guiNode;
+    }
     @Override
     public FilterPostProcessor getFpp() {
         return this.fpp;

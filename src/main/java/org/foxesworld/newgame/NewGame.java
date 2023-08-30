@@ -7,11 +7,11 @@ import codex.j3map.processors.IntegerProcessor;
 import codex.j3map.processors.StringProcessor;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.renderer.ViewPort;
 import com.jme3.system.AppSettings;
 import com.simsilica.lemur.GuiGlobals;
+import com.simsilica.lemur.style.BaseStyles;
 import org.foxesworld.newgame.engine.Kernel;
 import org.foxesworld.newgame.engine.config.ConfigReader;
 import org.slf4j.Logger;
@@ -32,8 +32,6 @@ public class NewGame extends SimpleApplication implements NewGameInterface {
     private FilterPostProcessor fpp;
     private Map CONFIG;
     private int numSamples;
-    @Deprecated
-    private NiftyJmeDisplay niftyDisplay;
 
     private final Logger logger = LoggerFactory.getLogger(NewGame.class);
 
@@ -70,8 +68,9 @@ public class NewGame extends SimpleApplication implements NewGameInterface {
         //bulletapp.setDebugViewPorts(viewPort);
         //bulletapp.setDebugEnabled(true);
 
-        niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
-        guiViewPort.addProcessor(niftyDisplay);
+        GuiGlobals globals = GuiGlobals.getInstance();
+        BaseStyles.loadStyleResources("themes/medieval/medieval.groovy");
+        globals.getStyles().setDefaultStyle("medieval");
 
         fpp = new FilterPostProcessor(assetManager);
         if (numSamples > 0) fpp.setNumSamples(numSamples);
@@ -97,10 +96,6 @@ public class NewGame extends SimpleApplication implements NewGameInterface {
     @Override
     public FilterPostProcessor getFpp() {
         return this.fpp;
-    }
-    @Override
-    public NiftyJmeDisplay getNifty() {
-        return this.niftyDisplay;
     }
     @Override
     public Map getCONFIG() {
