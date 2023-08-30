@@ -24,7 +24,7 @@ public class MaterialProvider extends MaterialAbstract {
     @Override
     public void addMaterials() {
         getKernelInterface().getLogger().info("Adding materials");
-        String[] textures = new String[]{"soil#default", "sand#default", "sun#default", "terrain#default", "terrain#mount"};
+        String[] textures = new String[]{"soil#default", "sand#default", "terrain#default", "terrain#mount"};
         for (String texture : textures) {
             String[] matArr = texture.split("#");
             String mat = matArr[0];
@@ -36,7 +36,7 @@ public class MaterialProvider extends MaterialAbstract {
     @Override
     public Material createMat(String dir, String type) {
         String baseDir = "textures/" + dir + '/';
-        matData = readMatConfig(MaterialProvider.class.getClassLoader().getResourceAsStream(baseDir + "/matOpt/" + type + ".json"));
+        matData = readMatConfig(MaterialProvider.class.getClassLoader().getResourceAsStream(baseDir + "matOpt/" + type + ".json"));
         initMaterial(String.valueOf(matData.get("matDef")));
         AtomicInteger textNum = new AtomicInteger();
         AtomicInteger varNum = new AtomicInteger();

@@ -2,23 +2,23 @@
   "matDef": "MatDefs/HeightBasedTerrain.j3md",
   "textures": {
     "region1ColorMap": {
-      "texture": "snow.jpg",
+      "texture": "region1/snow-diff.jpg",
       "wrap": "REPEAT"
     },
     "region2ColorMap": {
-      "texture": "snow.jpg",
+      "texture": "region1/snow-diff.jpg",
       "wrap": "REPEAT"
     },
     "region3ColorMap": {
-      "texture": "snow_field.jpg",
+      "texture": "region2/snow-field-diff.jpg",
       "wrap": "REPEAT"
     },
     "region4ColorMap": {
-      "texture": "snow_field.jpg",
+      "texture": "region2/snow-field-diff.jpg",
       "wrap": "REPEAT"
     },
     "slopeColorMap": {
-      "texture": "snow_field.jpg",
+      "texture": "region2/snow-field-diff.jpg",
       "wrap": "REPEAT"
     }
   },

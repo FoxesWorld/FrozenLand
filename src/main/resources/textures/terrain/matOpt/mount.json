@@ -6,15 +6,15 @@
       "wrap": "REPEAT"
     },
     "Tex1": {
-      "texture": "grass.jpg",
+      "texture": "region2/snow-field-diff.jpg",
       "wrap": "REPEAT"
     },
     "Tex2": {
-      "texture": "snow.jpg",
+      "texture": "region1/snow-diff.jpg",
       "wrap": "REPEAT"
     },
     "Tex3": {
-      "texture": "snow_field.jpg",
+      "texture": "region2/snow-field-diff.jpg",
       "wrap": "REPEAT"
     }
   },
