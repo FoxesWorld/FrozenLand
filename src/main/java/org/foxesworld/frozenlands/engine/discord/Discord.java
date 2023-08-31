@@ -7,7 +7,6 @@ public class Discord implements DiscordInterface {
     private DiscordRPC lib;
     private DiscordRichPresence presence;
     private String applicationId = "712667904956432456";
-
     public Discord(String details, String state) {
         lib = DiscordRPC.INSTANCE;
         String steamId = "";

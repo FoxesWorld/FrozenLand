@@ -5,5 +5,6 @@ shadowMode: "Cast";
 radius: .25f;
 height: 2f;
 mass: 175f;
-jumpForce: 3500f;
+jumpForce: 500f;
+initialHealth: 100;
 faceWalkDirection: true;

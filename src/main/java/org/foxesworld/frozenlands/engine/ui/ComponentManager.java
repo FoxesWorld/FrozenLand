@@ -11,8 +11,7 @@ public class ComponentManager {
 
     private Map<String, Label> labelMap = new HashMap<>();
 
-    public ComponentManager() {
-    }
+    public ComponentManager() {}
 
     public Label addLabel(String text, String elementIdText, Container parent) {
         ElementId elementId = new ElementId(elementIdText);

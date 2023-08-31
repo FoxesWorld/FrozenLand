@@ -3,6 +3,7 @@ package org.foxesworld.frozenlands.engine.player;
 import codex.j3map.J3map;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
+import com.jme3.audio.AudioNode;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.control.BetterCharacterControl;
@@ -22,11 +23,14 @@ import org.foxesworld.frozenlands.engine.player.input.FPSViewControl;
 import org.foxesworld.frozenlands.engine.player.input.UserInputHandler;
 import org.foxesworld.frozenlands.engine.providers.sound.SoundProvider;
 
+import java.util.List;
 import java.util.Map;
 
 public class Player extends Node implements PlayerInterface {
 
     private BetterCharacterControl characterControl;
+
+    private int health;
     private  Camera fpsCam;
     private  UserInputHandler userInputHandler;
     private Vector3f jumpForce;
@@ -52,12 +56,17 @@ public class Player extends Node implements PlayerInterface {
         this.CFG = kernel.getCONFIG();
 
         playerSpecs = (J3map)assetManager.loadAsset("properties/player.j3map");
-        jumpForce = new Vector3f(0, playerSpecs.getFloat("jumpForce"), 0);
+        this.jumpForce = new Vector3f(0, playerSpecs.getFloat("jumpForce"), 0);
+        this.health = playerSpecs.getInteger("initialHealth");
         actorLoad = assetManager.loadModel(playerSpecs.getString("model"));
         actorLoad.setLocalScale(playerSpecs.getFloat("scale"));
         this.attachChild(actorLoad);
         this.setCullHint(CullHint.valueOf(playerSpecs.getString("cullHint")));
         this.setShadowMode(RenderQueue.ShadowMode.valueOf(playerSpecs.getString("shadowMode")));
+    }
+
+    private  void onSpawn(PlayerInterface player) {
+       player.getSoundManager().getRandomAudioNode(player.getPlayerSounds().get("spawn")).play();
     }
 
     public void addPlayer(Camera cam, Vector3f spawnPoint){
@@ -77,15 +86,14 @@ public class Player extends Node implements PlayerInterface {
         // Spawn position
         characterControl.warp(spawnPoint);
 
-        ShakeCam camShake = new ShakeCam(cam);
-        stateManager.attach(camShake);
-
+        userInputHandler = new UserInputHandler(this, ()-> playerModel.getControl(ActionsControl.class).shot(assetManager,cam.getLocation().add(cam.getDirection().mult(1)),cam.getDirection(),this.rootNode, this.pspace));
+        userInputHandler.setPlayerHealth(health);
         // Load playerSpecs logic
-        addControl(userInputHandler = new UserInputHandler(this, ()->
-        playerModel.getControl(ActionsControl.class).shot(assetManager,cam.getLocation().add(cam.getDirection().mult(1)),cam.getDirection(),this.rootNode, this.pspace)));
-        addControl(new CameraFollowSpatial(getUserInputHandler(), cam, camShake));
+        addControl(userInputHandler);
+        addControl(new CameraFollowSpatial(getUserInputHandler(), cam));
         addControl(new ActionsControl(assetManager, soundProvider));
         addControl(new FPSViewControl(FPSViewControl.Mode.WORLD_SCENE));
+        this.onSpawn(this);
     }
 
     public void loadFPSLogicFPSView(Camera cam, Camera fpsCam, Spatial playerSpatial){
@@ -129,6 +137,18 @@ public class Player extends Node implements PlayerInterface {
     @Override
     public SoundProvider getSoundManager() {
         return soundProvider;
+    }
+    @Override
+    public int getHealth() {
+        return health;
+    }
+    @Override
+    public void setHealth(int health) {
+        this.health = health;
+    }
+    @Override
+    public Map<String, List<AudioNode>> getPlayerSounds() {
+        return userInputHandler.getPlayerSounds();
     }
     @Override
     public InputManager getInputManager() {

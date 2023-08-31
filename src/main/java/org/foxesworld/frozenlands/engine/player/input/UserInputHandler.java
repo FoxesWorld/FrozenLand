@@ -24,6 +24,7 @@ import java.util.*;
 
 public class UserInputHandler extends UserInputAbstract implements UserInputHandlerI {
 
+    private int playerHealth;
     private UserInfo userInfoBox;
     private BetterCharacterControl characterControl;
     protected final CharacterSettings characterSettings;
@@ -168,12 +169,14 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
                 new String[]{
                         "posX",
                         "posY",
-                        "posZ"
+                        "posZ",
+                        "Health"
                 },
                 new String[]{
                         String.valueOf(this.getPlayerPosition().x),
                         String.valueOf(this.getPlayerPosition().y),
-                        String.valueOf(this.getPlayerPosition().z)
+                        String.valueOf(this.getPlayerPosition().z),
+                        String.valueOf(this.playerHealth)
                 });
     }
 
@@ -223,7 +226,7 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
 
     private void playWalkAudio(String userState) {
         stopWalkAudio();
-        walkAudio = getRandomAudioNode(userState);
+        walkAudio = soundProvider.getRandomAudioNode(playerSounds.get(userState));
         if (walkAudio != null) {
             walkAudio.setLocalTranslation(spatial.getWorldTranslation());
             walkAudio.setPitch(characterSettings.getCurrentSpeed() / 4);
@@ -240,16 +243,6 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         }
     }
 
-    public AudioNode getRandomAudioNode(String event) {
-        Random random = new Random();
-        List<AudioNode> audioNodes = playerSounds.get(event);
-        if (audioNodes != null && !audioNodes.isEmpty()) {
-            int randomIndex = random.nextInt(audioNodes.size());
-            return audioNodes.get(randomIndex);
-        }
-        return null;
-    }
-
 
     public Vector3f getPlayerPosition() {
         if (spatial != null) {
@@ -261,5 +254,13 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         } else {
             return new Vector3f(0, 0, 0);
         }
+    }
+    @Override
+    public void setPlayerHealth(int health) {
+        this.playerHealth = health;
+    }
+    @Override
+    public Map<String, List<AudioNode>> getPlayerSounds() {
+        return this.playerSounds;
     }
 }

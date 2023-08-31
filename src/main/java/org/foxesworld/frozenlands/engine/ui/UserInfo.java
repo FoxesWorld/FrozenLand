@@ -8,10 +8,14 @@ import com.simsilica.lemur.component.IconComponent;
 import com.simsilica.lemur.style.ElementId;
 import org.foxesworld.frozenlands.engine.player.PlayerInterface;
 
+import java.awt.*;
+
 public class UserInfo {
 
     private Node guiNode;
     private Camera cam;
+
+    private Font customFont;
     public ComponentManager componentManager;
 
     public UserInfo(PlayerInterface playerInterface) {
@@ -22,9 +26,10 @@ public class UserInfo {
     public void showWindow() {
 
         String[][] icons = new String[][]{
-                {"X", "icons/posX.png"},
-                {"Y", "icons/posY.png"},
-                {"Z", "icons/posZ.png"}
+                {"posX", "icons/posX.png"},
+                {"posY", "icons/posY.png"},
+                {"posZ", "icons/posZ.png"},
+                {"Health", ""}
         };
 
         // We'll wrap the text in a window to make sure the layout is working
@@ -37,13 +42,16 @@ public class UserInfo {
         window.addChild(pos);
 
         Container buttonSets = window.addChild(new Container());
-        pos.setIcon(new IconComponent("pos.png"));
+        pos.setIcon(new IconComponent("icons/pos.png"));
 
         for (String[] iconDef : icons) {
-            IconComponent icon = new IconComponent(iconDef[1]);
+            IconComponent icon;
             String posLetter = iconDef[0];
-            Label posLabel = componentManager.addLabel("", "pos" + posLetter, buttonSets);
-            posLabel.setIcon(icon);
+            Label posLabel = componentManager.addLabel("", posLetter, buttonSets);
+            if (!iconDef[1].equals("")) {
+                icon = new IconComponent(iconDef[1]);
+                posLabel.setIcon(icon);
+            }
         }
 
         float windowX = cam.getWidth() - window.getPreferredSize().x - 15;

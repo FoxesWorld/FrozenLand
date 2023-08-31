@@ -14,16 +14,14 @@ import org.foxesworld.frozenlands.engine.player.input.UserInputHandler;
 public class CameraFollowSpatial extends AbstractControl {
     private boolean ready = false;
     private Camera cam;
-    private ShakeCam camShake;
     private  UserInputHandler userInputHandler;
     private Vector3f offset, direction;
     private BetterCharacterControl character;
     private Spatial cameraNode;
 
-    public CameraFollowSpatial(UserInputHandler userInputHandler, Camera cam, ShakeCam camShake) {
+    public CameraFollowSpatial(UserInputHandler userInputHandler, Camera cam) {
         this.cam = cam;
         this.userInputHandler = userInputHandler;
-        this.camShake = camShake;
     }
 
     public void setOffset(Vector3f offset) {
@@ -83,7 +81,6 @@ public class CameraFollowSpatial extends AbstractControl {
         } else { // direction is the specified direction
             cam.lookAtDirection(direction, Vector3f.UNIT_Y);
         }
-        camShake.update(tpf);
     }
 
     @Override

@@ -103,6 +103,16 @@ public class SoundProvider {
         }
     }
 
+    public AudioNode getRandomAudioNode(List<AudioNode> sndList) {
+        Random random = new Random();
+        if (sndList != null && !sndList.isEmpty()) {
+            int randomIndex = random.nextInt(sndList.size());
+            return sndList.get(randomIndex);
+        }
+        return null;
+    }
+
+    @Deprecated
     public Map<String, Map<String, List<AudioNode>>> getSounds() {
         return Sounds;
     }

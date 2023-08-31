@@ -96,6 +96,19 @@
       "sounds": [
         "/gooseSkin.ogg"
       ]
+    },
+    {
+      "event": "spawn",
+      "package": "",
+      "settings": {
+        "volume": 2.0,
+        "positional": false,
+        "pitch": 1.0,
+        "dataType": "Buffer"
+      },
+      "sounds": [
+        "/reveal.ogg"
+      ]
     }
   ],
   "music": [
