@@ -10,7 +10,6 @@ import java.util.Map;
 public class ComponentManager {
 
     private Map<String, Label> labelMap = new HashMap<>();
-
     public ComponentManager() {}
 
     public Label addLabel(String text, String elementIdText, Container parent) {

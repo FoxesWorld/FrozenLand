@@ -18,7 +18,6 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import org.foxesworld.frozenlands.engine.KernelInterface;
 import org.foxesworld.frozenlands.engine.player.camera.CameraFollowSpatial;
-import org.foxesworld.frozenlands.engine.player.camera.ShakeCam;
 import org.foxesworld.frozenlands.engine.player.input.FPSViewControl;
 import org.foxesworld.frozenlands.engine.player.input.UserInputHandler;
 import org.foxesworld.frozenlands.engine.providers.sound.SoundProvider;

@@ -18,6 +18,7 @@ import com.jme3.scene.Node;
 import org.foxesworld.frozenlands.engine.player.CharacterSettings;
 import org.foxesworld.frozenlands.engine.player.PlayerInterface;
 import org.foxesworld.frozenlands.engine.providers.sound.SoundProvider;
+import org.foxesworld.frozenlands.engine.ui.ComponentManager;
 import org.foxesworld.frozenlands.engine.ui.UserInfo;
 
 import java.util.*;
@@ -25,6 +26,7 @@ import java.util.*;
 public class UserInputHandler extends UserInputAbstract implements UserInputHandlerI {
 
     private int playerHealth;
+    private ComponentManager componentManager;
     private UserInfo userInfoBox;
     private BetterCharacterControl characterControl;
     protected final CharacterSettings characterSettings;
@@ -53,6 +55,7 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         this.cam = player.getFpsCam();
         setUserInputConfig((HashMap<String, List<Object>>) player.getCFG().get("userInput"));
         this.characterSettings = new CharacterSettings();
+        this.componentManager = new ComponentManager();
         this.userInfoBox = new UserInfo(player);
     }
 
@@ -64,7 +67,8 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
                 System.err.println(getClass() + " can be attached only to a spatial that has a BetterCharacterControl");
                 return;
             }
-            userInfoBox.showWindow();
+            //userInfoBox.showWindow();
+            userInfoBox.userInfo(this.componentManager);
             inputManager.setCursorVisible(false);
             inputInit(UserInputHelper.getInputMaps(getUserInputConfig()));
             setInit(true);
@@ -165,18 +169,18 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
 
         updateMovementAudio(tpf);
         soundProvider.update(tpf);
-        this.userInfoBox.componentManager.updateLabelTexts(
+        //this.componentManager.updateLabelText("posX", String.valueOf(this.getPlayerPosition().y));
+
+        this.componentManager.updateLabelTexts(
                 new String[]{
                         "posX",
                         "posY",
-                        "posZ",
-                        "Health"
+                        "posZ"
                 },
                 new String[]{
                         String.valueOf(this.getPlayerPosition().x),
                         String.valueOf(this.getPlayerPosition().y),
                         String.valueOf(this.getPlayerPosition().z),
-                        String.valueOf(this.playerHealth)
                 });
     }
 

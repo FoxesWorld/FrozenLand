@@ -1,62 +1,47 @@
 package org.foxesworld.frozenlands.engine.ui;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
-import com.simsilica.lemur.Container;
-import com.simsilica.lemur.Label;
-import com.simsilica.lemur.component.IconComponent;
-import com.simsilica.lemur.style.ElementId;
 import org.foxesworld.frozenlands.engine.player.PlayerInterface;
 
-import java.awt.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 public class UserInfo {
 
     private Node guiNode;
     private Camera cam;
-
-    private Font customFont;
-    public ComponentManager componentManager;
+    private  PlayerInterface playerInterface;
 
     public UserInfo(PlayerInterface playerInterface) {
         this.guiNode = playerInterface.getGuiNode();
         this.cam = playerInterface.getFpsCam();
+        this.playerInterface = playerInterface;
     }
 
-    public void showWindow() {
+    public void userInfo(ComponentManager componentManager){
+        UiFactory uiFactory = new UiFactory(playerInterface, componentManager);
+        JsonObject object = parseJsonObjectFromStream(UserInfo.class.getClassLoader().getResourceAsStream("ui/forms/userInfo.json"));
+        guiNode.attachChild(uiFactory.createContainerFromJson(object));
+    }
 
-        String[][] icons = new String[][]{
-                {"posX", "icons/posX.png"},
-                {"posY", "icons/posY.png"},
-                {"posZ", "icons/posZ.png"},
-                {"Health", ""}
-        };
 
-        // We'll wrap the text in a window to make sure the layout is working
-        Container window = new Container();
-        componentManager = new ComponentManager();
-        float x = cam.getWidth() - window.getPreferredSize().x;
-        float y = cam.getHeight() - window.getPreferredSize().y;
-        window.setLocalTranslation(x, y, 0);
-        Label pos = new Label(" Position", new ElementId("window.title.label"));
-        window.addChild(pos);
-
-        Container buttonSets = window.addChild(new Container());
-        pos.setIcon(new IconComponent("icons/pos.png"));
-
-        for (String[] iconDef : icons) {
-            IconComponent icon;
-            String posLetter = iconDef[0];
-            Label posLabel = componentManager.addLabel("", posLetter, buttonSets);
-            if (!iconDef[1].equals("")) {
-                icon = new IconComponent(iconDef[1]);
-                posLabel.setIcon(icon);
+    private JsonObject parseJsonObjectFromStream(InputStream inputStream) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            StringBuilder jsonStr = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonStr.append(line);
             }
-        }
+            return JsonParser.parseString(jsonStr.toString()).getAsJsonObject();
 
-        float windowX = cam.getWidth() - window.getPreferredSize().x - 15;
-        float windowY = cam.getHeight() - pos.getPreferredSize().y - 15;
-        window.setLocalTranslation(windowX, windowY, 1);
-        guiNode.attachChild(window);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
