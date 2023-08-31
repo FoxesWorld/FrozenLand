@@ -8,26 +8,18 @@ import com.jme3.input.InputManager;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
-import com.jme3.math.*;
+import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
-import com.simsilica.lemur.Button;
-import com.simsilica.lemur.Container;
-import com.simsilica.lemur.Label;
-import com.simsilica.lemur.*;
-import com.simsilica.lemur.component.IconComponent;
-import com.simsilica.lemur.component.QuadBackgroundComponent;
-import com.simsilica.lemur.event.PopupState;
-import com.simsilica.lemur.style.ElementId;
 import org.foxesworld.newgame.engine.player.CharacterSettings;
 import org.foxesworld.newgame.engine.player.PlayerInterface;
 import org.foxesworld.newgame.engine.providers.sound.SoundProvider;
 import org.foxesworld.newgame.engine.ui.UserInfo;
 
-import java.awt.*;
-import java.util.List;
 import java.util.*;
 
 public class UserInputHandler extends UserInputAbstract implements UserInputHandlerI {
@@ -183,14 +175,6 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
                         String.valueOf(this.getPlayerPosition().y),
                         String.valueOf(this.getPlayerPosition().z)
                 });
-        /*updateHUDText(new String[]{"speed", "playerState", "posX", "posY", "posZ"}, new String[]{
-                String.valueOf(characterSettings.getCurrentSpeed()),
-                String.valueOf(getPlayerState()),
-                String.valueOf(this.getPlayerPosition().x),
-                String.valueOf(this.getPlayerPosition().y),
-                String.valueOf(this.getPlayerPosition().z)
-        });
-        */
     }
 
     @Override
@@ -225,7 +209,7 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
             if ((walkAudio == null || !walkAudio.getStatus().equals(AudioSource.Status.Playing))) {
                 playWalkAudio(getPlayerState().toString().toLowerCase());
             } else {
-                interval -= tpf * speed; // Уменьшаем интервал на прошедшее время, умноженное на скорость
+                interval -= tpf * speed;
                 if (interval <= 0) {
                     interval = Math.max(1f, speed * 0.5f) / 2;
                     playWalkAudio(getPlayerState().toString().toLowerCase());
@@ -255,27 +239,6 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
             walkAudio = null;
         }
     }
-    /*
-    private void updateHUDText(String[] elementIds, String[] values) {
-        if (nifty != null) {
-            Screen currentScreen = nifty.getCurrentScreen();
-            if (currentScreen != null) {
-                for (int i = 0; i < elementIds.length; i++) {
-                    String elementId = elementIds[i];
-                    String value = values[i];
-
-                    Element hudElement = currentScreen.findElementById(elementId);
-                    if (hudElement != null) {
-                        TextRenderer textRenderer = hudElement.getRenderer(TextRenderer.class);
-                        if (textRenderer != null) {
-                            textRenderer.setText(String.valueOf(value));
-                        }
-                    }
-                }
-            }
-        }
-    }
-    */
 
     public AudioNode getRandomAudioNode(String event) {
         Random random = new Random();

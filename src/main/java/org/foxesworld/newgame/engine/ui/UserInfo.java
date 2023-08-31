@@ -7,7 +7,6 @@ import com.simsilica.lemur.Label;
 import com.simsilica.lemur.component.IconComponent;
 import com.simsilica.lemur.style.ElementId;
 import org.foxesworld.newgame.engine.player.PlayerInterface;
-import org.foxesworld.newgame.engine.player.input.UserInputHandler;
 
 public class UserInfo {
 

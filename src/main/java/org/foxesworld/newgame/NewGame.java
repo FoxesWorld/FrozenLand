@@ -8,7 +8,6 @@ import codex.j3map.processors.StringProcessor;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.post.FilterPostProcessor;
-import com.jme3.renderer.ViewPort;
 import com.jme3.system.AppSettings;
 import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.lemur.style.BaseStyles;
@@ -23,10 +22,6 @@ import java.io.IOException;
 import java.util.Map;
 
 public class NewGame extends SimpleApplication implements NewGameInterface {
-
-    /* TODO
-     *  Replace nifty with Lemur
-     * */
 
     private BulletAppState bulletAppState;
     private FilterPostProcessor fpp;
