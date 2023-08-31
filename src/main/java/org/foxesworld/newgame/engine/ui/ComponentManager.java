@@ -1,40 +1,45 @@
 package org.foxesworld.newgame.engine.ui;
 
+import com.simsilica.lemur.Container;
 import com.simsilica.lemur.Label;
-import com.simsilica.lemur.Panel;
-import com.simsilica.lemur.core.GuiControl;
 import com.simsilica.lemur.style.ElementId;
 
-import com.jme3.scene.Spatial;
-
+import java.util.HashMap;
+import java.util.Map;
 
 public class ComponentManager {
 
-    private Panel container;
+    private Map<String, Label> labelMap = new HashMap<>();
 
-    // Конструктор, принимающий контейнер, в котором хранятся компоненты
-    public ComponentManager(Panel container) {
-        this.container = container;
+    public ComponentManager() {
     }
 
-    // Метод для получения Label по строковому значению ElementId
-    public Label getLabelByElementId(String elementIdText) {
+    public Label addLabel(String text, String elementIdText, Container parent) {
         ElementId elementId = new ElementId(elementIdText);
-        return findLabelByElementId(container, elementId);
+        Label label = new Label(text, elementId);
+        labelMap.put(elementIdText, label);
+        parent.addChild(label);
+        return label;
     }
 
-    // Приватный метод для поиска Label по ElementId
-    private Label findLabelByElementId(Panel container, ElementId elementId) {
-        for (Spatial child : container.getChildren()) {
-            if (child instanceof Label && child.getControl(GuiControl.class).getComponent(elementId.toString()).equals(elementId)) {
-                return (Label) child;
-            } else if (child instanceof Panel) {
-                Label foundLabel = findLabelByElementId((Panel) child, elementId);
-                if (foundLabel != null) {
-                    return foundLabel;
-                }
-            }
+    public Label getLabelByElementId(String elementIdText) {
+        return labelMap.get(elementIdText);
+    }
+
+    public void updateLabelText(String elementIdText, String newText) {
+        Label label = getLabelByElementId(elementIdText);
+        if (label != null) {
+            label.setText(newText);
         }
-        return null;
+    }
+
+    public void updateLabelTexts(String[] elementIds, String[] newValues) {
+        if (elementIds.length != newValues.length) {
+            throw new IllegalArgumentException("Arrays must have the same length");
+        }
+
+        for (int i = 0; i < elementIds.length; i++) {
+            updateLabelText(elementIds[i], newValues[i]);
+        }
     }
 }

@@ -44,7 +44,7 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
     private boolean[] directions = new boolean[4];
     private final AssetManager assetManager;
     private final Map<String, List<AudioNode>> playerSounds;
-    private  final SoundProvider soundProvider;
+    private final SoundProvider soundProvider;
     final float[] angles = {0, 0, 0};
     final Quaternion tmpRot = new Quaternion();
     final Vector3f tmpV3 = new Vector3f();
@@ -65,10 +65,10 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
 
     @Override
     public void init() {
-        if(!isInit()){
+        if (!isInit()) {
             characterControl = spatial.getControl(BetterCharacterControl.class);
             if (characterControl == null) {
-                    System.err.println(getClass() + " can be attached only to a spatial that has a BetterCharacterControl");
+                System.err.println(getClass() + " can be attached only to a spatial that has a BetterCharacterControl");
                 return;
             }
             userInfoBox.showWindow();
@@ -149,6 +149,7 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
             case "Run" -> characterSettings.setRunning(isPressed);
         }
     }
+
     @Override
     protected void movePlayer(Vector3f direction, float speedMultiplier, float tpf) {
         init();
@@ -171,6 +172,17 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
 
         updateMovementAudio(tpf);
         soundProvider.update(tpf);
+        this.userInfoBox.componentManager.updateLabelTexts(
+                new String[]{
+                        "posX",
+                        "posY",
+                        "posZ"
+                },
+                new String[]{
+                        String.valueOf(this.getPlayerPosition().x),
+                        String.valueOf(this.getPlayerPosition().y),
+                        String.valueOf(this.getPlayerPosition().z)
+                });
         /*updateHUDText(new String[]{"speed", "playerState", "posX", "posY", "posZ"}, new String[]{
                 String.valueOf(characterSettings.getCurrentSpeed()),
                 String.valueOf(getPlayerState()),
@@ -180,18 +192,19 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         });
         */
     }
+
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
         // Only for rendering
     }
 
     @Override
-    protected void setPlayerState(Vector3f walkDirection, float tpf){
-        if(walkDirection.lengthSquared() == 0 && characterSettings.getCurrentSpeed() == characterSettings.getWalkSpeed()){
+    protected void setPlayerState(Vector3f walkDirection, float tpf) {
+        if (walkDirection.lengthSquared() == 0 && characterSettings.getCurrentSpeed() == characterSettings.getWalkSpeed()) {
             setPlayerState(PlayerState.STANDING);
         } else {
-            if(walkDirection.lengthSquared() > 0){
-                if(!characterControl.isOnGround() && Math.abs(characterSettings.getPlayerDistanceAboveGround(spatial)) <= 1){
+            if (walkDirection.lengthSquared() > 0) {
+                if (!characterControl.isOnGround() && Math.abs(characterSettings.getPlayerDistanceAboveGround(spatial)) <= 1) {
                     setPlayerState(PlayerState.FLYING);
                 } else {
                     if (characterSettings.getCurrentSpeed() > characterSettings.getWalkSpeed()) {
@@ -222,7 +235,6 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
             stopWalkAudio();
         }
     }
-
 
 
     private void playWalkAudio(String userState) {
@@ -275,12 +287,16 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         return null;
     }
 
+
     public Vector3f getPlayerPosition() {
         if (spatial != null) {
-            return spatial.getWorldTranslation();
+            Vector3f worldTranslation = spatial.getWorldTranslation();
+            float x = Math.round(worldTranslation.x);
+            float y = Math.round(worldTranslation.y);
+            float z = Math.round(worldTranslation.z);
+            return new Vector3f(x, y, z);
         } else {
-            return new Vector3f(0,0,0);
+            return new Vector3f(0, 0, 0);
         }
     }
-
 }
