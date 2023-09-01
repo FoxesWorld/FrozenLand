@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import java.util.Map;
 
 public class Kernel extends BaseAppState implements KernelInterface {
-
     private final FrozenLands frozenLands;
     private  final Logger logger;
     private final Map CONFIG;
@@ -94,6 +93,12 @@ public class Kernel extends BaseAppState implements KernelInterface {
     @Override
     public void update(float tpf) {
     }
+
+    @Override
+    public FrozenLands getFrozenLands() {
+        return frozenLands;
+    }
+
     @Override
     public Map getCONFIG() {
         return CONFIG;

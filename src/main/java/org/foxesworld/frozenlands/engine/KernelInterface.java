@@ -8,6 +8,7 @@ import com.jme3.post.FilterPostProcessor;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
+import org.foxesworld.frozenlands.FrozenLands;
 import org.foxesworld.frozenlands.engine.player.Player;
 import org.foxesworld.frozenlands.engine.providers.material.MaterialProvider;
 import org.foxesworld.frozenlands.engine.providers.sound.SoundProvider;
@@ -32,4 +33,5 @@ public interface KernelInterface {
     SoundProvider getSoundManager();
     MaterialProvider getMaterialManager();
     BulletAppState getBulletAppState();
+    FrozenLands getFrozenLands();
 }

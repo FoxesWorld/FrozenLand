@@ -28,21 +28,16 @@ import java.util.Random;
 
 public class ActionsControl extends AbstractControl {
     private boolean ready = false;
+    private PlayerSoundProvider soundProvider;
     private BetterCharacterControl character;
     private AnimationGroupControl anims;
     private final Map<String, List<AudioNode>> playerSounds;
-    private AudioNode jumpUp, jumpDown;
-    private SoundProvider soundProvider;
     private AssetManager assetManager;
 
-    public ActionsControl(AssetManager assetManager, SoundProvider soundProvider) {
-        this.soundProvider = soundProvider;
-        this.assetManager = assetManager;
-        this.playerSounds = soundProvider.getSoundBlock("player");
-    }
-
     public ActionsControl(PlayerInterface playerInterface) {
-        this(playerInterface.getAssetManager(), playerInterface.getSoundManager());
+        this.soundProvider = new PlayerSoundProvider(playerInterface);
+        this.assetManager = playerInterface.getAssetManager();
+        this.playerSounds = playerInterface.getPlayerSounds();
         this.character = playerInterface.getCharacterControl();
     }
 
@@ -87,12 +82,7 @@ public class ActionsControl extends AbstractControl {
         rb.setPhysicsLocation(pos);
 
         rb.setLinearVelocity(direction.mult(10f));
-        //if(plasmaSound!=null)plasmaSound.playInstance();
-        //Sound sound = FrozenLands.getSOUND();
-        //AudioNode snd = sound.getSoundNode("player/shootAudio", false, 2.0f, 20.0f, 1.0f);
-        //snd.play();
-        AudioNode test = getRandomAudioNode("action");
-        test.play();
+       soundProvider.playWalkAudio("action");
         return bullet;
     }
 
@@ -105,46 +95,27 @@ public class ActionsControl extends AbstractControl {
         if (!ready) return;
 
         if (character != null) {
-            //if (jumpUp != null) {
                 if (!character.isOnGround() && wasOnGround) {
-                    jumpUp = getRandomAudioNode("jump/takeoff");
-                    jumpUp.playInstance();
+                    soundProvider.playWalkAudio("jump/takeoff");
                 }
                 if (character.isOnGround() && !wasOnGround) {
-                    jumpDown = getRandomAudioNode("jump/land");
-                    jumpDown.playInstance();
+                    soundProvider.playWalkAudio("jump/land");
                 }
-            //}
             wasOnGround = character.isOnGround();
         }
-
-        /*
-            if(footsteps != null){
-                boolean walking=(character.isOnGround() && character.getVelocity().length() > 0.1);
-                if(walking){
-                    AudioNode footsteps = getRandomAudioNode("");
-                    t+=tpf;
-                    if(t > 0.3){
-                        t=0;
-                        footsteps.playInstance();
-                    }
-                }
-            } */
+        boolean walking=(character.isOnGround() && character.getVelocity().length() > 0.1);
+        if(walking){
+            t+=tpf;
+            if(t > 0.32){
+                t=0;
+                soundProvider.playWalkAudio("walking");
+            }
+        }
     }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
 
-    }
-
-    public AudioNode getRandomAudioNode(String event) {
-        Random random = new Random();
-        List<AudioNode> audioNodes = playerSounds.get(event);
-        if (audioNodes != null && !audioNodes.isEmpty()) {
-            int randomIndex = random.nextInt(audioNodes.size());
-            return audioNodes.get(randomIndex);
-        }
-        return null;
     }
 
 }

@@ -31,6 +31,8 @@ public class Player extends Node implements PlayerInterface {
 
     private int health;
     private  Camera fpsCam;
+    private KernelInterface kernelInterface;
+    private PlayerData playerData;
     private  UserInputHandler userInputHandler;
     private Vector3f jumpForce;
     private AssetManager assetManager;
@@ -45,6 +47,7 @@ public class Player extends Node implements PlayerInterface {
     private J3map playerSpecs;
 
     public Player(KernelInterface kernel){
+        this.kernelInterface = kernel;
         this.stateManager = kernel.appStateManager();
         this.soundProvider = kernel.getSoundManager();
         this.assetManager = kernel.getAssetManager();
@@ -53,6 +56,7 @@ public class Player extends Node implements PlayerInterface {
         this.pspace = kernel.getBulletAppState().getPhysicsSpace();
         this.inputManager = kernel.getInputManager();
         this.CFG = kernel.getCONFIG();
+        this.playerData = new PlayerData();
 
         playerSpecs = (J3map)assetManager.loadAsset("properties/player.j3map");
         this.jumpForce = new Vector3f(0, playerSpecs.getFloat("jumpForce"), 0);
@@ -90,7 +94,7 @@ public class Player extends Node implements PlayerInterface {
         // Load playerSpecs logic
         addControl(userInputHandler);
         addControl(new CameraFollowSpatial(getUserInputHandler(), cam));
-        addControl(new ActionsControl(assetManager, soundProvider));
+        addControl(new ActionsControl(this));
         addControl(new FPSViewControl(FPSViewControl.Mode.WORLD_SCENE));
         this.onSpawn(this);
     }
@@ -119,6 +123,12 @@ public class Player extends Node implements PlayerInterface {
     public BetterCharacterControl getCharacterControl() {
         return characterControl;
     }
+
+    @Override
+    public PlayerData getPlayerData() {
+        return this.playerData;
+    }
+
     @Override
     public UserInputHandler getUserInputHandler() {
         return userInputHandler;
@@ -147,7 +157,7 @@ public class Player extends Node implements PlayerInterface {
     }
     @Override
     public Map<String, List<AudioNode>> getPlayerSounds() {
-        return userInputHandler.getPlayerSounds();
+        return this.getSoundManager().getSoundBlock("player");
     }
     @Override
     public InputManager getInputManager() {
@@ -164,5 +174,9 @@ public class Player extends Node implements PlayerInterface {
     @Override
     public Map getCFG() {
         return CFG;
+    }
+    @Override
+    public KernelInterface getKernelInterface() {
+        return kernelInterface;
     }
 }

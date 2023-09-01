@@ -8,6 +8,7 @@ import com.jme3.input.InputManager;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import org.foxesworld.frozenlands.engine.KernelInterface;
 import org.foxesworld.frozenlands.engine.player.input.UserInputHandler;
 import org.foxesworld.frozenlands.engine.providers.sound.SoundProvider;
 
@@ -15,7 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface PlayerInterface {
+    KernelInterface getKernelInterface();
     BetterCharacterControl getCharacterControl();
+    PlayerData getPlayerData();
     AssetManager getAssetManager();
     int getHealth();
     SoundProvider getSoundManager();

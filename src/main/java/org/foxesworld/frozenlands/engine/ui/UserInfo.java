@@ -28,8 +28,8 @@ public class UserInfo {
 
     public void userInfo(ComponentManager componentManager){
         Automaton automaton = new Automaton(componentManager);
-        automaton.setScreenHeight(playerInterface.getFpsCam().getHeight());
-        automaton.setScreenWidth(playerInterface.getFpsCam().getWidth());
+        automaton.setScreenHeight(cam.getHeight());
+        automaton.setScreenWidth(cam.getWidth());
         JsonObject object = parseJsonObjectFromStream(UserInfo.class.getClassLoader().getResourceAsStream("ui/forms/userInfo.json"));
         guiNode.attachChild(automaton.createContainerFromJson(object));
     }
