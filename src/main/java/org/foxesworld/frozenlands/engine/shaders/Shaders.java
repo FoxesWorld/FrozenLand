@@ -49,8 +49,11 @@ public class Shaders extends BaseAppState {
 
         //Shadows EXP
         FilterPostProcessor processor = new FilterPostProcessor(assetManager);
-        DirectionalLightShadowFilter filter = new DirectionalLightShadowFilter(assetManager, 2048, 1);
+        DirectionalLightShadowFilter filter = new DirectionalLightShadowFilter(assetManager, 2048, 4);
         filter.setLight(kernelInterface.getSky().getSun());
+        filter.setShadowIntensity(0.5f); // Inttesity (0.0 - 1.0)
+        filter.setEdgesThickness(10);
+        filter.setShadowZExtend(100f); // Depth
         processor.addFilter(filter);
         viewPort.addProcessor(processor);
     }

@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import org.foxesworld.automaton.Automaton;
+import org.foxesworld.automaton.ComponentManager;
 import org.foxesworld.frozenlands.engine.player.PlayerInterface;
 
 import java.io.BufferedReader;
@@ -25,9 +27,11 @@ public class UserInfo {
     }
 
     public void userInfo(ComponentManager componentManager){
-        UiFactory uiFactory = new UiFactory(playerInterface, componentManager);
+        Automaton automaton = new Automaton(componentManager);
+        automaton.setScreenHeight(playerInterface.getFpsCam().getHeight());
+        automaton.setScreenWidth(playerInterface.getFpsCam().getWidth());
         JsonObject object = parseJsonObjectFromStream(UserInfo.class.getClassLoader().getResourceAsStream("ui/forms/userInfo.json"));
-        guiNode.attachChild(uiFactory.createContainerFromJson(object));
+        guiNode.attachChild(automaton.createContainerFromJson(object));
     }
 
 

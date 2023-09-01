@@ -15,6 +15,7 @@
     {
       "type": "container",
       "alignment": "right",
+      "height": 95,
       "children": [
         {
           "type": "label",
@@ -33,6 +34,12 @@
           "text": "0",
           "id": "posZ",
           "icon": "ui/icons/posZ.png"
+        },
+        {
+          "type": "progressbar",
+          "value": 20,
+          "id": "test",
+          "text": "TEST"
         }
       ]
     }

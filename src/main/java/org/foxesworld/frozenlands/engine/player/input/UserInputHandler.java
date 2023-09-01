@@ -18,7 +18,7 @@ import com.jme3.scene.Node;
 import org.foxesworld.frozenlands.engine.player.CharacterSettings;
 import org.foxesworld.frozenlands.engine.player.PlayerInterface;
 import org.foxesworld.frozenlands.engine.providers.sound.SoundProvider;
-import org.foxesworld.frozenlands.engine.ui.ComponentManager;
+import org.foxesworld.automaton.ComponentManager;
 import org.foxesworld.frozenlands.engine.ui.UserInfo;
 
 import java.util.*;
