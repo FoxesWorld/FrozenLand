@@ -13,6 +13,7 @@ import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.lemur.style.BaseStyles;
 import org.foxesworld.frozenlands.engine.Kernel;
 import org.foxesworld.frozenlands.engine.config.ConfigReader;
+import org.foxesworld.frozenlands.engine.ui.UIEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +73,7 @@ public class FrozenLands extends SimpleApplication implements FrozenLandsInterfa
 
         stateManager.attach(bulletAppState);
         stateManager.attach(new Kernel(this));
+        stateManager.attach(new UIEngine(this));
     }
 
     private static void setIcon(AppSettings settings) {

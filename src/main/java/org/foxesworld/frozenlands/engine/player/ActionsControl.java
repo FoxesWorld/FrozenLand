@@ -31,14 +31,12 @@ public class ActionsControl extends AbstractControl {
     private PlayerSoundProvider soundProvider;
     private BetterCharacterControl character;
     private AnimationGroupControl anims;
-    private final Map<String, List<AudioNode>> playerSounds;
     private AssetManager assetManager;
 
     public ActionsControl(PlayerInterface playerInterface) {
-        this.soundProvider = new PlayerSoundProvider(playerInterface);
         this.assetManager = playerInterface.getAssetManager();
-        this.playerSounds = playerInterface.getPlayerSounds();
         this.character = playerInterface.getCharacterControl();
+        this.soundProvider = new PlayerSoundProvider(playerInterface);
     }
 
     private void initialize() {

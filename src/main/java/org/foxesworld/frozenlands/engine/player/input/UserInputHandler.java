@@ -32,7 +32,6 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
     private PlayerData playerData;
     private final InputManager inputManager;
     private final Camera cam;
-    private final PlayerSoundProvider test;
     private final Node rootNode;
     private final Node guiNode;
     private AudioNode walkAudio;
@@ -44,7 +43,6 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
     final Vector3f tmpV3 = new Vector3f();
 
     public UserInputHandler(PlayerInterface player, Runnable attackCallback) {
-        this.test = new PlayerSoundProvider(player);
         this.inputManager = player.getInputManager();
         this.assetManager = player.getAssetManager();
         this.rootNode = player.getRootNode();
@@ -66,7 +64,6 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
                 return;
             }
             userInfoBox.userInfo(this.componentManager);
-            inputManager.setCursorVisible(false);
             inputInit(UserInputHelper.getInputMaps(getUserInputConfig()));
             setInit(true);
         }
@@ -203,8 +200,8 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
     }
 
     public Vector3f getPlayerPosition() {
-        if (spatial != null) {
-            Vector3f worldTranslation = spatial.getWorldTranslation();
+        if (this.spatial != null) {
+            Vector3f worldTranslation = this.spatial.getWorldTranslation();
             float x = Math.round(worldTranslation.x);
             float y = Math.round(worldTranslation.y);
             float z = Math.round(worldTranslation.z);
