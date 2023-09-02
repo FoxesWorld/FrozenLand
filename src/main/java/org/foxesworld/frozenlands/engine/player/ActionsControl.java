@@ -36,7 +36,7 @@ public class ActionsControl extends AbstractControl {
     public ActionsControl(PlayerInterface playerInterface) {
         this.assetManager = playerInterface.getAssetManager();
         this.character = playerInterface.getCharacterControl();
-        this.soundProvider = new PlayerSoundProvider(playerInterface);
+        this.soundProvider = playerInterface.getSoundProvider();
     }
 
     private void initialize() {

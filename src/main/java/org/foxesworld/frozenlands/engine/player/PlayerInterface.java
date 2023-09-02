@@ -21,8 +21,7 @@ public interface PlayerInterface {
     PlayerData getPlayerData();
     AssetManager getAssetManager();
     int getHealth();
-    SoundProvider getSoundManager();
-    Map<String, List<AudioNode>> getPlayerSounds();
+    PlayerSoundProvider getSoundProvider();
     Node getRootNode();
     Node getGuiNode();
     Camera getFpsCam();

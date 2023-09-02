@@ -19,9 +19,9 @@ public class PlayerSoundProvider {
     private PlayerInterface playerInterface;
     private Node rootNode;
     private AudioNode walkAudio;
-    private float currentVolume = 0.0f; // Начальная громкость звука
-    private float targetVolume = 1.0f; // Целевая громкость звука
-    private float fadeDuration = 1.0f; // Длительность появления/затухания в секундах
+    private float currentVolume = 0.0f;
+    private float targetVolume = 1.0f;
+    private float fadeDuration = 1.0f;
     private float timeElapsed = 1.0f;
     private boolean fadingIn = false;
     private boolean fadingOut = false;
@@ -31,19 +31,19 @@ public class PlayerSoundProvider {
         this.frozenLands = playerInterface.getKernelInterface().getFrozenLands();
         this.playerInterface = playerInterface;
         this.rootNode = playerInterface.getRootNode();
-        this.soundProvider = playerInterface.getSoundManager();
+        this.soundProvider = playerInterface.getKernelInterface().getSoundManager();
     }
 
     public void playWalkAudio(String userState) {
 
-        walkAudio = soundProvider.getRandomAudioNode(playerInterface.getPlayerSounds().get(userState));
+        walkAudio = soundProvider.getRandomAudioNode(soundProvider.getSoundBlock("player").get(userState));
         if (walkAudio != null) {
             thisAudio = walkAudio;
             walkAudio.setLocalTranslation(playerInterface.getPlayerPosition());
-            walkAudio.setPitch(playerInterface.getPlayerData().getCurrentSpeed() / 4);
+            walkAudio.setPitch(1);//playerInterface.getPlayerData().getCurrentSpeed() / 4
             rootNode.attachChild(walkAudio);
             walkAudio.play();
-            fadeInAudio(walkAudio); // Начнем с плавного появления звука
+            fadeInAudio(walkAudio);
         }
         stopWalkAudio();
     }
@@ -51,22 +51,20 @@ public class PlayerSoundProvider {
     public void stopWalkAudio() {
         if (walkAudio != null) {
             if (fadingIn) {
-                // Если звук плавно появляется, остановим плавное появление
                 frozenLands.getTimer().reset();
                 fadingIn = false;
             }
             if (fadingOut) {
-                // Если звук плавно затухает, остановим плавное затухание
                 frozenLands.getTimer().reset();
                 fadingOut = false;
             }
 
-            fadeOutAudio(thisAudio); // Начнем плавное затухание звука
+            fadeOutAudio(thisAudio);
         }
     }
 
     private void fadeInAudio(AudioNode audioNode) {
-        audioNode.setVolume(0.0f); // Начинаем с нулевой громкости
+        audioNode.setVolume(0.0f);
         audioNode.play();
 
         frozenLands.enqueue(() -> {
@@ -75,9 +73,9 @@ public class PlayerSoundProvider {
                 float alpha = FastMath.clamp(elapsed / fadeDuration, 0.0f, 1.0f);
                 float current = alpha * targetVolume;
                 audioNode.setVolume(current);
-                return false; // Продолжаем выполнение таймера
+                return false;
             } else {
-                return true; // Завершаем выполнение таймера
+                return true;
             }
         });
     }
@@ -89,11 +87,11 @@ public class PlayerSoundProvider {
                 float alpha = FastMath.clamp(elapsed / fadeDuration, 0.0f, 1.0f);
                 float current = (1.0f - alpha) * targetVolume;
                 audioNode.setVolume(current);
-                return false; // Продолжаем выполнение таймера
+                return false;
             } else {
                 audioNode.stop();
                 rootNode.detachChild(audioNode);
-                return true; // Завершаем выполнение таймера
+                return true;
             }
         });
     }
