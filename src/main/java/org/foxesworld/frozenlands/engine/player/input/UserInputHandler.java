@@ -1,6 +1,5 @@
 package org.foxesworld.frozenlands.engine.player.input;
 
-import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.audio.AudioSource;
 import com.jme3.bullet.control.BetterCharacterControl;
@@ -11,46 +10,36 @@ import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import com.jme3.scene.Node;
-import org.foxesworld.frozenlands.engine.player.PlayerData;
-import org.foxesworld.frozenlands.engine.player.PlayerInterface;
-import org.foxesworld.frozenlands.engine.player.PlayerSoundProvider;
 import org.foxesworld.automaton.ComponentManager;
+import org.foxesworld.frozenlands.engine.player.PlayerInterface;
 import org.foxesworld.frozenlands.engine.ui.UserInfo;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
 public class UserInputHandler extends UserInputAbstract implements UserInputHandlerInterface {
 
+    private PlayerInterface playerInterface;
+    private BetterCharacterControl characterControl;
     private int playerHealth;
     private ComponentManager componentManager;
     private UserInfo userInfoBox;
-    private BetterCharacterControl characterControl;
-    private PlayerData playerData;
-    private final InputManager inputManager;
-    private final Camera cam;
-    private final Node rootNode;
-    private final Node guiNode;
     private AudioNode walkAudio;
     private final Runnable attackCallback;
     private boolean[] directions = new boolean[4];
-    private final AssetManager assetManager;
-    final float[] angles = {0, 0, 0};
-    final Quaternion tmpRot = new Quaternion();
+    private final Map<String, List<AudioNode>> playerSounds;
     final Vector3f tmpV3 = new Vector3f();
+    float[] angles = {0, 0, 0};
 
     public UserInputHandler(PlayerInterface player, Runnable attackCallback) {
-        this.inputManager = player.getInputManager();
-        this.assetManager = player.getAssetManager();
-        this.rootNode = player.getRootNode();
-        this.guiNode = player.getGuiNode();
-        this.playerData = player.getPlayerData();
+        this.playerInterface = player;
+        this.playerSounds = player.getSoundManager().getSoundBlock("player");
         this.attackCallback = attackCallback;
-        this.cam = player.getFpsCam();
-        setUserInputConfig((HashMap<String, List<Object>>) player.getCFG().get("userInput"));
+        setUserInputConfig((HashMap<String, List<Object>>) player.getConfig().get("userInput"));
         this.componentManager = new ComponentManager();
         this.userInfoBox = new UserInfo(player);
     }
@@ -60,10 +49,11 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         if (!isInit()) {
             characterControl = spatial.getControl(BetterCharacterControl.class);
             if (characterControl == null) {
-                System.err.println(getClass() + " can be attached only to a spatial that has a BetterCharacterControl");
+                playerInterface.getLogger().error(getClass() + " can be attached only to a spatial that has a BetterCharacterControl");
                 return;
             }
             userInfoBox.userInfo(this.componentManager);
+            playerInterface.getInputManager().setCursorVisible(false);
             inputInit(UserInputHelper.getInputMaps(getUserInputConfig()));
             setInit(true);
         }
@@ -71,6 +61,7 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
 
     @Override
     protected void inputInit(Stack<String> inputMaps) {
+        InputManager inputManager = playerInterface.getInputManager();
         inputMaps.forEach(inputMap -> getUserInputConfig().get(inputMap).forEach(inputLine -> {
             InputType inputType = InputType.valueOf(inputMap.toUpperCase());
             int inputKey = (Integer) ((HashMap<?, ?>) inputLine).get("inputKey");
@@ -97,8 +88,8 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
 
     @Override
     public void onAnalog(String name, float value, float tpf) {
-        float rotationMultiplier = getPlayerState().equals(PlayerState.SPRINTING) ? playerData.getRotationMultiplierWalking() : playerData.getRotationMultiplierRunning();
-        value *= playerData.getCurrentSpeed() * rotationMultiplier;
+        float rotationMultiplier = getPlayerState().equals(PlayerState.SPRINTING) ? this.getRotationMultiplierWalking() : this.getRotationMultiplierRunning();
+        value *= this.getCurrentSpeed() * rotationMultiplier;
 
         switch (name) {
             case "Rotate_Left" -> angles[1] += value;
@@ -106,7 +97,7 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
             case "Rotate_Up" -> angles[0] -= value;
             case "Rotate_Down" -> angles[0] += value;
         }
-
+        Quaternion tmpRot = new Quaternion();
         angles[0] = FastMath.clamp(angles[0], -0.85f, 1.1f);
         tmpV3.set(Vector3f.UNIT_Z);
         tmpRot.fromAngles(angles);
@@ -125,19 +116,19 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
             case "Up" -> directions[2] = isPressed;
             case "Down" -> directions[3] = isPressed;
             case "Attack" -> {
-                playerData.setAttacking(isPressed);
+                this.setAttacking(isPressed);
                 if (isPressed) {
                     attackCallback.run();
                 }
             }
             case "Jump" -> {
-                playerData.setJumping(isPressed);
+                this.setJumping(isPressed);
                 if (isPressed) {
                     characterControl.jump();
                     characterControl.setPhysicsDamping(0);
                 }
             }
-            case "Run" -> playerData.setRunning(isPressed);
+            case "Run" -> this.setRunning(isPressed);
         }
     }
 
@@ -145,11 +136,11 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
     protected void movePlayer(Vector3f direction, float speedMultiplier, float tpf) {
         init();
         Quaternion tmpQtr = new Quaternion();
-        float targetSpeed = playerData.isRunning() ? playerData.getRunSpeed() : playerData.getWalkSpeed();
-        float speedChange = targetSpeed - playerData.getCurrentSpeed();
-        float actualSpeedChange = Math.signum(speedChange) * Math.min(playerData.getMaxSmoothSpeedChange() * tpf, Math.abs(speedChange));
-        playerData.setCurrentSpeed(playerData.getCurrentSpeed() + actualSpeedChange);
-        direction.multLocal(playerData.getCurrentSpeed() * speedMultiplier);
+        float targetSpeed = this.isRunning() ? this.getRunSpeed() : this.getWalkSpeed();
+        float speedChange = targetSpeed - this.getCurrentSpeed();
+        float actualSpeedChange = Math.signum(speedChange) * Math.min(this.getMaxSmoothSpeedChange() * tpf, Math.abs(speedChange));
+        this.setCurrentSpeed(this.getCurrentSpeed() + actualSpeedChange);
+        direction.multLocal(this.getCurrentSpeed() * speedMultiplier);
 
         tmpV3.set(characterControl.getViewDirection());
         tmpV3.y = 0;
@@ -161,7 +152,9 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         characterControl.setPhysicsDamping(0.9f);
         setPlayerState(direction, tpf);
 
-        this.componentManager.updateProgressBarValue("health", this.playerHealth);
+        updateMovementAudio(tpf);
+        playerInterface.getSoundManager().update(tpf);
+
         this.componentManager.updateLabelTexts(
                 new String[]{
                         "posX",
@@ -180,16 +173,16 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         // Only for rendering
     }
 
-    @Override
+
     protected void setPlayerState(Vector3f walkDirection, float tpf) {
-        if (walkDirection.lengthSquared() == 0 && playerData.getCurrentSpeed() == playerData.getWalkSpeed()) {
+        if (walkDirection.lengthSquared() == 0 && this.getCurrentSpeed() == this.getWalkSpeed()) {
             setPlayerState(PlayerState.STANDING);
         } else {
             if (walkDirection.lengthSquared() > 0) {
-                if (!characterControl.isOnGround() && Math.abs(playerData.getPlayerDistanceAboveGround(spatial)) <= 1) {
+                if (!characterControl.isOnGround() && Math.abs(this.getPlayerDistanceAboveGround(spatial)) <= 1) {
                     setPlayerState(PlayerState.FLYING);
                 } else {
-                    if (playerData.getCurrentSpeed() > playerData.getWalkSpeed()) {
+                    if (this.getCurrentSpeed() > this.getWalkSpeed()) {
                         setPlayerState(PlayerState.SPRINTING);
                     } else {
                         setPlayerState(PlayerState.WALKING);
@@ -199,9 +192,49 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         }
     }
 
+    private void updateMovementAudio(float tpf) {
+        float speed = this.getCurrentSpeed();
+        float interval = Math.max(1f, speed * 0.5f) / 2;
+
+        if (!getPlayerState().equals(PlayerState.STANDING)) {
+            if ((walkAudio == null || !walkAudio.getStatus().equals(AudioSource.Status.Playing))) {
+                playWalkAudio(getPlayerState().toString().toLowerCase());
+            } else {
+                interval -= tpf * speed;
+                if (interval <= 0) {
+                    interval = Math.max(1f, speed * 0.5f) / 2;
+                    playWalkAudio(getPlayerState().toString().toLowerCase());
+                }
+            }
+        } else {
+            stopWalkAudio();
+        }
+    }
+
+
+    private void playWalkAudio(String userState) {
+        stopWalkAudio();
+        walkAudio = playerInterface.getSoundManager().getRandomAudioNode(playerSounds.get(userState));
+        if (walkAudio != null) {
+            walkAudio.setLocalTranslation(spatial.getWorldTranslation());
+            walkAudio.setPitch(this.getCurrentSpeed() / 4);
+            playerInterface.getRootNode().attachChild(walkAudio);
+            walkAudio.play();
+        }
+    }
+
+    private void stopWalkAudio() {
+        if (walkAudio != null && walkAudio.getStatus().equals(AudioSource.Status.Playing)) {
+            walkAudio.stop();
+            playerInterface.getRootNode().detachChild(walkAudio);
+            walkAudio = null;
+        }
+    }
+
+
     public Vector3f getPlayerPosition() {
-        if (this.spatial != null) {
-            Vector3f worldTranslation = this.spatial.getWorldTranslation();
+        if (spatial != null) {
+            Vector3f worldTranslation = spatial.getWorldTranslation();
             float x = Math.round(worldTranslation.x);
             float y = Math.round(worldTranslation.y);
             float z = Math.round(worldTranslation.z);
@@ -214,9 +247,8 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
     public void setPlayerHealth(int health) {
         this.playerHealth = health;
     }
-
     @Override
-    public Node getRootNode() {
-        return this.rootNode;
+    public Map<String, List<AudioNode>> getPlayerSounds() {
+        return this.playerSounds;
     }
 }

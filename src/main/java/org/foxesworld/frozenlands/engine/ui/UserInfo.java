@@ -15,8 +15,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 public class UserInfo {
-    /*TODO
-    *  Make it working through UIEngine */
 
     private Node guiNode;
     private Camera cam;
@@ -24,14 +22,14 @@ public class UserInfo {
 
     public UserInfo(PlayerInterface playerInterface) {
         this.guiNode = playerInterface.getGuiNode();
-        this.cam = playerInterface.getFpsCam();
+        this.cam = playerInterface.getPlayerOptions().getFpsCam();
         this.playerInterface = playerInterface;
     }
 
     public void userInfo(ComponentManager componentManager){
         Automaton automaton = new Automaton(componentManager);
-        automaton.setScreenHeight(cam.getHeight());
-        automaton.setScreenWidth(cam.getWidth());
+        automaton.setScreenHeight(this.cam.getHeight());
+        automaton.setScreenWidth(this.cam.getWidth());
         JsonObject object = parseJsonObjectFromStream(UserInfo.class.getClassLoader().getResourceAsStream("ui/forms/userInfo.json"));
         guiNode.attachChild(automaton.createContainerFromJson(object));
     }

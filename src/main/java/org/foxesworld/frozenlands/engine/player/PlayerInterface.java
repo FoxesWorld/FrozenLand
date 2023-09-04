@@ -8,28 +8,25 @@ import com.jme3.input.InputManager;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
-import org.foxesworld.frozenlands.engine.KernelInterface;
 import org.foxesworld.frozenlands.engine.player.input.UserInputHandler;
 import org.foxesworld.frozenlands.engine.providers.sound.SoundProvider;
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Map;
 
 public interface PlayerInterface {
-    KernelInterface getKernelInterface();
-    BetterCharacterControl getCharacterControl();
-    PlayerData getPlayerData();
+    PlayerOptions getPlayerOptions();
+    PlayerModel getPlayerModel();
     AssetManager getAssetManager();
-    int getHealth();
-    PlayerSoundProvider getSoundProvider();
+    Logger getLogger();
+    SoundProvider getSoundManager();
+    Map<String, List<AudioNode>> getPlayerSounds();
     Node getRootNode();
     Node getGuiNode();
-    Camera getFpsCam();
     AppStateManager getStateManager();
     Vector3f getPlayerPosition();
     UserInputHandler getUserInputHandler();
-    Vector3f getJumpForce();
     InputManager getInputManager();
-    Map getCFG();
-    void setHealth(int health);
+    Map getConfig();
 }

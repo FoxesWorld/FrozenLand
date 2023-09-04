@@ -1,14 +1,14 @@
 {
   "floatContainer": 0.5,
-  "width": 200,
-  "height": 250,
+  "width": "10%",
+  "height": "16%",
   "verticalAlignment": "top",
   "horizontalAlignment": "right",
   "children": [
     {
       "type": "label",
       "fontSize": 20,
-      "text": "Player position",
+      "text": "Position",
       "id": "test",
       "icon": "ui/icons/pos.png",
       "iconSize": "64,64",

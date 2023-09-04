@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import java.util.Map;
 
 public class Kernel extends BaseAppState implements KernelInterface {
+
     private final FrozenLands frozenLands;
     private  final Logger logger;
     private final Map CONFIG;
@@ -75,12 +76,11 @@ public class Kernel extends BaseAppState implements KernelInterface {
         terrainManager = new TerrainManager(this);
         rootNode.attachChild(terrainManager.getTerrain());
         rootNode.attachChild(terrainManager.getMountains());
-        //if(!terrainManager.getTerrain().equals(null)) {
+
         player = new Player(this);
-        player.addPlayer(camera, new Vector3f(0, 600, 0));
+        player.addPlayer(camera, new Vector3f(0, 300, 0));
         this.stateManager.attach(new Shaders(this));
         this.stateManager.attach(new WorldUpdate(this));
-        //}
     }
 
     @Override
@@ -94,14 +94,8 @@ public class Kernel extends BaseAppState implements KernelInterface {
     @Override
     public void update(float tpf) {
     }
-
     @Override
-    public FrozenLands getFrozenLands() {
-        return frozenLands;
-    }
-
-    @Override
-    public Map getCONFIG() {
+    public Map getConfig() {
         return CONFIG;
     }
     @Override
