@@ -10,6 +10,4 @@ public interface UserInputHandlerInterface {
 
     void init();
     Vector3f getPlayerPosition();
-    Map<String, List<AudioNode>> getPlayerSounds();
-    void setPlayerHealth(int health);
 }

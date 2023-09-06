@@ -68,7 +68,7 @@ public class CameraFollowSpatial extends AbstractControl {
             // Location is the camera node location
             loc.set(cameraNode.getWorldTranslation());
         }
-        cam.setLocation(loc);//.add(new Vector3f(-10,0,0))
+        cam.setLocation(loc);//.add(new Vector3f(-10,0,0)
 
         // if character exists: Direction is character direction
         if (character != null) {

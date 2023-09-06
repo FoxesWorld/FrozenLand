@@ -60,8 +60,8 @@ public class FrozenLands extends SimpleApplication implements FrozenLandsInterfa
 
         bulletAppState = new BulletAppState();
 
-        //bulletapp.setDebugViewPorts(viewPort);
-        //bulletapp.setDebugEnabled(true);
+        //bulletAppState.setDebugViewPorts(viewPort);
+        //bulletAppState.setDebugEnabled(true);
 
         GuiGlobals globals = GuiGlobals.getInstance();
         BaseStyles.loadStyleResources("themes/medieval/medieval.groovy");

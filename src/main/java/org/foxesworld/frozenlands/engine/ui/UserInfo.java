@@ -5,7 +5,7 @@ import com.google.gson.JsonParser;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import org.foxesworld.automaton.Automaton;
-import org.foxesworld.automaton.ComponentManager;
+import org.foxesworld.automaton.compoonent.ComponentManager;
 import org.foxesworld.frozenlands.engine.player.PlayerInterface;
 
 import java.io.BufferedReader;

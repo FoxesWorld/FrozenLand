@@ -80,4 +80,9 @@ public class PlayerOptions {
     public void setCharacterControl(BetterCharacterControl characterControl) {
         this.characterControl = characterControl;
     }
+
+    public void setInitialHealth(int initialHealth) {
+        this.initialHealth = initialHealth;
+    }
+
 }

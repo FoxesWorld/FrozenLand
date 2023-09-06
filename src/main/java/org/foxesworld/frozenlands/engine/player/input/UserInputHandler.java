@@ -1,7 +1,5 @@
 package org.foxesworld.frozenlands.engine.player.input;
 
-import com.jme3.audio.AudioNode;
-import com.jme3.audio.AudioSource;
 import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.controls.KeyTrigger;
@@ -12,32 +10,27 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import org.foxesworld.automaton.ComponentManager;
+import org.foxesworld.automaton.compoonent.ComponentManager;
 import org.foxesworld.frozenlands.engine.player.PlayerInterface;
 import org.foxesworld.frozenlands.engine.ui.UserInfo;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 
 public class UserInputHandler extends UserInputAbstract implements UserInputHandlerInterface {
 
     private PlayerInterface playerInterface;
     private BetterCharacterControl characterControl;
-    private int playerHealth;
     private ComponentManager componentManager;
     private UserInfo userInfoBox;
-    private AudioNode walkAudio;
     private final Runnable attackCallback;
     private boolean[] directions = new boolean[4];
-    private final Map<String, List<AudioNode>> playerSounds;
     final Vector3f tmpV3 = new Vector3f();
     float[] angles = {0, 0, 0};
 
     public UserInputHandler(PlayerInterface player, Runnable attackCallback) {
         this.playerInterface = player;
-        this.playerSounds = player.getSoundManager().getSoundBlock("player");
         this.attackCallback = attackCallback;
         setUserInputConfig((HashMap<String, List<Object>>) player.getConfig().get("userInput"));
         this.componentManager = new ComponentManager();
@@ -152,9 +145,6 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         characterControl.setPhysicsDamping(0.9f);
         setPlayerState(direction, tpf);
 
-        updateMovementAudio(tpf);
-        playerInterface.getSoundManager().update(tpf);
-
         this.componentManager.updateLabelTexts(
                 new String[]{
                         "posX",
@@ -192,45 +182,6 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         }
     }
 
-    private void updateMovementAudio(float tpf) {
-        float speed = this.getCurrentSpeed();
-        float interval = Math.max(1f, speed * 0.5f) / 2;
-
-        if (!getPlayerState().equals(PlayerState.STANDING)) {
-            if ((walkAudio == null || !walkAudio.getStatus().equals(AudioSource.Status.Playing))) {
-                playWalkAudio(getPlayerState().toString().toLowerCase());
-            } else {
-                interval -= tpf * speed;
-                if (interval <= 0) {
-                    interval = Math.max(1f, speed * 0.5f) / 2;
-                    playWalkAudio(getPlayerState().toString().toLowerCase());
-                }
-            }
-        } else {
-            stopWalkAudio();
-        }
-    }
-
-
-    private void playWalkAudio(String userState) {
-        stopWalkAudio();
-        walkAudio = playerInterface.getSoundManager().getRandomAudioNode(playerSounds.get(userState));
-        if (walkAudio != null) {
-            walkAudio.setLocalTranslation(spatial.getWorldTranslation());
-            walkAudio.setPitch(this.getCurrentSpeed() / 4);
-            playerInterface.getRootNode().attachChild(walkAudio);
-            walkAudio.play();
-        }
-    }
-
-    private void stopWalkAudio() {
-        if (walkAudio != null && walkAudio.getStatus().equals(AudioSource.Status.Playing)) {
-            walkAudio.stop();
-            playerInterface.getRootNode().detachChild(walkAudio);
-            walkAudio = null;
-        }
-    }
-
 
     public Vector3f getPlayerPosition() {
         if (spatial != null) {
@@ -242,13 +193,5 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         } else {
             return new Vector3f(0, 0, 0);
         }
-    }
-    @Override
-    public void setPlayerHealth(int health) {
-        this.playerHealth = health;
-    }
-    @Override
-    public Map<String, List<AudioNode>> getPlayerSounds() {
-        return this.playerSounds;
     }
 }
