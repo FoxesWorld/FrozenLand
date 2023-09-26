@@ -15,7 +15,7 @@ import org.foxesworld.frozenlands.FrozenLands;
 import org.foxesworld.frozenlands.engine.discord.Discord;
 import org.foxesworld.frozenlands.engine.player.Player;
 import org.foxesworld.frozenlands.engine.providers.material.MaterialProvider;
-import org.foxesworld.frozenlands.engine.providers.model.ModelpROVIDER;
+import org.foxesworld.frozenlands.engine.providers.model.ModelProvider;
 import org.foxesworld.frozenlands.engine.providers.sound.SoundProvider;
 import org.foxesworld.frozenlands.engine.shaders.Shaders;
 import org.foxesworld.frozenlands.engine.world.WorldUpdate;
@@ -37,7 +37,7 @@ public class Kernel extends BaseAppState implements KernelInterface {
     protected AppStateManager stateManager;
     protected SoundProvider soundProvider;
     protected MaterialProvider materialProvider;
-    protected ModelpROVIDER modelpROVIDER;
+    protected ModelProvider modelProvider;
 
     protected Camera camera;
     protected BulletAppState bulletAppState;
@@ -66,7 +66,7 @@ public class Kernel extends BaseAppState implements KernelInterface {
         this.soundProvider = new SoundProvider(this);
         this.materialProvider = new MaterialProvider(this);
         this.materialProvider.addMaterials();
-        this.modelpROVIDER = new ModelpROVIDER(assetManager, bulletAppState, rootNode);
+        this.modelProvider = new ModelProvider(this);
 
         this.discord = new Discord("In lobby", "Dev Env");
         this.discord.discordRpcStart("frozenLogo");

@@ -13,60 +13,57 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.foxesworld.frozenlands.engine.utils.Utils.inputJsonReader;
+
 public class SoundProvider {
     private KernelInterface kernelInterface;
     private Map<String, Map<String, List<AudioNode>>> Sounds = new HashMap<>();
 
     public SoundProvider(KernelInterface kernelInterface) {
         this.kernelInterface = kernelInterface;
-        loadSounds(kernelInterface.getAssetManager().locateAsset(new AssetKey<>("sounds.json")).openStream());
+        loadSounds("sounds.json");
     }
 
-    private void loadSounds(InputStream inputStream) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonRoot = objectMapper.readTree(inputStream);
-            Iterator<String> iterator = jsonRoot.fieldNames();
-            while (iterator.hasNext()) {
-                String currentBlock = iterator.next();
-                kernelInterface.getLogger().info("====== Scanning block " + currentBlock + " ======");
-                JsonNode eventsArray = jsonRoot.get(currentBlock);
-                Map<String, List<AudioNode>> soundBlock = new HashMap<>();
-                eventsArray.forEach(eventNode -> {
-                    AtomicInteger soundsNum = new AtomicInteger();
-                    String event = eventNode.get("event").asText();
-                    String sndPackage = (eventNode.has("package")) ? eventNode.get("package").asText() : "";
-                    JsonNode settingsNode = eventNode.get("settings");
-                    List<AudioNode> audioNodes = new ArrayList<>();
-                    JsonNode soundsArray = eventNode.get("sounds");
-                    soundsArray.forEach(soundNode -> {
+    private void loadSounds(String path) {
+        JsonNode jsonRoot = inputJsonReader(kernelInterface.getAssetManager(), path);
+        Iterator<String> iterator = jsonRoot.fieldNames();
+        while (iterator.hasNext()) {
+            String currentBlock = iterator.next();
+            kernelInterface.getLogger().info("====== Scanning block " + currentBlock + " ======");
+            JsonNode eventsArray = jsonRoot.get(currentBlock);
+            Map<String, List<AudioNode>> soundBlock = new HashMap<>();
+            eventsArray.forEach(eventNode -> {
+                AtomicInteger soundsNum = new AtomicInteger();
+                String event = eventNode.get("event").asText();
+                String sndPackage = (eventNode.has("package")) ? eventNode.get("package").asText() : "";
+                JsonNode settingsNode = eventNode.get("settings");
+                List<AudioNode> audioNodes = new ArrayList<>();
+                JsonNode soundsArray = eventNode.get("sounds");
+                soundsArray.forEach(soundNode -> {
 
-                        String fileName = soundNode.asText();
-                        AudioData.DataType dataType = AudioData.DataType.valueOf(settingsNode.get("dataType").asText());
-                        String filePath = "sounds/" + currentBlock + '/' + sndPackage + event + fileName;
-                        AudioNode audioNode = new AudioNode(kernelInterface.getAssetManager(), filePath, dataType);
+                    String fileName = soundNode.asText();
+                    AudioData.DataType dataType = AudioData.DataType.valueOf(settingsNode.get("dataType").asText());
+                    String filePath = "sounds/" + currentBlock + '/' + sndPackage + event + fileName;
+                    AudioNode audioNode = new AudioNode(kernelInterface.getAssetManager(), filePath, dataType);
 
-                        if (settingsNode != null) {
-                            if (settingsNode.has("volume")) {
-                                audioNode.setVolume((float) settingsNode.get("volume").asDouble());
-                            }
-                            if (settingsNode.has("positional")) {
-                                audioNode.setPositional(settingsNode.get("volume").asBoolean(false));
-                            }
-                            if (settingsNode.has("pitch")) {
-                                audioNode.setPitch((float) settingsNode.get("pitch").asDouble());
-                            }
+                    if (settingsNode != null) {
+                        if (settingsNode.has("volume")) {
+                            audioNode.setVolume((float) settingsNode.get("volume").asDouble());
                         }
-                        audioNodes.add(audioNode);
-                        soundsNum.getAndIncrement();
-                    });
-                    kernelInterface.getLogger().info("Added " + soundsNum + " sounds to '" + event + "' event");
-                    soundBlock.put(event, audioNodes);
+                        if (settingsNode.has("positional")) {
+                            audioNode.setPositional(settingsNode.get("volume").asBoolean(false));
+                        }
+                        if (settingsNode.has("pitch")) {
+                            audioNode.setPitch((float) settingsNode.get("pitch").asDouble());
+                        }
+                    }
+                    audioNodes.add(audioNode);
+                    soundsNum.getAndIncrement();
                 });
-                Sounds.put(currentBlock, soundBlock);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+                kernelInterface.getLogger().info("Added " + soundsNum + " sounds to '" + event + "' event");
+                soundBlock.put(event, audioNodes);
+            });
+            Sounds.put(currentBlock, soundBlock);
         }
         kernelInterface.getLogger().info("Sound scanning done!");
     }
