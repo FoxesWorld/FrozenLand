@@ -6,7 +6,7 @@ plugins {
 
 apply plugin: 'java'
 
-group 'org.example'
+group 'org.foxesworld'
 version '1.0-SNAPSHOT'
 
 def libsDir = project.projectDir.toString() + File.separator + "lib"
@@ -39,7 +39,7 @@ dependencies {
 
     //Third Party
     implementation files('lib/foxesworld/cfgProvider-1.5.0-Release.jar')
-    implementation files('lib/foxesworld/LemurAutomaton-1.2.6.jar')
+    implementation files('lib/foxesworld/LemurAutomaton-1.2.7.jar')
     implementation files('lib/j3map-1.0-SNAPSHOT.jar')
 
     //PARSERS

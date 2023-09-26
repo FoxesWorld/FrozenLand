@@ -10,7 +10,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import org.foxesworld.automaton.compoonent.ComponentManager;
+import org.foxesworld.automaton.elements.components.ComponentManager;
 import org.foxesworld.frozenlands.engine.player.PlayerInterface;
 import org.foxesworld.frozenlands.engine.ui.UserInfo;
 
