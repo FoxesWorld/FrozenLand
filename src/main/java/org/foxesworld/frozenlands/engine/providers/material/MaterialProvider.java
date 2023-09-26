@@ -3,7 +3,6 @@ package org.foxesworld.frozenlands.engine.providers.material;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonArray;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.texture.Texture;
@@ -12,7 +11,6 @@ import org.foxesworld.frozenlands.engine.KernelInterface;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -27,9 +25,9 @@ public class MaterialProvider extends MaterialAbstract {
         setAssetManager(kernelInterface);
     }
     @Override
-    public void addMaterials() {
+    public void loadMaterials(String path) {
         getKernelInterface().getLogger().info("Adding materials");
-        JsonNode materialsNode = inputJsonReader(getKernelInterface().getAssetManager(), "materials.json");
+        JsonNode materialsNode = inputJsonReader(getKernelInterface().getAssetManager(), path);
         materialsNode.forEach(material -> {
             String[] matArr = material.asText().split("#");
             String mat = matArr[0];
@@ -37,6 +35,7 @@ public class MaterialProvider extends MaterialAbstract {
             getKernelInterface().getLogger().info("  - Adding '" + mat + "' material of type " + type);
             Materials.put(mat + '#' + type, createMat(mat, type));
         });
+        getKernelInterface().getLogger().info("Finished adding materials, total matAmount: " + Materials.size());
     }
     @Override
     public Material createMat(String dir, String type) {

@@ -27,7 +27,7 @@ public class ModelProvider {
         this.rootNode = kernelInterface.getRootNode();
     }
 
-    public Spatial addModels(String modelPath, String material) {
+    public Spatial loadModels(String modelPath, String material) {
         Spatial model = loadModel(modelPath);
         model.setMaterial(kernelInterface.getMaterialManager().getMaterial(material));
         this.rootNode.attachChild(model);

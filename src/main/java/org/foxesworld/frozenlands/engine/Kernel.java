@@ -29,8 +29,9 @@ import java.util.Map;
 public class Kernel extends BaseAppState implements KernelInterface {
 
     private final FrozenLands frozenLands;
-    private  final Logger logger;
+    private final Logger logger;
     private final Map CONFIG;
+
     protected final AssetManager assetManager;
     protected final Discord discord;
     protected final ViewPort viewPort;
@@ -63,9 +64,13 @@ public class Kernel extends BaseAppState implements KernelInterface {
         this.CONFIG = frozenLands.getCONFIG();
         this.logger = frozenLands.getLogger();
         this.guiNode = frozenLands.getGuiNode();
+
         this.soundProvider = new SoundProvider(this);
+        this.soundProvider.loadSounds("sounds.json");
+
         this.materialProvider = new MaterialProvider(this);
-        this.materialProvider.addMaterials();
+        this.materialProvider.loadMaterials("materials.json");
+
         this.modelProvider = new ModelProvider(this);
 
         this.discord = new Discord("In lobby", "Dev Env");
@@ -84,68 +89,89 @@ public class Kernel extends BaseAppState implements KernelInterface {
     }
 
     @Override
-    protected void initialize(Application application) {}
+    protected void initialize(Application application) {
+    }
+
     @Override
-    protected void cleanup(Application application) {}
+    protected void cleanup(Application application) {
+    }
+
     @Override
-    protected void onEnable() {}
+    protected void onEnable() {
+    }
+
     @Override
-    protected void onDisable() {}
+    protected void onDisable() {
+    }
+
     @Override
     public void update(float tpf) {
     }
+
     @Override
     public Map getConfig() {
         return CONFIG;
     }
+
     @Override
     public AssetManager getAssetManager() {
         return assetManager;
     }
+
     @Override
-    public AppStateManager appStateManager(){ return frozenLands.getStateManager(); }
+    public AppStateManager appStateManager() {return frozenLands.getStateManager();}
+
     @Override
-    public InputManager getInputManager(){ return  frozenLands.getInputManager();}
+    public InputManager getInputManager() {return frozenLands.getInputManager();}
+
     @Override
     public SoundProvider getSoundManager() {
         return soundProvider;
     }
+
     @Override
     public MaterialProvider getMaterialManager() {
         return materialProvider;
     }
+
     @Override
     public Camera getCamera() {
         return camera;
     }
+
     @Override
     public BulletAppState getBulletAppState() {
         return bulletAppState;
     }
+
     @Override
     public Node getRootNode() {
         return rootNode;
     }
+
     @Override
     public Logger getLogger() {
         return this.logger;
     }
+
     @Override
     public Player getPlayer() {
         return player;
     }
+
     @Override
-    public Sky getSky(){
-        return sky;
-    }
+    public Sky getSky() {return sky;}
+
     @Override
     public ViewPort getViewPort() {
         return this.viewPort;
     }
+
     @Override
     public Node getGuiNode() {
         return guiNode;
     }
+
     @Override
     public FilterPostProcessor getFpp() {
         return this.fpp;

@@ -17,14 +17,14 @@ import static org.foxesworld.frozenlands.engine.utils.Utils.inputJsonReader;
 
 public class SoundProvider {
     private KernelInterface kernelInterface;
+    private int totalSounds = 0;
     private Map<String, Map<String, List<AudioNode>>> Sounds = new HashMap<>();
 
     public SoundProvider(KernelInterface kernelInterface) {
         this.kernelInterface = kernelInterface;
-        loadSounds("sounds.json");
     }
 
-    private void loadSounds(String path) {
+    public void loadSounds(String path) {
         JsonNode jsonRoot = inputJsonReader(kernelInterface.getAssetManager(), path);
         Iterator<String> iterator = jsonRoot.fieldNames();
         while (iterator.hasNext()) {
@@ -59,13 +59,14 @@ public class SoundProvider {
                     }
                     audioNodes.add(audioNode);
                     soundsNum.getAndIncrement();
+                    totalSounds+=soundsNum.get();
                 });
                 kernelInterface.getLogger().info("Added " + soundsNum + " sounds to '" + event + "' event");
                 soundBlock.put(event, audioNodes);
             });
             Sounds.put(currentBlock, soundBlock);
         }
-        kernelInterface.getLogger().info("Sound scanning done!");
+        kernelInterface.getLogger().info("Finished adding sounds, total sndAmount: " + Sounds.size() + "x" + totalSounds);
     }
 
     public Map<String, List<AudioNode>> getSoundBlock(String blockName) {
