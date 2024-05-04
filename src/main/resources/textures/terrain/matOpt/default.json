@@ -5,35 +5,35 @@
       "regName": "region1ColorMap",
       "regOptions": {
         "texture": "region1/snow-diff.jpg",
-        "wrap": "REPEAT"
+        "wrap": "Repeat"
       }
     },
     {
       "regName": "region2ColorMap",
       "regOptions": {
         "texture": "region1/snow-diff.jpg",
-        "wrap": "REPEAT"
+        "wrap": "Repeat"
       }
     },
     {
       "regName": "region3ColorMap",
       "regOptions": {
         "texture": "region2/snow-field-diff.jpg",
-        "wrap": "REPEAT"
+        "wrap": "Repeat"
       }
     },
     {
       "regName": "region4ColorMap",
       "regOptions": {
         "texture": "region2/snow-field-diff.jpg",
-        "wrap": "REPEAT"
+        "wrap": "Repeat"
       }
     },
     {
       "regName": "slopeColorMap",
       "regOptions": {
         "texture": "region2/snow-field-diff.jpg",
-        "wrap": "REPEAT"
+        "wrap": "Repeat"
       }
     }
   ],

@@ -5,28 +5,28 @@
       "regName": "Alpha",
       "regOptions": {
         "texture": "alphamap_horizon.png",
-        "wrap": "REPEAT"
+        "wrap": "Repeat"
       }
     },
     {
       "regName": "Tex1",
       "regOptions": {
         "texture": "region2/snow-field-diff.jpg",
-        "wrap": "REPEAT"
+        "wrap": "Repeat"
       }
     },
     {
       "regName": "Tex2",
       "regOptions": {
         "texture": "region1/snow-diff.jpg",
-        "wrap": "REPEAT"
+        "wrap": "Repeat"
       }
     },
     {
       "regName": "Tex3",
       "regOptions": {
         "texture": "region2/snow-field-diff.jpg",
-        "wrap": "REPEAT"
+        "wrap": "Repeat"
       }
     }
   ],

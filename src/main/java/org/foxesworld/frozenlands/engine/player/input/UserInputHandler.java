@@ -1,5 +1,6 @@
 package org.foxesworld.frozenlands.engine.player.input;
 
+import com.google.gson.internal.LinkedTreeMap;
 import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.controls.KeyTrigger;
@@ -17,6 +18,7 @@ import org.foxesworld.frozenlands.engine.ui.UserInfo;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 public class UserInputHandler extends UserInputAbstract implements UserInputHandlerInterface {
@@ -56,23 +58,56 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
     @Override
     protected void inputInit(Stack<String> inputMaps) {
         InputManager inputManager = playerInterface.getInputManager();
-        inputMaps.forEach(inputMap -> getUserInputConfig().get(inputMap).forEach(inputLine -> {
-            InputType inputType = InputType.valueOf(inputMap.toUpperCase());
-            int inputKey = (Integer) ((HashMap<?, ?>) inputLine).get("inputKey");
-            String inputName = (String) ((HashMap<?, ?>) inputLine).get("inputName");
 
-            switch (inputType) {
-                case KEYBOARD -> inputManager.addMapping(inputName, new KeyTrigger(inputKey));
-                case MOUSEAXIS -> {
-                    boolean negative = (Boolean) ((HashMap<?, ?>) inputLine).get("negative");
-                    inputManager.addMapping(inputName, new MouseAxisTrigger(inputKey, negative));
-                }
-                case MOUSEBUTTONS -> inputManager.addMapping(inputName, new MouseButtonTrigger(inputKey));
+        for (String inputMap : inputMaps) {
+            List<Object> userInputConfigs = getUserInputConfig().get(inputMap);
+            if (userInputConfigs == null) {
+                // Handle invalid inputMap
+                continue;
             }
 
-            inputManager.addListener(this, inputName);
-        }));
+            for (Object userInputConfigObj : userInputConfigs) {
+                if (!(userInputConfigObj instanceof Map)) {
+                    // Handle invalid userInputConfig
+                    continue;
+                }
+
+                Map<String, Object> userInputConfig = (Map<String, Object>) userInputConfigObj;
+
+                String inputName = (String) userInputConfig.get("inputName");
+                InputType inputType = InputType.valueOf(inputMap.toUpperCase());
+                if (inputType == null) {
+                    // Handle invalid inputType
+                    continue;
+                }
+
+                Object inputKeyObject = userInputConfig.get("inputKey");
+                if (!(inputKeyObject instanceof Integer)) {
+                    // Handle invalid inputKey
+                    continue;
+                }
+
+                int inputKey = (Integer) inputKeyObject;
+
+                switch (inputType) {
+                    case KEYBOARD:
+                        inputManager.addMapping(inputName, new KeyTrigger(inputKey));
+                        break;
+                    case MOUSEAXIS:
+                        boolean negative = (Boolean) userInputConfig.get("negative");
+                        inputManager.addMapping(inputName, new MouseAxisTrigger(inputKey, negative));
+                        break;
+                    case MOUSEBUTTONS:
+                        inputManager.addMapping(inputName, new MouseButtonTrigger(inputKey));
+                        break;
+                }
+
+                inputManager.addListener(this, inputName);
+            }
+        }
     }
+
+
 
     @Override
     protected void controlUpdate(float tpf) {

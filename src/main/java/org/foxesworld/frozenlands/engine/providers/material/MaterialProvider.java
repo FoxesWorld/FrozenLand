@@ -26,6 +26,7 @@ private final  Kernel kernel;
     public void loadMaterials(String path) {
         FrozenLands.logger.info("Adding materials");
         for (Materials mat: new Gson().fromJson(inputJsonReader(getKernel(), path), Materials[].class)) {
+            FrozenLands.logger.info("  - Adding '" + mat.getMatName() + "' material of type " + mat.getMatType());
             materials.put(mat.getMatName() + '#' + mat.getMatType(), createMat(mat.getMatName(), mat.getMatType()));
         }
 
@@ -38,16 +39,19 @@ private final  Kernel kernel;
         String baseDir = "textures/" + dir + '/';
         MatOpt matOpt = readMatConfig(baseDir + "matOpt/" + type + ".json");
         initMaterial(matOpt.getMatDef());
-        System.out.println(matOpt.getMatDef());
+        getMaterial().setName(dir);
         for(TextureInstance textureInstance: matOpt.getTextures()){
-            TextureWrap wrapType = TextureWrap.valueOf(textureInstance.getRegOptions().getWrap());
+            //TextureWrap wrapType = TextureWrap.valueOf(textureInstance.getRegOptions().getWrap());
             Texture thisTexture = getKernel().getAssetManager().loadTexture(baseDir + "textures/" + textureInstance.getRegOptions().getTexture());
-            wrapType(wrapType, thisTexture);
+            thisTexture.setWrap(Texture.WrapMode.valueOf(textureInstance.getRegOptions().getWrap()));
+            //wrapType(wrapType, thisTexture);
             // TODO
             // Image Size can be set here
-            System.out.println(textureInstance.getRegName());
-            System.out.println(thisTexture.getKey());
-            getMaterial().setTexture(textureInstance.getRegName(), thisTexture);
+            try {
+                getMaterial().setTexture(textureInstance.getRegName(), thisTexture);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
             textureNum++;
         }
 
@@ -55,7 +59,6 @@ private final  Kernel kernel;
             inputType(varOption.getVarName(), varOption.getVarOpt());
             varNum++;
         }
-
         FrozenLands.logger.info("    - "+ dir + '#'+type + " has " + textureNum + " textures and " + varNum + " vars");
 
         return getMaterial();
@@ -80,7 +83,7 @@ private final  Kernel kernel;
     private void inputType(String cfgTitle,VarOptions value) {
         VarType inputType = VarType.valueOf(value.getType().toUpperCase());
         switch (inputType) {
-            case FLOAT -> setMaterialFloat(cfgTitle, (Integer) value.getValue());
+            case FLOAT -> setMaterialFloat(cfgTitle, Integer.parseInt((String) value.getValue()));
             case BOOLEAN -> setMaterialBoolean(cfgTitle, (Boolean) value.getValue());
             case COLOR -> setMaterialColor(cfgTitle, parseColor((String) value.getValue()));
             case VECTOR -> {

@@ -24,15 +24,19 @@ public abstract class MaterialAbstract {
         getMaterial().setFloat(map, val);
     }
     public void setMaterialColor(String map, ColorRGBA color) {
-        getMaterial().setColor(map, color);
+        try {
+            getMaterial().setColor(map, color);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     public MaterialDef getMaterialDef() {
         return materialDef;
     }
     protected void initMaterial(String matDef) {
-        materialDef = (MaterialDef) kernel.getAssetManager().loadAsset(matDef);
-        material = new Material(getMaterialDef());
+        //materialDef = (MaterialDef) kernel.getAssetManager().loadAsset(matDef);
+        material = new Material(this.kernel.getAssetManager(), matDef);
     }
     public Kernel getKernel() {
         return kernel;

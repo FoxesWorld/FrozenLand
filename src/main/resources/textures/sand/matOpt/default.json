@@ -5,7 +5,7 @@
       "regName": "DiffuseMap",
       "regOptions": {
         "texture": "SandDiffuse.png",
-        "wrap": "REPEAT",
+        "wrap": "Repeat",
         "textureScale": "2.0, 2.0"
       }
     },
@@ -13,14 +13,14 @@
       "regName": "GlowMap",
       "regOptions": {
         "texture": "SandOcclussion.png",
-        "wrap": "REPEAT"
+        "wrap": "Repeat"
       }
     },
     {
       "regName": "NormalMap",
       "regOptions": {
         "texture": "SandNormal.png",
-        "wrap": "REPEAT"
+        "wrap": "Repeat"
       }
     }
   ],
