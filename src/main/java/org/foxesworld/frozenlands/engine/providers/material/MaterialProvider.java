@@ -3,13 +3,18 @@ package org.foxesworld.frozenlands.engine.providers.material;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.texture.Texture;
+import org.foxesworld.frozenlands.FrozenLands;
 import org.foxesworld.frozenlands.engine.KernelInterface;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,16 +31,15 @@ public class MaterialProvider extends MaterialAbstract {
     }
     @Override
     public void loadMaterials(String path) {
-        getKernelInterface().getLogger().info("Adding materials");
-        JsonNode materialsNode = inputJsonReader(getKernelInterface(), path);
-        materialsNode.forEach(material -> {
-            String[] matArr = material.asText().split("#");
-            String mat = matArr[0];
-            String type = matArr[1];
-            getKernelInterface().getLogger().info("  - Adding '" + mat + "' material of type " + type);
-            Materials.put(mat + '#' + type, createMat(mat, type));
-        });
-        getKernelInterface().getLogger().info("Finished adding materials, total matAmount: " + Materials.size());
+        FrozenLands.logger.info("Adding materials");
+        String materialsJson = inputJsonReader(getKernelInterface(), path);
+        MaterialAttributes[] jsonElement = new Gson().fromJson(materialsJson, (Type) MaterialAttributes.class);
+        for(MaterialAttributes mat: jsonElement){
+            FrozenLands.logger.info("  - Adding '" + mat.getMatName() + "' material of type " + mat.getMatType());
+            Materials.put(mat.getMatName() + '#' + mat.getMatType(), createMat(mat.getMatName(), mat.getMatType()));
+        }
+
+        FrozenLands.logger.info("Finished adding materials, total matAmount: " + Materials.size());
     }
     @Override
     public Material createMat(String dir, String type) {
@@ -56,7 +60,7 @@ public class MaterialProvider extends MaterialAbstract {
             inputType(cfgTitle, value);
             varNum.getAndIncrement();
         });
-        getKernelInterface().getLogger().info("    - "+ dir + '#'+type + " has " + textNum + " textures and " + varNum + " vars");
+        FrozenLands.logger.info("    - "+ dir + '#'+type + " has " + textNum + " textures and " + varNum + " vars");
 
         return getMaterial();
     }
@@ -128,6 +132,14 @@ public class MaterialProvider extends MaterialAbstract {
             System.out.println(ignored);
         }
         return map;
+    }
+
+    static class  MatOpt {
+        private String matDef;
+    }
+
+    static  class  Textures {
+
     }
 
     @FunctionalInterface

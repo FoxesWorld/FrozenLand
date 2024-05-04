@@ -3,6 +3,7 @@ package org.foxesworld.frozenlands.engine.providers.sound;
 import com.jme3.audio.AudioData;
 import com.jme3.audio.AudioNode;
 import com.jme3.audio.AudioSource;
+import org.foxesworld.frozenlands.FrozenLands;
 import org.foxesworld.frozenlands.engine.KernelInterface;
 
 import java.util.*;
@@ -20,11 +21,11 @@ public class SoundProvider {
     }
 
     public void loadSounds(String path) {
-        JsonNode jsonRoot = inputJsonReader(kernelInterface, path);
+        //JsonNode jsonRoot = inputJsonReader(kernelInterface, path);
         Iterator<String> iterator = jsonRoot.fieldNames();
         while (iterator.hasNext()) {
             String currentBlock = iterator.next();
-            kernelInterface.getLogger().info("====== Scanning block " + currentBlock + " ======");
+            FrozenLands.logger.info("====== Scanning block " + currentBlock + " ======");
             JsonNode eventsArray = jsonRoot.get(currentBlock);
             Map<String, List<AudioNode>> soundBlock = new HashMap<>();
             eventsArray.forEach(eventNode -> {

@@ -27,7 +27,6 @@ public class FrozenLands extends SimpleApplication implements FrozenLandsInterfa
     private FilterPostProcessor fpp;
     private Map CONFIG;
     private int numSamples;
-
     public static final Logger logger =  LogManager.getLogger(FrozenLands.class);
 
     public static void main(String[] args) {

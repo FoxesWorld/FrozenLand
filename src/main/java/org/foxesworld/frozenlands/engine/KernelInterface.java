@@ -28,7 +28,6 @@ public interface KernelInterface {
     InputManager getInputManager();
     Player getPlayer();
     Camera getCamera();
-    Logger getLogger();
     SoundProvider getSoundManager();
     MaterialProvider getMaterialManager();
     BulletAppState getBulletAppState();

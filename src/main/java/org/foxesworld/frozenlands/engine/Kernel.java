@@ -11,6 +11,7 @@ import com.jme3.post.FilterPostProcessor;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
+import org.apache.logging.log4j.Logger;
 import org.foxesworld.frozenlands.FrozenLands;
 import org.foxesworld.frozenlands.engine.discord.Discord;
 import org.foxesworld.frozenlands.engine.player.Player;
@@ -22,7 +23,6 @@ import org.foxesworld.frozenlands.engine.world.WorldUpdate;
 import org.foxesworld.frozenlands.engine.world.sky.Sky;
 import org.foxesworld.frozenlands.engine.world.terrain.TerrainManager;
 import org.foxesworld.frozenlands.engine.world.terrain.TerrainManagerInterface;
-import org.slf4j.Logger;
 
 import java.util.Map;
 
@@ -62,14 +62,14 @@ public class Kernel extends BaseAppState implements KernelInterface {
         this.bulletAppState = frozenLands.getBulletAppState();
         this.fpp = frozenLands.getFpp();
         this.CONFIG = frozenLands.getCONFIG();
-        this.logger = frozenLands.getLogger();
+        this.logger = FrozenLands.logger;
         this.guiNode = frozenLands.getGuiNode();
 
         this.soundProvider = new SoundProvider(this);
         this.soundProvider.loadSounds("data/sounds.dat");
 
         this.materialProvider = new MaterialProvider(this);
-        this.materialProvider.loadMaterials("data/materials.dat");
+        this.materialProvider.loadMaterials("data/materials.json");
 
         this.modelProvider = new ModelProvider(this);
 
@@ -147,11 +147,6 @@ public class Kernel extends BaseAppState implements KernelInterface {
     @Override
     public Node getRootNode() {
         return rootNode;
-    }
-
-    @Override
-    public Logger getLogger() {
-        return this.logger;
     }
 
     @Override

@@ -1,0 +1,18 @@
+[
+  {
+    "matName": "soil",
+    "matType": "default"
+  },
+  {
+    "matName": "sand",
+    "matType": "default"
+  },
+  {
+    "matName": "terrain",
+    "matType": "default"
+  },
+  {
+    "matName": "terrain",
+    "matType": "mount"
+  }
+]
