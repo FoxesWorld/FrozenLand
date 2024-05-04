@@ -14,5 +14,4 @@ public interface FrozenLandsInterface {
     ViewPort getViewPort();
     FilterPostProcessor getFpp();
     Map getCONFIG();
-    Logger getLogger();
 }

@@ -8,7 +8,6 @@ import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Spatial;
 
 public class PlayerOptions {
-
     private BetterCharacterControl characterControl;
     private String modelPath;
     private float scale;

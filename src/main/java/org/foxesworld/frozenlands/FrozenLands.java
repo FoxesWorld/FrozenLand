@@ -11,10 +11,10 @@ import com.jme3.post.FilterPostProcessor;
 import com.jme3.system.AppSettings;
 import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.lemur.style.BaseStyles;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.foxesworld.frozenlands.engine.Kernel;
 import org.foxesworld.frozenlands.engine.config.ConfigReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -28,7 +28,7 @@ public class FrozenLands extends SimpleApplication implements FrozenLandsInterfa
     private Map CONFIG;
     private int numSamples;
 
-    private final Logger logger = LoggerFactory.getLogger(FrozenLands.class);
+    public static final Logger logger =  LogManager.getLogger(FrozenLands.class);
 
     public static void main(String[] args) {
         FrozenLands app = new FrozenLands();
@@ -48,7 +48,7 @@ public class FrozenLands extends SimpleApplication implements FrozenLandsInterfa
 
     @Override
     public void simpleInitApp() {
-        CONFIG = new ConfigReader(new String[]{"userInput", "internal/sounds"}).getCfgMaps();
+        CONFIG = new ConfigReader(new String[]{"userInput", "engine"}).getCfgMaps();
         GuiGlobals.initialize(this);
         numSamples = getContext().getSettings().getSamples();
         assetManager.registerLoader(J3mapFactory.class, "j3map");
@@ -95,10 +95,6 @@ public class FrozenLands extends SimpleApplication implements FrozenLandsInterfa
     @Override
     public Map getCONFIG() {
         return this.CONFIG;
-    }
-    @Override
-    public Logger getLogger() {
-        return this.logger;
     }
 
 

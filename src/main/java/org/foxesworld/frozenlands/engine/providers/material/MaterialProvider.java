@@ -27,7 +27,7 @@ public class MaterialProvider extends MaterialAbstract {
     @Override
     public void loadMaterials(String path) {
         getKernelInterface().getLogger().info("Adding materials");
-        JsonNode materialsNode = inputJsonReader(getKernelInterface().getAssetManager(), path);
+        JsonNode materialsNode = inputJsonReader(getKernelInterface(), path);
         materialsNode.forEach(material -> {
             String[] matArr = material.asText().split("#");
             String mat = matArr[0];

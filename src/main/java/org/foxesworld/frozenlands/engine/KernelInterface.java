@@ -23,7 +23,7 @@ public interface KernelInterface {
     ViewPort getViewPort();
     FilterPostProcessor getFpp();
     AssetManager getAssetManager();
-    Map getConfig();
+    Map<Map, Map> getConfig();
     AppStateManager appStateManager();
     InputManager getInputManager();
     Player getPlayer();

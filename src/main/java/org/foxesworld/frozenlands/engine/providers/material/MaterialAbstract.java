@@ -10,9 +10,7 @@ public abstract class MaterialAbstract {
     private KernelInterface kernelInterface;
     private Material material;
     private MaterialDef materialDef;
-
     public abstract void loadMaterials(String path);
-
     public abstract  Material createMat(String dir, String type);
     public void setMaterialBoolean(String map, boolean val) {
         getMaterial().setBoolean(map, val);

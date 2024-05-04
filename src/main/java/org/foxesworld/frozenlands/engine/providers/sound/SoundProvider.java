@@ -1,15 +1,10 @@
 package org.foxesworld.frozenlands.engine.providers.sound;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jme3.asset.AssetKey;
 import com.jme3.audio.AudioData;
 import com.jme3.audio.AudioNode;
 import com.jme3.audio.AudioSource;
 import org.foxesworld.frozenlands.engine.KernelInterface;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -25,7 +20,7 @@ public class SoundProvider {
     }
 
     public void loadSounds(String path) {
-        JsonNode jsonRoot = inputJsonReader(kernelInterface.getAssetManager(), path);
+        JsonNode jsonRoot = inputJsonReader(kernelInterface, path);
         Iterator<String> iterator = jsonRoot.fieldNames();
         while (iterator.hasNext()) {
             String currentBlock = iterator.next();
