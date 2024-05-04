@@ -1,35 +1,56 @@
 {
   "matDef": "Common/MatDefs/Terrain/Terrain.j3md",
-  "textures": {
-    "Alpha": {
-      "texture": "alphamap_horizon.png",
-      "wrap": "REPEAT"
+  "textures": [
+    {
+      "regName": "Alpha",
+      "regOptions": {
+        "texture": "alphamap_horizon.png",
+        "wrap": "REPEAT"
+      }
     },
-    "Tex1": {
-      "texture": "region2/snow-field-diff.jpg",
-      "wrap": "REPEAT"
+    {
+      "regName": "Tex1",
+      "regOptions": {
+        "texture": "region2/snow-field-diff.jpg",
+        "wrap": "REPEAT"
+      }
     },
-    "Tex2": {
-      "texture": "region1/snow-diff.jpg",
-      "wrap": "REPEAT"
+    {
+      "regName": "Tex2",
+      "regOptions": {
+        "texture": "region1/snow-diff.jpg",
+        "wrap": "REPEAT"
+      }
     },
-    "Tex3": {
-      "texture": "region2/snow-field-diff.jpg",
-      "wrap": "REPEAT"
+    {
+      "regName": "Tex3",
+      "regOptions": {
+        "texture": "region2/snow-field-diff.jpg",
+        "wrap": "REPEAT"
+      }
     }
-  },
-  "vars": {
-    "Tex1Scale": {
-      "type": "float",
-      "value": 64
+  ],
+  "vars": [
+    {
+      "varName": "Tex1Scale",
+      "varOpt": {
+        "type": "float",
+        "value": 64
+      }
     },
-    "Tex2Scale": {
-      "type": "float",
-      "value": 64
+    {
+      "varName": "Tex2Scale",
+      "varOpt": {
+        "type": "float",
+        "value": 64
+      }
     },
-    "Tex3Scale": {
-      "type": "float",
-      "value": 64
+    {
+      "varName": "Tex3Scale",
+      "varOpt": {
+        "type": "float",
+        "value": 64
+      }
     }
-  }
+  ]
 }

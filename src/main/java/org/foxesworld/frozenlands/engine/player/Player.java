@@ -95,11 +95,6 @@ public class Player extends Node implements PlayerInterface {
     }
 
     @Override
-    public Logger getLogger() {
-        return kernelInterface.getLogger();
-    }
-
-    @Override
     public Vector3f getPlayerPosition() {
         return userInputHandler.getPlayerPosition();
     }

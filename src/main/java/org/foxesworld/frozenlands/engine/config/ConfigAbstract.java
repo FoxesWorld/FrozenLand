@@ -10,6 +10,7 @@ public abstract class ConfigAbstract {
     private String cfgFileExtension = "";
 
     protected void addCfgFiles(String[] configFiles){
+        CfgProvider.setDefaultConfFilesDir("config/");
         for(String cfgUnit: configFiles){
             String cfgFileName = cfgUnit + cfgFileExtension;
             new CfgProvider(cfgFileName);

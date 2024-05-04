@@ -17,6 +17,8 @@ import com.jme3.terrain.geomipmap.TerrainQuad;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+
+import org.foxesworld.frozenlands.FrozenLands;
 import org.foxesworld.frozenlands.engine.KernelInterface;
 import org.foxesworld.frozenlands.engine.config.Constants;
 import org.foxesworld.frozenlands.engine.utils.LodUtils;
@@ -97,13 +99,13 @@ public class TreeGen {
 
                             kernelInterface.getRootNode().attachChild(treeNode);
                             createCollisionControl(treeNode); // Generate collision for the tree
-                            kernelInterface.getLogger().debug("Attached "
+                            FrozenLands.logger.debug("Attached "
                                     + treeNode.hashCode()
                                     + treeNode.getLocalTranslation().toString());
                             break;
                         }
                     } else {
-                        kernelInterface.getLogger().debug("Placement MISS "
+                        FrozenLands.logger.debug("Placement MISS "
                                 + treeNode.hashCode()
                                 + treeNode.getLocalTranslation().toString());
                     }
@@ -112,7 +114,7 @@ public class TreeGen {
         } else {
             Stream<Spatial> stream = quadForest.stream();
             stream.forEach(treeNode -> {
-                kernelInterface.getLogger().debug("Attached again "
+                FrozenLands.logger.debug("Attached again "
                         + treeNode.hashCode() + treeNode.getLocalTranslation().toString());
                 kernelInterface.getRootNode().attachChild(treeNode);
             });

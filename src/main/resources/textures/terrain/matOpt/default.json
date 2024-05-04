@@ -1,51 +1,84 @@
 {
   "matDef": "MatDefs/HeightBasedTerrain.j3md",
-  "textures": {
-    "region1ColorMap": {
-      "texture": "region1/snow-diff.jpg",
-      "wrap": "REPEAT"
+  "textures": [
+    {
+      "regName": "region1ColorMap",
+      "regOptions": {
+        "texture": "region1/snow-diff.jpg",
+        "wrap": "REPEAT"
+      }
     },
-    "region2ColorMap": {
-      "texture": "region1/snow-diff.jpg",
-      "wrap": "REPEAT"
+    {
+      "regName": "region2ColorMap",
+      "regOptions": {
+        "texture": "region1/snow-diff.jpg",
+        "wrap": "REPEAT"
+      }
     },
-    "region3ColorMap": {
-      "texture": "region2/snow-field-diff.jpg",
-      "wrap": "REPEAT"
+    {
+      "regName": "region3ColorMap",
+      "regOptions": {
+        "texture": "region2/snow-field-diff.jpg",
+        "wrap": "REPEAT"
+      }
     },
-    "region4ColorMap": {
-      "texture": "region2/snow-field-diff.jpg",
-      "wrap": "REPEAT"
+    {
+      "regName": "region4ColorMap",
+      "regOptions": {
+        "texture": "region2/snow-field-diff.jpg",
+        "wrap": "REPEAT"
+      }
     },
-    "slopeColorMap": {
-      "texture": "region2/snow-field-diff.jpg",
-      "wrap": "REPEAT"
+    {
+      "regName": "slopeColorMap",
+      "regOptions": {
+        "texture": "region2/snow-field-diff.jpg",
+        "wrap": "REPEAT"
+      }
     }
-  },
-  "vars": {
-    "region1": {
-      "type": "vector",
-      "value": "15,200,64"
+  ],
+  "vars": [
+    {
+      "varName": "region1",
+      "varOpt": {
+        "type": "vector",
+        "value": "15,200,64"
+      }
     },
-    "region2": {
-      "type": "vector",
-      "value": "0,20,16"
+    {
+      "varName": "region2",
+      "varOpt": {
+        "type": "vector",
+        "value": "0,20,16"
+      }
     },
-    "region3": {
-      "type": "vector",
-      "value": "198,260,128"
+    {
+      "varName": "region3",
+      "varOpt": {
+        "type": "vector",
+        "value": "198,260,128"
+      }
     },
-    "region4": {
-      "type": "vector",
-      "value": "198,260,128"
+    {
+      "varName": "region4",
+      "varOpt": {
+        "type": "vector",
+        "value": "198,260,128"
+      }
     },
-    "slopeTileFactor": {
-      "type": "float",
-      "value": 32
+    {
+      "varName": "slopeTileFactor",
+      "varOpt": {
+        "type": "float",
+        "value": 32
+      }
     },
-    "terrainSize": {
-      "type": "float",
-      "value": 513
+    {
+      "varName": "terrainSize",
+      "varOpt": {
+        "type": "float",
+        "value": 513
+      }
     }
-  }
+  ]
 }

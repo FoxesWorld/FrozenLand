@@ -14,7 +14,6 @@ public interface PlayerInterface {
     PlayerOptions getPlayerOptions();
     PlayerModel getPlayerModel();
     AssetManager getAssetManager();
-    Logger getLogger();
     PlayerSoundProvider getPlayerSoundProvider();
     Node getRootNode();
     Node getGuiNode();

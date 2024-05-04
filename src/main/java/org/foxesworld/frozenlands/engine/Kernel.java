@@ -66,7 +66,7 @@ public class Kernel extends BaseAppState implements KernelInterface {
         this.guiNode = frozenLands.getGuiNode();
 
         this.soundProvider = new SoundProvider(this);
-        this.soundProvider.loadSounds("data/sounds.dat");
+        this.soundProvider.loadSounds("data/sounds.json");
 
         this.materialProvider = new MaterialProvider(this);
         this.materialProvider.loadMaterials("data/materials.json");

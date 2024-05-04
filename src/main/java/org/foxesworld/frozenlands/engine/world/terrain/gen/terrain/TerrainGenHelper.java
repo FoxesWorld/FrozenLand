@@ -6,6 +6,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.*;
 import com.jme3.terrain.geomipmap.lodcalc.DistanceLodCalculator;
+import org.foxesworld.frozenlands.FrozenLands;
 import org.foxesworld.frozenlands.engine.KernelInterface;
 import org.foxesworld.frozenlands.engine.config.Constants;
 import org.foxesworld.frozenlands.engine.world.terrain.gen.tree.TreeGen;
@@ -68,7 +69,7 @@ public class TerrainGenHelper {
                 List<Spatial> quadForest = quad.getUserData("quadForest");
                 Stream<Spatial> stream = quadForest.stream();
                 stream.forEach(treeNode -> {
-                    kernelInterface.getLogger().info("Detached " + treeNode.hashCode() + treeNode.getLocalTranslation().toString());
+                    FrozenLands.logger.info("Detached " + treeNode.hashCode() + treeNode.getLocalTranslation().toString());
                     kernelInterface.getRootNode().detachChild(treeNode);
                 });
             }

@@ -11,19 +11,12 @@ public abstract class MaterialAbstract {
     private Material material;
     private MaterialDef materialDef;
     public abstract void loadMaterials(String path);
-    public abstract  Material createMat(String dir, String type);
+    public abstract  Material createMat(String dir, String type, String regName);
     public void setMaterialBoolean(String map, boolean val) {
         getMaterial().setBoolean(map, val);
     }
 
-    public void setMaterialVector(String map, String value){
-        String[] strArr = value.split(",");
-        int[] intArr = new int[3];
-
-        for (int i = 0; i < 3; i++) {
-            intArr[i] = Integer.parseInt(strArr[i]);
-        }
-        Vector3f vector = new Vector3f(intArr[0], intArr[1], intArr[2]);
+    public void setMaterialVector(String map, Vector3f vector) {
         getMaterial().setVector3(map, vector);
     }
 

@@ -47,7 +47,7 @@ public class FrozenLands extends SimpleApplication implements FrozenLandsInterfa
 
     @Override
     public void simpleInitApp() {
-        CONFIG = new ConfigReader(new String[]{"userInput", "engine"}).getCfgMaps();
+        CONFIG = new ConfigReader(new String[]{"userInput", "internal/engine"}).getCfgMaps();
         GuiGlobals.initialize(this);
         numSamples = getContext().getSettings().getSamples();
         assetManager.registerLoader(J3mapFactory.class, "j3map");

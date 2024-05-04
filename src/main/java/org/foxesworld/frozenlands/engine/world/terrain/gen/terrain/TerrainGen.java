@@ -17,6 +17,7 @@ import com.jme3.terrain.noise.filter.PerturbFilter;
 import com.jme3.terrain.noise.filter.SmoothFilter;
 import com.jme3.terrain.noise.fractal.FractalSum;
 import com.jme3.terrain.noise.modulator.NoiseModulator;
+import org.foxesworld.frozenlands.FrozenLands;
 import org.foxesworld.frozenlands.engine.KernelInterface;
 
 public class TerrainGen {
@@ -95,7 +96,7 @@ public class TerrainGen {
                                     q = getGridTileLoader().getTerrainQuadAt(quadCell);
                                     if (q.getMaterial() == null)
                                         q.setMaterial(material.clone());
-                                    kernelInterface.getLogger().info("Loaded TerrainQuad "+q.getName()+" from TerrainQuadGrid");
+                                    FrozenLands.logger.info("Loaded TerrainQuad "+q.getName()+" from TerrainQuadGrid");
                                 }
                             }
                             cache.put(quadCell, q);
@@ -112,7 +113,7 @@ public class TerrainGen {
                                 } else {
                                     getControl(UpdateControl.class).enqueue(() -> {
                                         removeQuad(newQuad);
-                                       kernelInterface.getLogger().info("Unloaded TerrainQuad "+newQuad.getQuadrant()+" from TerrainQuadGrid");
+                                       FrozenLands.logger.info("Unloaded TerrainQuad "+newQuad.getQuadrant()+" from TerrainQuadGrid");
                                         return null;
                                     });
                                 }

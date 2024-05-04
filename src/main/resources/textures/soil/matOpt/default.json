@@ -1,19 +1,27 @@
 {
-  "matDef": "Common/MatDefs/Light/Lighting.j3md",
-  "textures": {
-    "DiffuseMap": {
-      "texture": "cracked_soil_BaseColor.jpg",
-      "wrap": "REPEAT"
+  "matDef": "MatDefs/HeightBasedTerrain.j3md",
+  "textures": [
+    {
+      "regName": "DiffuseMap",
+      "regOptions": {
+        "texture": "cracked_soil_BaseColor.jpg",
+        "wrap": "REPEAT"
+      }
     },
-    "GlowMap": {
-      "texture": "cracked_soil_AmbientOcclusion.jpg",
-      "wrap": "REPEAT"
+    {
+      "regName": "GlowMap",
+      "regOptions": {
+        "texture": "cracked_soil_AmbientOcclusion.jpg",
+        "wrap": "REPEAT"
+      }
     },
-    "NormalMap": {
-      "texture": "cracked_soil_Normal.jpg",
-      "wrap": "REPEAT"
+    {
+      "regName": "NormalMap",
+      "regOptions": {
+        "texture": "cracked_soil_Normal.jpg",
+        "wrap": "REPEAT"
+      }
     }
-  },
-  "vars": {
-  }
+  ],
+  "vars": []
 }

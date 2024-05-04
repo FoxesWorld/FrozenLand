@@ -20,23 +20,39 @@ public class Utils {
         return lower <= x && x <= upper;
     }
 
-    public static String inputJsonReader(KernelInterface kernelInterface, String path){
-        boolean inputSearch = (boolean) kernelInterface.getConfig().get("engine").get("assetsInputStream");
-        if(inputSearch) {
-            InputStreamReader is = new InputStreamReader(kernelInterface.getClass().getClassLoader().getResourceAsStream(path), StandardCharsets.UTF_8);
-            BufferedReader bufferedReader = new BufferedReader(is);
-            StringBuilder jsonStringBuilder = new StringBuilder();
-            String line;
-
-                try {
-                    while ((line = bufferedReader.readLine()) != null) {
-                        jsonStringBuilder.append(line);
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                return jsonStringBuilder.toString();
+    public static String inputJsonReader(KernelInterface kernelInterface, String path) {
+        if (kernelInterface == null || kernelInterface.getConfig() == null) {
+            return null;
         }
-        return null;
+
+        boolean inputSearch = (boolean) kernelInterface.getConfig().get("internal/engine").get("assetsInputStream");
+        if (inputSearch) {
+            try (InputStreamReader is = new InputStreamReader(kernelInterface.getClass().getClassLoader().getResourceAsStream(path), StandardCharsets.UTF_8);
+                 BufferedReader bufferedReader = new BufferedReader(is)) {
+                StringBuilder jsonStringBuilder = new StringBuilder();
+                String line;
+
+                while ((line = bufferedReader.readLine()) != null) {
+                    jsonStringBuilder.append(line);
+                }
+
+                return jsonStringBuilder.toString();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+                StringBuilder jsonStringBuilder = new StringBuilder();
+                String line;
+
+                while ((line = br.readLine()) != null) {
+                    jsonStringBuilder.append(line);
+                }
+
+                return jsonStringBuilder.toString();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

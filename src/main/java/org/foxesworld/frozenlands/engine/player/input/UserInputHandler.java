@@ -11,6 +11,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import org.foxesworld.automaton.elements.components.ComponentManager;
+import org.foxesworld.frozenlands.FrozenLands;
 import org.foxesworld.frozenlands.engine.player.PlayerInterface;
 import org.foxesworld.frozenlands.engine.ui.UserInfo;
 
@@ -42,7 +43,7 @@ public class UserInputHandler extends UserInputAbstract implements UserInputHand
         if (!isInit()) {
             characterControl = spatial.getControl(BetterCharacterControl.class);
             if (characterControl == null) {
-                playerInterface.getLogger().error(getClass() + " can be attached only to a spatial that has a BetterCharacterControl");
+                FrozenLands.logger.error(getClass() + " can be attached only to a spatial that has a BetterCharacterControl");
                 return;
             }
             userInfoBox.userInfo(this.componentManager);
