@@ -1,6 +1,6 @@
 package org.foxesworld.frozenlands.engine.utils;
 
-import org.foxesworld.frozenlands.engine.KernelInterface;
+import org.foxesworld.frozenlands.engine.Kernel;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -20,14 +20,14 @@ public class Utils {
         return lower <= x && x <= upper;
     }
 
-    public static String inputJsonReader(KernelInterface kernelInterface, String path) {
-        if (kernelInterface == null || kernelInterface.getConfig() == null) {
+    public static String inputJsonReader(Kernel kernel, String path) {
+        if (kernel == null || kernel.getConfig() == null) {
             return null;
         }
 
-        boolean inputSearch = (boolean) kernelInterface.getConfig().get("internal/engine").get("assetsInputStream");
+        boolean inputSearch = (boolean) kernel.getConfig().get("internal/engine").get("assetsInputStream");
         if (inputSearch) {
-            try (InputStreamReader is = new InputStreamReader(kernelInterface.getClass().getClassLoader().getResourceAsStream(path), StandardCharsets.UTF_8);
+            try (InputStreamReader is = new InputStreamReader(kernel.getClass().getClassLoader().getResourceAsStream(path), StandardCharsets.UTF_8);
                  BufferedReader bufferedReader = new BufferedReader(is)) {
                 StringBuilder jsonStringBuilder = new StringBuilder();
                 String line;

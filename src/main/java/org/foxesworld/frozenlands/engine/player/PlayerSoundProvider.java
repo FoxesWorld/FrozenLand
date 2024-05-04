@@ -1,7 +1,7 @@
 package org.foxesworld.frozenlands.engine.player;
 
 import com.jme3.audio.AudioNode;
-import org.foxesworld.frozenlands.engine.KernelInterface;
+import org.foxesworld.frozenlands.engine.Kernel;
 import org.foxesworld.frozenlands.engine.providers.sound.SoundProvider;
 
 import java.util.List;
@@ -11,9 +11,9 @@ public class PlayerSoundProvider extends SoundProvider {
 
     private Map<String, List<AudioNode>> playerSounds;
 
-    public PlayerSoundProvider(KernelInterface kernelInterface) {
-        super(kernelInterface);
-        playerSounds = kernelInterface.getSoundManager().getSoundBlock("player");
+    public PlayerSoundProvider(Kernel kernel) {
+        super(kernel);
+        playerSounds = kernel.getSoundManager().getSoundBlock("player");
     }
 
     public void playSound(String sound){

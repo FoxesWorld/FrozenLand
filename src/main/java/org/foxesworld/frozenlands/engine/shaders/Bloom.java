@@ -2,16 +2,16 @@ package org.foxesworld.frozenlands.engine.shaders;
 
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.BloomFilter;
-import org.foxesworld.frozenlands.engine.KernelInterface;
+import org.foxesworld.frozenlands.engine.Kernel;
 
 public class Bloom extends Shaders {
 
     private BloomFilter bloom;
     private  FilterPostProcessor fpp;
 
-    public Bloom(KernelInterface kernelInterface) {
-        super(kernelInterface);
-        this.fpp = kernelInterface.getFpp();
+    public Bloom(Kernel kernel) {
+        super(kernel);
+        this.fpp = kernel.getFpp();
         bloom = new BloomFilter();
     }
 

@@ -3,16 +3,16 @@ package org.foxesworld.frozenlands.engine.shaders;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.LightScatteringFilter;
-import org.foxesworld.frozenlands.engine.KernelInterface;
+import org.foxesworld.frozenlands.engine.Kernel;
 
 public class LSF extends  Shaders {
 
     LightScatteringFilter lsf;
     FilterPostProcessor fpp;
 
-    public LSF(KernelInterface kernelInterface, Vector3f lightDir) {
-        super(kernelInterface);
-        this.fpp = kernelInterface.getFpp();
+    public LSF(Kernel kernel, Vector3f lightDir) {
+        super(kernel);
+        this.fpp = kernel.getFpp();
         lsf = new LightScatteringFilter(lightDir);
     }
 

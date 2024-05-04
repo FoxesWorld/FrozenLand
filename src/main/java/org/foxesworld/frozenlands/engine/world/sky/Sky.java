@@ -17,7 +17,7 @@ import com.jme3.util.SkyFactory;
 import jme3utilities.sky.SkyControl;
 import jme3utilities.sky.StarsOption;
 import jme3utilities.sky.Updater;
-import org.foxesworld.frozenlands.engine.KernelInterface;
+import org.foxesworld.frozenlands.engine.Kernel;
 
 public class Sky implements SkyInterface {
 
@@ -30,11 +30,11 @@ public class Sky implements SkyInterface {
     private final AssetManager assetManager;
     private final ViewPort viewPort;
     private final Camera camera;
-    public Sky(KernelInterface kernelInterface){
-        this.rootNode = kernelInterface.getRootNode();
-        this.assetManager = kernelInterface.getAssetManager();
-        this.camera = kernelInterface.getCamera();
-        this.viewPort = kernelInterface.getViewPort();
+    public Sky(Kernel kernel){
+        this.rootNode = kernel.getRootNode();
+        this.assetManager = kernel.getAssetManager();
+        this.camera = kernel.getCamera();
+        this.viewPort = kernel.getViewPort();
     }
 
     public void addSky(){

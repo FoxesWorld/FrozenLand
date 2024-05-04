@@ -6,10 +6,8 @@ import com.jme3.audio.AudioData;
 import com.jme3.audio.AudioNode;
 import com.jme3.audio.AudioSource;
 import org.foxesworld.frozenlands.FrozenLands;
-import org.foxesworld.frozenlands.engine.KernelInterface;
+import org.foxesworld.frozenlands.engine.Kernel;
 
-import java.io.File;
-import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,17 +15,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.foxesworld.frozenlands.engine.utils.Utils.inputJsonReader;
 
 public class SoundProvider {
-    private KernelInterface kernelInterface;
+    private Kernel kernel;
     private int totalSounds = 0;
     private Map<String, Map<String, List<AudioNode>>> Sounds = new HashMap<>();
 
-    public SoundProvider(KernelInterface kernelInterface) {
-        this.kernelInterface = kernelInterface;
+    public SoundProvider(Kernel kernel) {
+        this.kernel = kernel;
     }
 
     public void loadSounds(String path) {
         Gson gson = new Gson();
-        String soundsJson = inputJsonReader(kernelInterface, path);
+        String soundsJson = inputJsonReader(kernel, path);
 
         // Определяем тип данных для разбора JSON
         Type soundsType = new TypeToken<Map<String, List<SoundEvent>>>(){}.getType();
@@ -54,7 +52,7 @@ public class SoundProvider {
                 soundEvent.getSounds().forEach(soundFile -> {
                     String filePath = "sounds/" +  topLevelKey + '/' + soundEvent.getSoundDir() + soundEvent.getEvent() + soundFile;
                     AudioData.DataType dataType = AudioData.DataType.valueOf(soundEvent.getSettings().getDataType());
-                    AudioNode audioNode = new AudioNode(kernelInterface.getAssetManager(), filePath, dataType);
+                    AudioNode audioNode = new AudioNode(kernel.getAssetManager(), filePath, dataType);
 
                     // Устанавливаем настройки звука
                     if (soundEvent.getSettings().getVolume() != null) {

@@ -1,17 +1,17 @@
 package org.foxesworld.frozenlands.engine.world.terrain;
 
 import com.jme3.terrain.geomipmap.TerrainQuad;
-import org.foxesworld.frozenlands.engine.KernelInterface;
+import org.foxesworld.frozenlands.engine.Kernel;
 import org.foxesworld.frozenlands.engine.world.terrain.gen.GenAdaptor;
 
 public class TerrainManager implements TerrainManagerInterface {
     private TerrainInterface terrainBuilder;
-    private  KernelInterface kernelInterface;
+    private Kernel kernel;
     private TerrainQuad terrain;
     private TerrainQuad mountains;
 
-    public TerrainManager(KernelInterface app) {
-        this.kernelInterface = app;
+    public TerrainManager(Kernel app) {
+        this.kernel = app;
         terrainBuilder = new GenAdaptor(app);
         generateTerrain();
     }

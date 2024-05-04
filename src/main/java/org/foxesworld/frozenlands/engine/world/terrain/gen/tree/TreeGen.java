@@ -19,22 +19,22 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.foxesworld.frozenlands.FrozenLands;
-import org.foxesworld.frozenlands.engine.KernelInterface;
+import org.foxesworld.frozenlands.engine.Kernel;
 import org.foxesworld.frozenlands.engine.config.Constants;
 import org.foxesworld.frozenlands.engine.utils.LodUtils;
 import org.foxesworld.frozenlands.engine.utils.Utils;
 
 public class TreeGen {
     private Spatial treeModel;
-    private KernelInterface kernelInterface;
+    private Kernel kernel;
 
-    public TreeGen(KernelInterface kernelInterface) {
-        this.kernelInterface = kernelInterface;
+    public TreeGen(Kernel kernel) {
+        this.kernel = kernel;
         this.initializeTreeModel();
     }
 
     private void initializeTreeModel() {
-        treeModel = kernelInterface.getAssetManager().loadModel("Models/Fir1/fir1_androlo.j3o");
+        treeModel = kernel.getAssetManager().loadModel("Models/Fir1/fir1_androlo.j3o");
         treeModel.setShadowMode(RenderQueue.ShadowMode.Cast);
         LodUtils.setUpTreeModelLod(treeModel);
     }
@@ -43,7 +43,7 @@ public class TreeGen {
         CollisionShape shape = CollisionShapeFactory.createMeshShape(spatial);
         RigidBodyControl control = new RigidBodyControl(shape, 0);
         spatial.addControl(control);
-        kernelInterface.getBulletAppState().getPhysicsSpace().add(control);
+        kernel.getBulletAppState().getPhysicsSpace().add(control);
         return control;
     }
 
@@ -73,15 +73,15 @@ public class TreeGen {
                 while (generated++ < 0) {
                     CollisionResults results = new CollisionResults();
 
-                    float y = kernelInterface.getPlayer().getPlayerPosition().y;
+                    float y = kernel.getPlayer().getPlayerPosition().y;
                     if (y < Constants.WATER_LEVEL_HEIGHT)
                         y = 0;
 
                     Vector3f start = new Vector3f(
-                            kernelInterface.getPlayer().getPlayerPosition().x
+                            kernel.getPlayer().getPlayerPosition().x
                                     + Utils.getRandomNumberInRange(-800, 800), // Adjust position range
                             y,
-                            kernelInterface.getPlayer().getPlayerPosition().z
+                            kernel.getPlayer().getPlayerPosition().z
                                     + Utils.getRandomNumberInRange(-800, 800)); // Adjust position range
                     Ray ray = new Ray(start, RAY_DOWN);
 
@@ -97,7 +97,7 @@ public class TreeGen {
                             treeNode.setLocalTranslation(plantLocation);
                             treeNode.setLocalRotation(rotation);
 
-                            kernelInterface.getRootNode().attachChild(treeNode);
+                            kernel.getRootNode().attachChild(treeNode);
                             createCollisionControl(treeNode); // Generate collision for the tree
                             FrozenLands.logger.debug("Attached "
                                     + treeNode.hashCode()
@@ -116,7 +116,7 @@ public class TreeGen {
             stream.forEach(treeNode -> {
                 FrozenLands.logger.debug("Attached again "
                         + treeNode.hashCode() + treeNode.getLocalTranslation().toString());
-                kernelInterface.getRootNode().attachChild(treeNode);
+                kernel.getRootNode().attachChild(treeNode);
             });
         }
 

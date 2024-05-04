@@ -2,22 +2,22 @@ package org.foxesworld.frozenlands.engine.world;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
-import org.foxesworld.frozenlands.engine.KernelInterface;
+import org.foxesworld.frozenlands.engine.Kernel;
 import org.foxesworld.frozenlands.engine.world.effect.SnowfallEffect;
 
 public class WorldUpdate extends BaseAppState {
     private long time = 0;
-    private  KernelInterface kernelInterface;
+    private Kernel kernel;
 
-    public WorldUpdate(KernelInterface kernelInterface){
-        this.kernelInterface = kernelInterface;
+    public WorldUpdate(Kernel kernel){
+        this.kernel = kernel;
     }
 
     @Override
     protected void initialize(Application application) {
-        SnowfallEffect snowfallEffect = new SnowfallEffect(kernelInterface);
+        SnowfallEffect snowfallEffect = new SnowfallEffect(kernel);
         snowfallEffect.setLocalTranslation(0, 10, 0);
-        kernelInterface.getRootNode().attachChild(snowfallEffect);
+        kernel.getRootNode().attachChild(snowfallEffect);
     }
 
     @Override

@@ -26,7 +26,7 @@ import org.foxesworld.frozenlands.engine.world.terrain.TerrainManagerInterface;
 
 import java.util.Map;
 
-public class Kernel extends BaseAppState implements KernelInterface {
+public class Kernel extends BaseAppState {
 
     private final FrozenLands frozenLands;
     private final Logger logger;
@@ -108,66 +108,40 @@ public class Kernel extends BaseAppState implements KernelInterface {
     public void update(float tpf) {
     }
 
-    @Override
-    public Map getConfig() {
+    public Map<String, Map<String, Object>> getConfig() {
         return CONFIG;
     }
 
-    @Override
     public AssetManager getAssetManager() {
         return assetManager;
     }
-
-    @Override
     public AppStateManager appStateManager() {return frozenLands.getStateManager();}
-
-    @Override
     public InputManager getInputManager() {return frozenLands.getInputManager();}
-
-    @Override
     public SoundProvider getSoundManager() {
         return soundProvider;
     }
-
-    @Override
     public MaterialProvider getMaterialManager() {
         return materialProvider;
     }
-
-    @Override
     public Camera getCamera() {
         return camera;
     }
-
-    @Override
     public BulletAppState getBulletAppState() {
         return bulletAppState;
     }
-
-    @Override
     public Node getRootNode() {
         return rootNode;
     }
-
-    @Override
     public Player getPlayer() {
         return player;
     }
-
-    @Override
     public Sky getSky() {return sky;}
-
-    @Override
     public ViewPort getViewPort() {
         return this.viewPort;
     }
-
-    @Override
     public Node getGuiNode() {
         return guiNode;
     }
-
-    @Override
     public FilterPostProcessor getFpp() {
         return this.fpp;
     }

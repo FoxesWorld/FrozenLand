@@ -8,22 +8,22 @@ import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.terrain.heightmap.AbstractHeightMap;
 import com.jme3.terrain.heightmap.ImageBasedHeightMap;
 import com.jme3.texture.Texture;
-import org.foxesworld.frozenlands.engine.KernelInterface;
+import org.foxesworld.frozenlands.engine.Kernel;
 import org.foxesworld.frozenlands.engine.config.Constants;
 
 public class MountGen {
 
-    private  KernelInterface kernelInterface;
+    private Kernel kernel;
     private AssetManager assetManager;
     private TerrainQuad distantTerrain;
 
-    public  MountGen(KernelInterface kernelInterface){
-        this.kernelInterface = kernelInterface;
-        this.assetManager = kernelInterface.getAssetManager();
+    public  MountGen(Kernel kernel){
+        this.kernel = kernel;
+        this.assetManager = kernel.getAssetManager();
     }
 
     public TerrainQuad generateMountains() {
-        Material matTerrain = kernelInterface.getMaterialManager().getMaterial("terrain#mount");
+        Material matTerrain = kernel.getMaterialManager().getMaterial("terrain#mount");
 
         AbstractHeightMap heightmap;
         Texture heightMapImage = assetManager.loadTexture("textures/terrain/textures/horizon.png");
@@ -39,7 +39,7 @@ public class MountGen {
         distantTerrain.setLocalTranslation(0, Constants.MOUNTAINS_HEIGHT_OFFSET, 0);
         distantTerrain.setLocalScale(6f, 19f, 6f);
 
-        TerrainLodControl control = new TerrainLodControl(distantTerrain, kernelInterface.getCamera());
+        TerrainLodControl control = new TerrainLodControl(distantTerrain, kernel.getCamera());
         distantTerrain.addControl(control);
         distantTerrain.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
         return distantTerrain;

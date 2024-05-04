@@ -5,14 +5,14 @@ import com.jme3.effect.ParticleMesh;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import org.foxesworld.frozenlands.engine.KernelInterface;
+import org.foxesworld.frozenlands.engine.Kernel;
 
 public class SnowfallEffect extends ParticleEmitter {
 
-    public SnowfallEffect(KernelInterface kernelInterface) {
+    public SnowfallEffect(Kernel kernel) {
         super("Snow", ParticleMesh.Type.Triangle, 2000);
-        Material snowMat = new Material(kernelInterface.getAssetManager(), "Common/MatDefs/Misc/Particle.j3md");
-        snowMat.setTexture("Texture", kernelInterface.getAssetManager().loadTexture("textures/snowflake.png"));
+        Material snowMat = new Material(kernel.getAssetManager(), "Common/MatDefs/Misc/Particle.j3md");
+        snowMat.setTexture("Texture", kernel.getAssetManager().loadTexture("textures/snowflake.png"));
         setMaterial(snowMat);
         setImagesX(1);
         setImagesY(1);

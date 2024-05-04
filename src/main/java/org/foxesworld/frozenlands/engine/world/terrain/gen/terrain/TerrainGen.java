@@ -18,11 +18,11 @@ import com.jme3.terrain.noise.filter.SmoothFilter;
 import com.jme3.terrain.noise.fractal.FractalSum;
 import com.jme3.terrain.noise.modulator.NoiseModulator;
 import org.foxesworld.frozenlands.FrozenLands;
-import org.foxesworld.frozenlands.engine.KernelInterface;
+import org.foxesworld.frozenlands.engine.Kernel;
 
 public class TerrainGen {
     private AssetManager assetManager;
-    private  KernelInterface kernelInterface;
+    private  Kernel kernel;
     private TerrainGenHelper terrainGenHelper;
     private FractalSum base;
     private PerturbFilter perturb;
@@ -31,14 +31,14 @@ public class TerrainGen {
     private IterativeFilter iterate;
 
 
-    public TerrainGen(KernelInterface kernelInterface){
-        this.kernelInterface = kernelInterface;
-        this.assetManager = kernelInterface.getAssetManager();
+    public TerrainGen(Kernel kernel){
+        this.kernel = kernel;
+        this.assetManager = kernel.getAssetManager();
     }
 
     public TerrainQuad generateTerrain(float baseRoughness,float baseFrequency, float baseAmplitude, float baseLacunarity, int baseOctaves, float baseScale) {
         TerrainQuad terrain;
-        Material matTerrain = this.kernelInterface.getMaterialManager().getMaterial("terrain#default");
+        Material matTerrain = this.kernel.getMaterialManager().getMaterial("terrain#default");
 
         this.base = new FractalSum();
         this.base.setRoughness(baseRoughness);
@@ -175,7 +175,7 @@ public class TerrainGen {
         };
 
         terrain.setMaterial(matTerrain);
-        terrainGenHelper = new TerrainGenHelper(kernelInterface, terrain);
+        terrainGenHelper = new TerrainGenHelper(kernel, terrain);
         terrainGenHelper.setupPosition();
         terrainGenHelper.setupScale();
         terrainGenHelper.setUpLODControl();

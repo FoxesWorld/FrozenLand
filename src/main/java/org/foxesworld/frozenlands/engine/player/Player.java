@@ -14,25 +14,24 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
-import org.foxesworld.frozenlands.engine.KernelInterface;
+import org.foxesworld.frozenlands.engine.Kernel;
 import org.foxesworld.frozenlands.engine.player.camera.CameraFollowSpatial;
 import org.foxesworld.frozenlands.engine.player.input.FPSViewControl;
 import org.foxesworld.frozenlands.engine.player.input.UserInputHandler;
-import org.slf4j.Logger;
 
 import java.util.Map;
 
 public class Player extends Node implements PlayerInterface {
 
-    private KernelInterface kernelInterface;
+    private Kernel kernel;
     private PlayerOptions playerOptions;
     private PlayerSoundProvider playerSoundProvider;
     private PlayerModel playerModel;
     private UserInputHandler userInputHandler;
     private PhysicsSpace pspace;
 
-    public Player(KernelInterface kernel) {
-        this.kernelInterface = kernel;
+    public Player(Kernel kernel) {
+        this.kernel = kernel;
         this.pspace = kernel.getBulletAppState().getPhysicsSpace();
 
         playerOptions = new PlayerOptions((J3map) kernel.getAssetManager().loadAsset("properties/player.j3map"));
@@ -53,7 +52,7 @@ public class Player extends Node implements PlayerInterface {
         this.loadFPSLogicWorld(cam, fpsPlayer, spawnPoint);
         fpsPlayer.loadFPSLogicFPSView(cam, this.playerOptions.getFpsCam(), this.playerModel.getPlayerSpatial());
         pspace.addAll(this);
-        kernelInterface.getRootNode().attachChild(this);
+        kernel.getRootNode().attachChild(this);
     }
 
     public void loadFPSLogicWorld(Camera cam, Spatial playerModel, Vector3f spawnPoint){
@@ -66,7 +65,7 @@ public class Player extends Node implements PlayerInterface {
         // Spawn position
         playerOptions.getCharacterControl().warp(spawnPoint);
 
-        userInputHandler = new UserInputHandler(this, ()-> playerModel.getControl(ActionsControl.class).shot(kernelInterface.getAssetManager(),cam.getLocation().add(cam.getDirection().mult(1)),cam.getDirection(),kernelInterface.getRootNode(), this.pspace));
+        userInputHandler = new UserInputHandler(this, ()-> playerModel.getControl(ActionsControl.class).shot(kernel.getAssetManager(),cam.getLocation().add(cam.getDirection().mult(1)),cam.getDirection(),kernel.getRootNode(), this.pspace));
         this.setPlayerHealth(playerOptions.getInitialHealth());
 
         // Load playerOptions logic
@@ -106,32 +105,32 @@ public class Player extends Node implements PlayerInterface {
 
     @Override
     public AssetManager getAssetManager() {
-        return kernelInterface.getAssetManager();
+        return kernel.getAssetManager();
     }
 
     @Override
     public AppStateManager getStateManager() {
-        return kernelInterface.appStateManager();
+        return kernel.appStateManager();
     }
 
     @Override
     public InputManager getInputManager() {
-        return kernelInterface.getInputManager();
+        return kernel.getInputManager();
     }
 
     @Override
     public Node getRootNode() {
-        return kernelInterface.getRootNode();
+        return kernel.getRootNode();
     }
 
     @Override
     public Node getGuiNode() {
-        return kernelInterface.getGuiNode();
+        return kernel.getGuiNode();
     }
 
     @Override
     public Map getConfig() {
-        return kernelInterface.getConfig();
+        return kernel.getConfig();
     }
 
     @Override

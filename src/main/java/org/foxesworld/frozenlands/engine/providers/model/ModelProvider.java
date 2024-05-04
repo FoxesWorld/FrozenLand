@@ -7,29 +7,29 @@ import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import org.foxesworld.frozenlands.engine.KernelInterface;
+import org.foxesworld.frozenlands.engine.Kernel;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ModelProvider {
 
-    private final KernelInterface kernelInterface;
+    private final Kernel kernel;
     private final AssetManager assetManager;
     private final BulletAppState bulletAppState;
     private final  Node rootNode;
     private Map<String, Spatial> modelsMap = new HashMap<>();
 
-    public ModelProvider(KernelInterface kernelInterface) {
-        this.kernelInterface = kernelInterface;
-        this.assetManager = kernelInterface.getAssetManager();
-        this.bulletAppState = kernelInterface.getBulletAppState();
-        this.rootNode = kernelInterface.getRootNode();
+    public ModelProvider(Kernel kernel) {
+        this.kernel = kernel;
+        this.assetManager = kernel.getAssetManager();
+        this.bulletAppState = kernel.getBulletAppState();
+        this.rootNode = kernel.getRootNode();
     }
 
     public Spatial loadModels(String modelPath, String material) {
         Spatial model = loadModel(modelPath);
-        model.setMaterial(kernelInterface.getMaterialManager().getMaterial(material));
+        model.setMaterial(kernel.getMaterialManager().getMaterial(material));
         this.rootNode.attachChild(model);
         this.rootNode.addControl(createCollisionControl(model));
         return model;

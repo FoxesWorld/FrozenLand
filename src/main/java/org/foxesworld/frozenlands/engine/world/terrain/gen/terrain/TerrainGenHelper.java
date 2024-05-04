@@ -7,7 +7,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.*;
 import com.jme3.terrain.geomipmap.lodcalc.DistanceLodCalculator;
 import org.foxesworld.frozenlands.FrozenLands;
-import org.foxesworld.frozenlands.engine.KernelInterface;
+import org.foxesworld.frozenlands.engine.Kernel;
 import org.foxesworld.frozenlands.engine.config.Constants;
 import org.foxesworld.frozenlands.engine.world.terrain.gen.tree.TreeGen;
 
@@ -16,11 +16,11 @@ import java.util.stream.Stream;
 
 public class TerrainGenHelper {
 
-    private KernelInterface kernelInterface;
+    private Kernel kernel;
     private  TerrainQuad terrain;
 
-    public TerrainGenHelper(KernelInterface kernelInterface, TerrainQuad terrain){
-        this.kernelInterface = kernelInterface;
+    public TerrainGenHelper(Kernel kernel, TerrainQuad terrain){
+        this.kernel = kernel;
         this.terrain = terrain;
     }
 
@@ -35,7 +35,7 @@ public class TerrainGenHelper {
 
     void setUpLODControl() {
         TerrainLodControl control =
-                new TerrainGridLodControl(this.terrain, kernelInterface.getCamera());
+                new TerrainGridLodControl(this.terrain, kernel.getCamera());
         control.setLodCalculator(
                 new DistanceLodCalculator(257, 2.7f));
         this.terrain.addControl(control);
@@ -48,7 +48,7 @@ public class TerrainGenHelper {
 
             @Override
             public void tileAttached(Vector3f cell, TerrainQuad quad) {
-                TreeGen treeGen = new TreeGen(kernelInterface);
+                TreeGen treeGen = new TreeGen(kernel);
                 while (quad.getControl(RigidBodyControl.class) != null) {
                     quad.removeControl(RigidBodyControl.class);
                 }
@@ -56,21 +56,21 @@ public class TerrainGenHelper {
                         new HeightfieldCollisionShape(
                                 quad.getHeightMap(), terrain.getLocalScale()),
                         0));
-                kernelInterface.getBulletAppState().getPhysicsSpace().add(quad);
+                kernel.getBulletAppState().getPhysicsSpace().add(quad);
                 treeGen.positionTrees(quad);
             }
 
             @Override
             public void tileDetached(Vector3f cell, TerrainQuad quad) {
                 if (quad.getControl(RigidBodyControl.class) != null) {
-                    kernelInterface.getBulletAppState().getPhysicsSpace().remove(quad);
+                    kernel.getBulletAppState().getPhysicsSpace().remove(quad);
                     quad.removeControl(RigidBodyControl.class);
                 }
                 List<Spatial> quadForest = quad.getUserData("quadForest");
                 Stream<Spatial> stream = quadForest.stream();
                 stream.forEach(treeNode -> {
                     FrozenLands.logger.info("Detached " + treeNode.hashCode() + treeNode.getLocalTranslation().toString());
-                    kernelInterface.getRootNode().detachChild(treeNode);
+                    kernel.getRootNode().detachChild(treeNode);
                 });
             }
         });
